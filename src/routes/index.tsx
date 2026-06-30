@@ -42,19 +42,28 @@ function Home() {
     <div>
       {/* Hero */}
       {featured && (
-        <div className="relative grain overflow-hidden bg-gradient-warm px-5 py-10 text-white sm:px-8 sm:py-14">
+        <div
+          className="relative grain overflow-hidden bg-gradient-warm px-5 py-10 text-white sm:px-8 sm:py-14"
+          style={coverImage(featured) ? { backgroundImage: `url(${coverImage(featured)})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+        >
+          {coverImage(featured) && <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/35" />}
           <div className="relative z-10 max-w-2xl">
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/80">Featured story</p>
             <h1 className="font-serif text-3xl font-bold leading-tight sm:text-5xl">{featured.title}</h1>
             <p className="mt-3 max-w-xl text-sm text-white/90 sm:text-base">{featured.description}</p>
             <p className="mt-2 text-sm text-white/80">{featured.elder?.name} · {featured.tribe?.name} · {featured.language?.name}</p>
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               <button
                 onClick={() => player.playStory(featured, stories)}
                 className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow"
               >
                 <Play className="h-4 w-4" /> Play story
               </button>
+              {youtubeId(featured.youtube_url) && (
+                <Link to="/stories/$slug" params={{ slug: featured.slug }} hash="watch" className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
+                  <Video className="h-4 w-4" /> Watch video
+                </Link>
+              )}
               <Link to="/stories/$slug" params={{ slug: featured.slug }} className="inline-flex items-center rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
                 Details
               </Link>
