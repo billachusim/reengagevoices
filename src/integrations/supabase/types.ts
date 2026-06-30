@@ -467,6 +467,7 @@ export type Database = {
           duration_seconds: number
           elder_id: string | null
           id: string
+          is_featured: boolean
           language_id: string | null
           play_count: number
           published_at: string | null
@@ -490,6 +491,7 @@ export type Database = {
           duration_seconds?: number
           elder_id?: string | null
           id?: string
+          is_featured?: boolean
           language_id?: string | null
           play_count?: number
           published_at?: string | null
@@ -513,6 +515,7 @@ export type Database = {
           duration_seconds?: number
           elder_id?: string | null
           id?: string
+          is_featured?: boolean
           language_id?: string | null
           play_count?: number
           published_at?: string | null
@@ -730,6 +733,7 @@ export type Database = {
           duration_seconds: number
           elder_id: string | null
           id: string
+          is_featured: boolean
           language_id: string | null
           play_count: number
           published_at: string | null
@@ -763,16 +767,34 @@ export type Database = {
         }
         Returns: undefined
       }
-      update_story: {
-        Args: {
-          _description?: string
-          _story_id: string
-          _transcript_english?: string
-          _transcript_original?: string
-          _youtube_url?: string
-        }
-        Returns: undefined
-      }
+      update_story:
+        | {
+            Args: {
+              _description?: string
+              _story_id: string
+              _transcript_english?: string
+              _transcript_original?: string
+              _youtube_url?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              _description?: string
+              _elder_name?: string
+              _is_featured?: boolean
+              _language?: string
+              _mood?: string
+              _region?: string
+              _story_id: string
+              _story_type?: string
+              _transcript_english?: string
+              _transcript_original?: string
+              _tribe?: string
+              _youtube_url?: string
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
