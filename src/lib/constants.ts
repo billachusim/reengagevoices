@@ -31,6 +31,22 @@ export function coverImage(story: { cover_url?: string | null }): string | undef
   return story.cover_url?.trim() ? story.cover_url : undefined;
 }
 
+// Single source of truth for how a story's artwork resolves across the card,
+// row, and detail header: a real cover photo wins; otherwise the elder's
+// portrait fills the same slot; otherwise nothing (the warm gradient shows).
+// `isCover` means the image is a full-bleed cover/background and no separate
+// thumbnail is needed; `isPortrait` means the fallback portrait is in use.
+export function storyImagery(story: {
+  cover_url?: string | null;
+  elder?: { slug?: string | null } | null;
+}): { image?: string; isCover: boolean; isPortrait: boolean } {
+  const cover = coverImage(story);
+  if (cover) return { image: cover, isCover: true, isPortrait: false };
+  const portrait = elderPortrait(story.elder?.slug);
+  if (portrait) return { image: portrait, isCover: false, isPortrait: true };
+  return { image: undefined, isCover: false, isPortrait: false };
+}
+
 // Deterministic warm gradient for story covers, keyed by slug.
 const COVER_GRADIENTS = [
   "linear-gradient(135deg, oklch(0.7 0.14 70), oklch(0.55 0.16 35))",

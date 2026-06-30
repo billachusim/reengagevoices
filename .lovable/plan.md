@@ -1,34 +1,50 @@
 ## Goal
 
-Make collection cards carry the same warm cover artwork that browse and story cards use, instead of a plain gradient — so the look stays consistent across the app. Where a collection has no usable artwork yet, it keeps the current gradient so nothing looks broken.
+1. Let admins set a story's cover/header image directly from the admin edit screen — by pasting an image URL **or** uploading a file — so headers no longer fall back to the gradient/elder placeholder.
+2. Resolve the second ask: yes, a small shared rule is worth extracting. The story card and detail header currently re-implement the same "cover → elder portrait → gradient" precedence inline, and the detail page separately decides when a thumbnail is redundant. One helper makes that a single source of truth.
 
-## Approach
+## Part 1 — Cover image field in admin edit
 
-Each collection groups several stories that already have cover images. Rather than commissioning a separate piece of art per collection, derive the card image from the collection's own stories: use the cover of the first member story that has one. This keeps the artwork on-brand and automatic — when stories get covers, their collections light up too. A gradient remains the fallback when no member story has a cover.
+### Database
+- Extend the existing `update_story` RPC with a new optional `_cover_url text` parameter that writes `cover_url = NULLIF(trim(...), '')` on the story. (Recreate the function with the extra arg; all current behavior unchanged.)
 
-(The `collections` table already has a `cover_url` column, so this also respects an explicit cover when one is ever set — explicit `cover_url` wins, then first member-story cover, then gradient.)
+### Storage
+- Create a public `story-covers` storage bucket for uploaded cover images (covers must be publicly readable to render as `<img src>`).
+- Add RLS policies on `storage.objects`: public read for the bucket; insert/update/delete limited to admins/moderators (reuse the `has_role` check).
 
-## Changes
+### Server functions (`src/lib/admin.functions.ts`)
+- Add `cover_url` to `AdminStoryRow` and to the `listAdminStories` select.
+- Add `coverUrl: z.string().max(1000).optional()` to the `updateStory` validator and pass `_cover_url` to the RPC.
+- Add an admin-only `uploadStoryCover` server function (uses `requireSupabaseAuth` + staff check) that accepts the file, stores it in `story-covers`, and returns the public URL. (Mirrors the existing audio-upload approach.)
 
-1. **Data (`catalog.functions.ts` → `getCollections`)**
-   - Extend the query to pull each collection's member story covers (e.g. `collection_items(story:stories(cover_url))`, ordered by position).
-   - Compute a `cover_url` per collection: the collection's own `cover_url` if set, else the first member story's non-empty `cover_url`, else `null`.
-   - Return `cover_url` on each collection.
+### UI (`src/routes/_authenticated/admin/edit.tsx`)
+- Add a "Cover image" field to the edit panel with:
+  - A URL text input (`coverUrl`) wired into `form`.
+  - A file picker that uploads via `uploadStoryCover` and fills the URL on success (with an uploading state).
+  - A small live preview thumbnail of the current cover, and a "Remove" action that clears it.
+- Include `coverUrl` in the existing `updateStory` save mutation. Invalidate `stories`/`story` queries so the new header shows immediately.
+- Show a "🖼 cover" marker in the story list row when a story already has a cover (next to the existing ★/▶ markers).
 
-2. **Type (`src/lib/types.ts` → `CollectionDTO`)**
-   - Add `cover_url: string | null`.
+## Part 2 — Shared thumbnail-vs-background rule (refactor)
 
-3. **Collections grid (`src/routes/collections.index.tsx`)**
-   - When `cover_url` exists, render it as the card's background image (object-cover) with a dark gradient overlay so the white title/description stay legible; otherwise keep the current `coverGradient(slug)` background. Reuse the `coverImage()` helper from `constants.ts`.
+### The single rule (in `src/lib/constants.ts`)
+Add a helper that encodes the precedence and the "is a separate thumbnail needed" decision once:
 
-4. **Saved playlists grid (`src/routes/_authenticated/library.tsx`)**
-   - Apply the same cover-or-gradient treatment to the playlist cards so the two grids match. (Requires the library's collections source to include `cover_url` — confirm/extend `getLibrary` similarly; gradient fallback if absent.)
+```text
+storyImage(story):
+  primary   = coverImage(story) ?? elderPortrait(elder.slug) ?? null
+  isCover   = !!coverImage(story)            // real cover photo
+  isPortrait= !isCover && !!elderPortrait    // elder fallback
+```
 
-## Scope notes
+Rule shared by both surfaces: **if a cover exists it is the background/primary image and no extra thumbnail is rendered; otherwise the elder portrait fills the same slot; otherwise the gradient alone.**
 
-- Collection detail header (`collections.$slug.tsx`) keeps its gradient for now — this request is specifically about the cards. Easy to extend later if you want the header to match.
-- No new assets generated and no schema change — artwork is reused from existing story covers.
+### Apply it
+- `src/components/story-card.tsx` (Card + Row): replace the duplicated `cover`/`portrait` branching with the helper, keeping the current look (cover = full-cover image; portrait = luminosity-blended fallback; gradient otherwise).
+- `src/routes/stories.$slug.tsx` header: use the helper so the thumbnail box renders only when the primary image is the portrait fallback (cover stays background-only) — same behavior as today, now driven by the shared rule instead of an inline `!cover && portrait` check.
 
-## Technical notes
+No visual change is intended from Part 2; it removes the divergent inline copies so future tweaks happen in one place.
 
-- Overlay pattern: a relatively-positioned card with the `<img>` absolutely filling it, a `bg-black/30`-style gradient layer above the image, and the text content on top — mirroring how the homepage hero handles cover legibility.
+## Notes
+- Migration runs first (schema + RPC + bucket policies); typed client regenerates after approval, then the code changes land.
+- Cover precedence everywhere stays: explicit cover → elder portrait → warm gradient.

@@ -13,7 +13,7 @@ import { RouteError, RouteNotFound } from "@/components/route-states";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
-import { coverGradient, coverImage, elderPortrait, formatDuration } from "@/lib/constants";
+import { coverGradient, storyImagery, formatDuration } from "@/lib/constants";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
 export const Route = createFileRoute("/stories/$slug")({
@@ -58,8 +58,8 @@ function StoryPage() {
   if (!data) return <RouteNotFound />;
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
-  const portrait = elderPortrait(story.elder?.slug);
-  const cover = coverImage(story);
+  const { image: heroImage, isCover, isPortrait } = storyImagery(story);
+  const cover = isCover ? heroImage : undefined;
   const embedUrl = youtubeEmbedUrl(story.youtube_url);
 
   const scrollToWatch = () => {
@@ -84,9 +84,9 @@ function StoryPage() {
           </>
         )}
         <div className="relative z-10 flex flex-col gap-5 text-white sm:flex-row sm:items-end">
-          {!cover && portrait && (
+          {isPortrait && heroImage && (
             <div className="h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-warm sm:h-48 sm:w-48">
-              <img src={portrait} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
+              <img src={heroImage} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
             </div>
           )}
           <div className="min-w-0">

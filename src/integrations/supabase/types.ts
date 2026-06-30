@@ -795,6 +795,24 @@ export type Database = {
             }
             Returns: undefined
           }
+        | {
+            Args: {
+              _cover_url?: string
+              _description?: string
+              _elder_name?: string
+              _is_featured?: boolean
+              _language?: string
+              _mood?: string
+              _region?: string
+              _story_id: string
+              _story_type?: string
+              _transcript_english?: string
+              _transcript_original?: string
+              _tribe?: string
+              _youtube_url?: string
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

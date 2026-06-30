@@ -273,6 +273,7 @@ export interface AdminStoryRow {
   language_name: string | null;
   story_type: string | null;
   mood: string | null;
+  cover_url: string | null;
 }
 
 // Admin-only: list published stories for editing (newest first, optional search).
@@ -284,7 +285,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
     let query = context.supabase
       .from("stories")
       .select(
-        "id,slug,title,audio_url,youtube_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
+        "id,slug,title,audio_url,youtube_url,cover_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
       )
       .eq("status", "published")
       .order("published_at", { ascending: false })
@@ -310,6 +311,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
         language_name: r.language?.name ?? null,
         story_type: themes.find((t: any) => t.kind === "type")?.name ?? null,
         mood: themes.find((t: any) => t.kind === "mood")?.name ?? null,
+        cover_url: r.cover_url ?? null,
       };
     });
   });
@@ -332,6 +334,7 @@ export const updateStory = createServerFn({ method: "POST" })
         storyType: z.string().max(60).optional(),
         mood: z.string().max(60).optional(),
         isFeatured: z.boolean().optional(),
+        coverUrl: z.string().max(1000).optional(),
       })
       .parse(d),
   )
@@ -350,6 +353,7 @@ export const updateStory = createServerFn({ method: "POST" })
       _story_type: data.storyType ?? undefined,
       _mood: data.mood ?? undefined,
       _is_featured: data.isFeatured ?? undefined,
+      _cover_url: data.coverUrl ?? undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };

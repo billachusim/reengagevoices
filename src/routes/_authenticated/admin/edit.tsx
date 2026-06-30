@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X } from "lucide-react";
 import {
   listAdminStories,
   updateStory,
@@ -11,6 +11,10 @@ import {
   type AdminStoryRow,
 } from "@/lib/admin.functions";
 import { youtubeEmbedUrl } from "@/lib/youtube";
+import { supabase } from "@/integrations/supabase/client";
+
+const COVER_URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
+
 
 export const Route = createFileRoute("/_authenticated/admin/edit")({
   component: EditStoriesPage,
@@ -55,7 +59,7 @@ function EditStoriesPage() {
               className="flex w-full items-center justify-between gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
             >
               <span className="truncate text-sm font-medium">{s.title}</span>
-              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.is_featured && <span className="text-primary">★ featured</span>}{s.youtube_url && <span>▶ video</span>}</span>
+              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.is_featured && <span className="text-primary">★ featured</span>}{s.cover_url && <span>🖼 cover</span>}{s.youtube_url && <span>▶ video</span>}</span>
             </button>
           ))
         )}
@@ -70,6 +74,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
   const qc = useQueryClient();
   const [form, setForm] = useState({
     youtubeUrl: story.youtube_url ?? "",
+    coverUrl: story.cover_url ?? "",
     transcriptOriginal: story.transcript_original ?? "",
     transcriptEnglish: story.transcript_english ?? "",
     description: story.description ?? "",
@@ -81,10 +86,39 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     mood: story.mood ?? "",
   });
   const [isFeatured, setIsFeatured] = useState(story.is_featured);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
   const embed = youtubeEmbedUrl(form.youtubeUrl);
+
+  const onCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${story.id}/${Date.now()}.${ext}`;
+      const up = await supabase.storage.from("story-covers").upload(path, file, {
+        cacheControl: "31536000",
+        upsert: true,
+        contentType: file.type,
+      });
+      if (up.error) throw up.error;
+      const signed = await supabase.storage.from("story-covers").createSignedUrl(path, COVER_URL_TTL);
+      if (signed.error || !signed.data?.signedUrl) throw signed.error ?? new Error("Could not create URL");
+      setForm((f) => ({ ...f, coverUrl: signed.data.signedUrl }));
+      toast.success("Cover uploaded.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
 
   const save = useMutation({
     mutationFn: () => updateStory({ data: { storyId: story.id, ...form, isFeatured } }),
@@ -128,6 +162,38 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
               </div>
             )}
           </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Cover image</label>
+            <div className="flex gap-2">
+              <input value={form.coverUrl} onChange={set("coverUrl")} placeholder="Paste an image URL…" className={inputCls} />
+              <input ref={fileRef} type="file" accept="image/*" onChange={onCoverFile} className="hidden" />
+              <button
+                type="button"
+                disabled={uploading}
+                onClick={() => fileRef.current?.click()}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium hover:bg-muted disabled:opacity-60"
+              >
+                <Upload className="h-3.5 w-3.5" /> {uploading ? "Uploading…" : "Upload"}
+              </button>
+            </div>
+            {form.coverUrl && (
+              <div className="relative mt-2 aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                <img src={form.coverUrl} alt="" className="h-full w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, coverUrl: "" }))}
+                  className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white"
+                  aria-label="Remove cover"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground">Used as the story header. Leave empty to fall back to the elder portrait / gradient.</p>
+          </div>
+
+
 
           <label className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2.5 text-sm font-medium">
             <input
