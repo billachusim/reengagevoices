@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getModerationQueue, approveSubmission, rejectSubmission, type QueueItem } from "@/lib/admin.functions";
+import { getModerationQueue, approveSubmission, rejectSubmission, transcribeAudio, type QueueItem } from "@/lib/admin.functions";
+import { Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
@@ -72,10 +73,17 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
     storyType: p.storyType ?? "",
     mood: p.mood ?? "",
     transcript: p.transcript ?? "",
+    youtubeUrl: p.youtubeUrl ?? "",
     pointAward: 25,
   });
   const [reason, setReason] = useState("");
   const editable = item.status === "pending";
+
+  const transcribe = useMutation({
+    mutationFn: () => transcribeAudio({ data: { audioUrl: item.audio_url! } }),
+    onSuccess: (res) => { setForm((f) => ({ ...f, transcript: res.text })); toast.success("Transcribed."); },
+    onError: (e: any) => toast.error(e.message ?? "Could not transcribe"),
+  });
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["moderation-queue"] });
@@ -96,6 +104,7 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
           storyType: form.storyType,
           mood: form.mood,
           transcript: form.transcript,
+          youtubeUrl: form.youtubeUrl,
           pointAward: Number(form.pointAward) || 0,
         },
       }),
@@ -141,7 +150,18 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
             <input disabled={!editable} value={form.storyType} onChange={set("storyType")} placeholder="Type" className={inputCls} />
             <input disabled={!editable} value={form.mood} onChange={set("mood")} placeholder="Mood" className={inputCls} />
           </div>
+          {editable && item.audio_url && (
+            <button
+              type="button"
+              disabled={transcribe.isPending}
+              onClick={() => transcribe.mutate()}
+              className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-60"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> {transcribe.isPending ? "Transcribing…" : "Transcribe with AI"}
+            </button>
+          )}
           <textarea disabled={!editable} value={form.transcript} onChange={set("transcript")} rows={4} placeholder="Transcript" className={inputCls} />
+          <input disabled={!editable} value={form.youtubeUrl} onChange={set("youtubeUrl")} placeholder="YouTube link (optional)" className={inputCls} />
 
           {item.status === "rejected" && item.reject_reason && (
             <p className="rounded-lg bg-destructive/10 p-2 text-xs text-destructive">Rejected: {item.reject_reason}</p>

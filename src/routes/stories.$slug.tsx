@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { coverGradient, elderPortrait, formatDuration } from "@/lib/constants";
+import { youtubeEmbedUrl } from "@/lib/youtube";
 
 export const Route = createFileRoute("/stories/$slug")({
   loader: async ({ context, params }) => {
@@ -58,6 +59,7 @@ function StoryPage() {
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const embedUrl = youtubeEmbedUrl(story.youtube_url);
 
   const share = async () => {
     const url = window.location.href;
@@ -106,6 +108,24 @@ function StoryPage() {
         </div>
 
         {story.description && <p className="mb-6 max-w-2xl text-sm text-muted-foreground">{story.description}</p>}
+
+        {/* Video */}
+        {embedUrl && (
+          <Section title="Watch">
+            <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-xl border bg-black">
+              <iframe
+                src={embedUrl}
+                title={`${story.title} — video`}
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </Section>
+        )}
+
+
 
         {/* Transcript */}
         <Section title="Transcript">

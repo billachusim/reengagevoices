@@ -66,6 +66,7 @@ export const approveSubmission = createServerFn({ method: "POST" })
         mood: z.string().max(60).optional(),
         transcript: z.string().max(8000).optional(),
         description: z.string().max(2000).optional(),
+        youtubeUrl: z.string().max(500).optional(),
         pointAward: z.number().int().min(0).max(1000).optional(),
       })
       .parse(d),
@@ -84,6 +85,7 @@ export const approveSubmission = createServerFn({ method: "POST" })
       _mood: data.mood || undefined,
       _transcript: data.transcript || undefined,
       _description: data.description || undefined,
+      _youtube_url: data.youtubeUrl || undefined,
       _point_award: data.pointAward ?? 25,
     });
     if (error) throw new Error(error.message);
@@ -184,6 +186,129 @@ export const setUserRole = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { error } = await supabase.rpc("set_user_role", { _user_id: data.userId, _role: data.role, _grant: data.grant });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+const LOVABLE_GATEWAY = "https://ai.gateway.lovable.dev/v1";
+
+function extFromType(type: string) {
+  const t = type.split(";")[0];
+  return ({ "audio/webm": "webm", "audio/mp4": "mp4", "audio/mpeg": "mp3", "audio/mp3": "mp3", "audio/wav": "wav", "audio/x-wav": "wav", "audio/ogg": "ogg", "audio/aac": "aac", "audio/m4a": "m4a" } as Record<string, string>)[t] ?? "webm";
+}
+
+// Admin-only: transcribe a story's audio with Lovable AI speech-to-text.
+export const transcribeAudio = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => z.object({ audioUrl: z.string().url() }).parse(d))
+  .handler(async ({ data, context }): Promise<{ text: string }> => {
+    await assertStaff(context.supabase, context.userId);
+    const key = process.env.LOVABLE_API_KEY;
+    if (!key) throw new Error("AI is not configured.");
+
+    const audioRes = await fetch(data.audioUrl);
+    if (!audioRes.ok) throw new Error("Could not download the audio file.");
+    const blob = await audioRes.blob();
+    const type = blob.type || "audio/webm";
+
+    const form = new FormData();
+    form.append("model", "openai/gpt-4o-mini-transcribe");
+    form.append("file", blob, `audio.${extFromType(type)}`);
+
+    const res = await fetch(`${LOVABLE_GATEWAY}/audio/transcriptions`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}` },
+      body: form,
+    });
+    if (res.status === 429) throw new Error("AI is rate-limited right now. Please try again in a moment.");
+    if (res.status === 402) throw new Error("AI credits are exhausted. Add credits to continue.");
+    if (!res.ok) throw new Error(`Transcription failed (${res.status}).`);
+    const json: any = await res.json();
+    const text = json?.text ?? "";
+    if (!text) throw new Error("No speech was detected in the audio.");
+    return { text };
+  });
+
+// Admin-only: translate transcript text to English with Lovable AI.
+export const translateToEnglish = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => z.object({ text: z.string().trim().min(1).max(8000) }).parse(d))
+  .handler(async ({ data, context }): Promise<{ text: string }> => {
+    await assertStaff(context.supabase, context.userId);
+    const key = process.env.LOVABLE_API_KEY;
+    if (!key) throw new Error("AI is not configured.");
+    const res = await fetch(`${LOVABLE_GATEWAY}/chat/completions`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: "You are a translator. Translate the user's text into clear, natural English. Return only the translation, with no preamble or notes." },
+          { role: "user", content: data.text },
+        ],
+      }),
+    });
+    if (res.status === 429) throw new Error("AI is rate-limited right now. Please try again in a moment.");
+    if (res.status === 402) throw new Error("AI credits are exhausted. Add credits to continue.");
+    if (!res.ok) throw new Error(`Translation failed (${res.status}).`);
+    const json: any = await res.json();
+    const text = json?.choices?.[0]?.message?.content ?? "";
+    if (!text) throw new Error("Could not translate the text.");
+    return { text: text.trim() };
+  });
+
+export interface AdminStoryRow {
+  id: string;
+  slug: string;
+  title: string;
+  audio_url: string | null;
+  youtube_url: string | null;
+  transcript_original: string | null;
+  transcript_english: string | null;
+  description: string | null;
+}
+
+// Admin-only: list published stories for editing (newest first, optional search).
+export const listAdminStories = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => z.object({ q: z.string().max(120).optional() }).parse(d ?? {}))
+  .handler(async ({ data, context }): Promise<AdminStoryRow[]> => {
+    await assertStaff(context.supabase, context.userId);
+    let query = context.supabase
+      .from("stories")
+      .select("id,slug,title,audio_url,youtube_url,transcript_original,transcript_english,description")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(50);
+    if (data.q && data.q.trim()) query = query.ilike("title", `%${data.q.trim()}%`);
+    const { data: rows, error } = await query;
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as AdminStoryRow[];
+  });
+
+// Admin-only: update a published story's editable fields.
+export const updateStory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) =>
+    z
+      .object({
+        storyId: z.string().uuid(),
+        youtubeUrl: z.string().max(500).optional(),
+        transcriptOriginal: z.string().max(8000).optional(),
+        transcriptEnglish: z.string().max(8000).optional(),
+        description: z.string().max(2000).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertStaff(context.supabase, context.userId);
+    const { error } = await context.supabase.rpc("update_story", {
+      _story_id: data.storyId,
+      _youtube_url: data.youtubeUrl ?? undefined,
+      _transcript_original: data.transcriptOriginal ?? undefined,
+      _transcript_english: data.transcriptEnglish ?? undefined,
+      _description: data.description ?? undefined,
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });

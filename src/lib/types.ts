@@ -18,6 +18,7 @@ export interface StoryDTO {
   play_count: number;
   transcript_original: string | null;
   transcript_english: string | null;
+  youtube_url: string | null;
   elder: Ref | null;
   region: Ref | null;
   tribe: Ref | null;
