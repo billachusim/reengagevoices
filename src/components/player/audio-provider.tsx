@@ -109,7 +109,18 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
+    const intro = introRef.current;
     if (!audio || !current) return;
+    // If the intro is currently playing, pause/resume the intro instead of the story.
+    if (introPlayingRef.current && intro) {
+      if (intro.paused) {
+        intro.play().then(() => setIsPlaying(true)).catch(() => {});
+      } else {
+        intro.pause();
+        setIsPlaying(false);
+      }
+      return;
+    }
     if (audio.paused) {
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     } else {
