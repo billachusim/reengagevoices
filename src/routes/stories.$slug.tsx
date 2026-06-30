@@ -102,6 +102,9 @@ function StoryPage() {
               <button onClick={() => (isCurrent ? player.toggle() : player.playStory(story, [story, ...related]))} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow">
                 {isCurrent && player.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {isCurrent && player.isPlaying ? "Pause" : "Play"}
               </button>
+              {embedUrl && (
+                <button onClick={scrollToWatch} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Video className="h-4 w-4" /> Watch video</button>
+              )}
               <button onClick={() => { player.addToQueue(story); toast.success("Added to queue"); }} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Plus className="h-4 w-4" /> Queue</button>
               <button onClick={share} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Share2 className="h-4 w-4" /> Share</button>
             </div>
