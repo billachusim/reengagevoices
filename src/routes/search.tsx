@@ -8,7 +8,7 @@ import { RouteError } from "@/components/route-states";
 
 export const Route = createFileRoute("/search")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
-  head: () => ({ meta: [{ title: "Search — ReEngage Voices" }, { name: "description", content: "Search stories, elders, tribes and transcripts across the archive." }] }),
+  head: () => ({ meta: [{ title: "Search — ReEngage African Voice" }, { name: "description", content: "Search stories, elders, tribes and transcripts across the archive." }] }),
   component: SearchPage,
   errorComponent: RouteError,
 });

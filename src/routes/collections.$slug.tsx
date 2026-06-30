@@ -12,7 +12,7 @@ export const Route = createFileRoute("/collections/$slug")({
     const data = await context.queryClient.ensureQueryData(collectionQuery(params.slug));
     if (!data) throw notFound();
   },
-  head: () => ({ meta: [{ title: "Collection — ReEngage Voices" }, { name: "description", content: "A curated collection of elders' stories." }] }),
+  head: () => ({ meta: [{ title: "Collection — ReEngage African Voice" }, { name: "description", content: "A curated collection of elders' stories." }] }),
   component: CollectionPage,
   errorComponent: RouteError,
   notFoundComponent: () => <RouteNotFound message="This collection doesn't exist." />,
