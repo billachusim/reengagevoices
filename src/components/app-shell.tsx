@@ -37,7 +37,7 @@ function Brand() {
     <Link to="/" className="flex items-center gap-2 px-2">
       <img src={LOGO_SRC} alt="ReEngage African Voices" width={36} height={36} className="h-9 w-9" />
       <span className="font-serif text-lg font-semibold leading-none">
-        ReEngage<span className="block text-xs font-normal text-muted-foreground">African Voice</span>
+        ReEngage<span className="block text-xs font-normal text-muted-foreground">African Voices</span>
       </span>
     </Link>
   );
