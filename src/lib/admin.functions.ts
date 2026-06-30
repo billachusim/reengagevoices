@@ -285,7 +285,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
     let query = context.supabase
       .from("stories")
       .select(
-        "id,slug,title,audio_url,youtube_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
+        "id,slug,title,audio_url,youtube_url,cover_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
       )
       .eq("status", "published")
       .order("published_at", { ascending: false })
