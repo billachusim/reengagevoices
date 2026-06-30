@@ -25,6 +25,7 @@ import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
 import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -111,6 +112,11 @@ const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCreatorRoute = AuthenticatedCreatorRouteImport.update({
+  id: '/creator',
+  path: '/creator',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
+  '/creator': typeof AuthenticatedCreatorRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/creator': typeof AuthenticatedCreatorRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/creator': typeof AuthenticatedCreatorRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/admin'
     | '/account'
+    | '/creator'
     | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/search'
     | '/account'
+    | '/creator'
     | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/_authenticated/admin'
     | '/_authenticated/account'
+    | '/_authenticated/creator'
     | '/_authenticated/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -418,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibraryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/creator': {
+      id: '/_authenticated/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
@@ -484,6 +503,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedCreatorRoute: typeof AuthenticatedCreatorRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedContributeRecordRoute: typeof AuthenticatedContributeRecordRoute
 }
@@ -491,6 +511,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedCreatorRoute: AuthenticatedCreatorRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedContributeRecordRoute: AuthenticatedContributeRecordRoute,
 }

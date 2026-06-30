@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Compass, Search, Library, Mic, Users, ListMusic, LogIn, Menu } from "lucide-react";
+import { Home, Compass, Search, Library, Mic, Users, ListMusic, LogIn, Menu, Sparkles, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { LOGO_SRC, WHATSAPP_URL } from "@/lib/constants";
 import { useAuth } from "@/hooks/use-auth";
