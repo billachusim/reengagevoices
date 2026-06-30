@@ -185,7 +185,7 @@ export const getCollection = createServerFn({ method: "GET" })
       .filter(Boolean)
       .map(mapStory);
     return {
-      collection: { id: (c as any).id, slug: (c as any).slug, title: (c as any).title, description: (c as any).description, story_count: items.length },
+      collection: { id: (c as any).id, slug: (c as any).slug, title: (c as any).title, description: (c as any).description, story_count: items.length, cover_url: items.map((s: any) => s.cover_url).find((u: any) => u && String(u).trim()) ?? null },
       stories: items,
     };
   });
