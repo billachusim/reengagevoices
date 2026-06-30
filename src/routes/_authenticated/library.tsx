@@ -63,7 +63,40 @@ function LibraryPage() {
         <TabsContent value="history" className="mt-4 max-w-2xl">
           {history.length === 0 ? <Empty text="Your listening history will show up here." /> : history.map((s) => <StoryRow key={s.id} story={s} queue={history} />)}
         </TabsContent>
+        <TabsContent value="submissions" className="mt-4 max-w-2xl space-y-3">
+          {submissions.length === 0 ? (
+            <Empty text="Stories you record or upload will appear here while they await review." />
+          ) : (
+            submissions.map((s) => <SubmissionRow key={s.id} sub={s} />)
+          )}
+        </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+const STATUS_STYLES: Record<string, { label: string; className: string }> = {
+  pending: { label: "Pending review", className: "bg-amber-500/15 text-amber-600 dark:text-amber-400" },
+  published: { label: "Approved", className: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
+  rejected: { label: "Rejected", className: "bg-destructive/15 text-destructive" },
+};
+
+function SubmissionRow({ sub }: { sub: MySubmission }) {
+  const status = STATUS_STYLES[sub.status] ?? { label: sub.status, className: "bg-muted text-muted-foreground" };
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-medium">{sub.title}</h3>
+          <p className="text-xs text-muted-foreground">Elder: {sub.elder_name} · {new Date(sub.created_at).toLocaleDateString()}</p>
+        </div>
+        <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${status.className}`}>{status.label}</span>
+      </div>
+      {sub.status === "rejected" && sub.reject_reason && (
+        <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          <span className="font-semibold">Admin note:</span> {sub.reject_reason}
+        </p>
+      )}
     </div>
   );
 }
@@ -71,3 +104,4 @@ function LibraryPage() {
 function Empty({ text }: { text: string }) {
   return <div className="rounded-xl border border-dashed py-16 text-center text-sm text-muted-foreground">{text}</div>;
 }
+
