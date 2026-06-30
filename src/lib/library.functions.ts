@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { StoryDTO, ElderDTO } from "./types";
 
 const STORY_SELECT =
-  "id,slug,title,description,audio_url,cover_url,duration_seconds,play_count,transcript_original,transcript_english,elder:elders(slug,name),region:regions(slug,name),tribe:tribes(slug,name),language:languages(slug,name),story_themes(theme:themes(slug,name,kind))";
+  "id,slug,title,description,audio_url,cover_url,duration_seconds,play_count,transcript_original,transcript_english,youtube_url,elder:elders(slug,name),region:regions(slug,name),tribe:tribes(slug,name),language:languages(slug,name),story_themes(theme:themes(slug,name,kind))";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function mapStory(row: any): StoryDTO {
