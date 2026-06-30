@@ -20,7 +20,7 @@ export const Route = createFileRoute("/browse")({
     duration: typeof s.duration === "string" ? s.duration : undefined,
     sort: typeof s.sort === "string" ? s.sort : "newest",
   }),
-  head: () => ({ meta: [{ title: "Browse — ReEngage African Voice" }, { name: "description", content: "Browse the full archive of African elders' stories by region, tribe, language, type and mood." }] }),
+  head: () => ({ meta: [{ title: "Browse — ReEngage African Voices" }, { name: "description", content: "Browse the full archive of African elders' stories by region, tribe, language, type and mood." }] }),
   loader: ({ context }) => {
     context.queryClient.ensureQueryData(storiesQuery);
     context.queryClient.ensureQueryData(facetsQuery);

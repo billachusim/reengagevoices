@@ -11,9 +11,9 @@ import { coverGradient, elderPortrait } from "@/lib/constants";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ReEngage African Voice — African elders' stories, in their own voices" },
+      { title: "ReEngage African Voices — African elders' stories, in their own voices" },
       { name: "description", content: "Listen to folktales, songs, proverbs and lived memory from elders across Africa. Browse by region, tribe, language and theme." },
-      { property: "og:title", content: "ReEngage African Voice" },
+      { property: "og:title", content: "ReEngage African Voices" },
       { property: "og:description", content: "An audio archive of African elders' stories, in their own voices." },
     ],
   }),

@@ -4,7 +4,7 @@ import { WHATSAPP_URL } from "@/lib/constants";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/contribute/")({
-  head: () => ({ meta: [{ title: "Contribute — ReEngage African Voice" }, { name: "description", content: "Help preserve an elder's voice. Record a story or share one over WhatsApp." }] }),
+  head: () => ({ meta: [{ title: "Contribute — ReEngage African Voices" }, { name: "description", content: "Help preserve an elder's voice. Record a story or share one over WhatsApp." }] }),
   component: Contribute,
 });
 
