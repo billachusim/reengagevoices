@@ -27,6 +27,8 @@ function LibraryPage() {
           <TabsTrigger value="playlists">Playlists {playlists.length > 0 && <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">{playlists.length}</Badge>}</TabsTrigger>
           <TabsTrigger value="following">Following {following.length > 0 && <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">{following.length}</Badge>}</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="submissions">Submissions {submissions.length > 0 && <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">{submissions.length}</Badge>}</TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="saved" className="mt-4 max-w-2xl">
