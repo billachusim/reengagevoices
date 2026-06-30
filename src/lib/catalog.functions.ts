@@ -149,17 +149,22 @@ export const getCollections = createServerFn({ method: "GET" }).handler(async ()
   const sb = publicClient();
   const { data, error } = await sb
     .from("collections")
-    .select("id,slug,title,description,collection_items(count)")
+    .select("id,slug,title,description,cover_url,collection_items(position,count,story:stories(cover_url))")
     .eq("is_public", true)
     .order("created_at");
   if (error) throw new Error(error.message);
-  return (data ?? []).map((c: any) => ({
-    id: c.id,
-    slug: c.slug,
-    title: c.title,
-    description: c.description,
-    story_count: c.collection_items?.[0]?.count ?? 0,
-  }));
+  return (data ?? []).map((c: any) => {
+    const items = (c.collection_items ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+    const firstCover = items.map((i: any) => i.story?.cover_url).find((u: any) => u && String(u).trim());
+    return {
+      id: c.id,
+      slug: c.slug,
+      title: c.title,
+      description: c.description,
+      story_count: c.collection_items?.[0]?.count ?? items.length,
+      cover_url: (c.cover_url && String(c.cover_url).trim()) ? c.cover_url : (firstCover ?? null),
+    };
+  });
 });
 
 export const getCollection = createServerFn({ method: "GET" })
