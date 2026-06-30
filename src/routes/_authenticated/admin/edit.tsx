@@ -59,7 +59,7 @@ function EditStoriesPage() {
               className="flex w-full items-center justify-between gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
             >
               <span className="truncate text-sm font-medium">{s.title}</span>
-              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.is_featured && <span className="text-primary">★ featured</span>}{s.youtube_url && <span>▶ video</span>}</span>
+              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.is_featured && <span className="text-primary">★ featured</span>}{s.cover_url && <span>🖼 cover</span>}{s.youtube_url && <span>▶ video</span>}</span>
             </button>
           ))
         )}
