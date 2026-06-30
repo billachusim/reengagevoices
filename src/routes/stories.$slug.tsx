@@ -58,6 +58,7 @@ function StoryPage() {
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const embedUrl = youtubeEmbedUrl(story.youtube_url);
 
   const share = async () => {
     const url = window.location.href;
