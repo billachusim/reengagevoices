@@ -25,8 +25,13 @@ import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
 import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
+import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
+import { Route as AuthenticatedAdminCreatorsRouteImport } from './routes/_authenticated/admin/creators'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -107,10 +112,25 @@ const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCreatorRoute = AuthenticatedCreatorRouteImport.update({
+  id: '/creator',
+  path: '/creator',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 const AuthenticatedContributeRecordRoute =
   AuthenticatedContributeRecordRouteImport.update({
@@ -118,13 +138,26 @@ const AuthenticatedContributeRecordRoute =
     path: '/contribute/record',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminQueueRoute = AuthenticatedAdminQueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminCreatorsRoute =
+  AuthenticatedAdminCreatorsRouteImport.update({
+    id: '/creators',
+    path: '/creators',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
+  '/creator': typeof AuthenticatedCreatorRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -136,7 +169,10 @@ export interface FileRoutesByFullPath {
   '/collections/': typeof CollectionsIndexRoute
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
+  '/admin/creators': typeof AuthenticatedAdminCreatorsRoute
+  '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -144,6 +180,7 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/creator': typeof AuthenticatedCreatorRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -155,7 +192,10 @@ export interface FileRoutesByTo {
   '/collections': typeof CollectionsIndexRoute
   '/contribute': typeof ContributeIndexRoute
   '/elders': typeof EldersIndexRoute
+  '/admin/creators': typeof AuthenticatedAdminCreatorsRoute
+  '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -164,7 +204,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/creator': typeof AuthenticatedCreatorRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -176,7 +218,10 @@ export interface FileRoutesById {
   '/collections/': typeof CollectionsIndexRoute
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
+  '/_authenticated/admin/creators': typeof AuthenticatedAdminCreatorsRoute
+  '/_authenticated/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -185,7 +230,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/search'
+    | '/admin'
     | '/account'
+    | '/creator'
     | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -197,7 +244,10 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/contribute/'
     | '/elders/'
+    | '/admin/creators'
+    | '/admin/queue'
     | '/contribute/record'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -205,6 +255,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/search'
     | '/account'
+    | '/creator'
     | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -216,7 +267,10 @@ export interface FileRouteTypes {
     | '/collections'
     | '/contribute'
     | '/elders'
+    | '/admin/creators'
+    | '/admin/queue'
     | '/contribute/record'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -224,7 +278,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/search'
+    | '/_authenticated/admin'
     | '/_authenticated/account'
+    | '/_authenticated/creator'
     | '/_authenticated/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -236,7 +292,10 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/contribute/'
     | '/elders/'
+    | '/_authenticated/admin/creators'
+    | '/_authenticated/admin/queue'
     | '/_authenticated/contribute/record'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -371,12 +430,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibraryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/creator': {
+      id: '/_authenticated/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/contribute/record': {
       id: '/_authenticated/contribute/record'
@@ -385,17 +465,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContributeRecordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/queue': {
+      id: '/_authenticated/admin/queue'
+      path: '/queue'
+      fullPath: '/admin/queue'
+      preLoaderRoute: typeof AuthenticatedAdminQueueRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/creators': {
+      id: '/_authenticated/admin/creators'
+      path: '/creators'
+      fullPath: '/admin/creators'
+      preLoaderRoute: typeof AuthenticatedAdminCreatorsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminCreatorsRoute: typeof AuthenticatedAdminCreatorsRoute
+  AuthenticatedAdminQueueRoute: typeof AuthenticatedAdminQueueRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminCreatorsRoute: AuthenticatedAdminCreatorsRoute,
+    AuthenticatedAdminQueueRoute: AuthenticatedAdminQueueRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedCreatorRoute: typeof AuthenticatedCreatorRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedContributeRecordRoute: typeof AuthenticatedContributeRecordRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedCreatorRoute: AuthenticatedCreatorRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedContributeRecordRoute: AuthenticatedContributeRecordRoute,
 }

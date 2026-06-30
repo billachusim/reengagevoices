@@ -97,6 +97,7 @@ export const recordPlay = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     await supabase.from("play_history").insert({ user_id: userId, story_id: data.storyId, ms_listened: data.ms });
+    await supabase.rpc("award_listen_point", { _story_id: data.storyId, _listener_id: userId });
     return { ok: true };
   });
 
