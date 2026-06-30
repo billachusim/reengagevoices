@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
 import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
+import { Route as AuthenticatedAdminEditRouteImport } from './routes/_authenticated/admin/edit'
 import { Route as AuthenticatedAdminCreatorsRouteImport } from './routes/_authenticated/admin/creators'
 
 const SearchRoute = SearchRouteImport.update({
@@ -143,6 +144,11 @@ const AuthenticatedAdminQueueRoute = AuthenticatedAdminQueueRouteImport.update({
   path: '/queue',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminEditRoute = AuthenticatedAdminEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedAdminCreatorsRoute =
   AuthenticatedAdminCreatorsRouteImport.update({
     id: '/creators',
@@ -170,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
   '/admin/creators': typeof AuthenticatedAdminCreatorsRoute
+  '/admin/edit': typeof AuthenticatedAdminEditRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/contribute': typeof ContributeIndexRoute
   '/elders': typeof EldersIndexRoute
   '/admin/creators': typeof AuthenticatedAdminCreatorsRoute
+  '/admin/edit': typeof AuthenticatedAdminEditRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
   '/_authenticated/admin/creators': typeof AuthenticatedAdminCreatorsRoute
+  '/_authenticated/admin/edit': typeof AuthenticatedAdminEditRoute
   '/_authenticated/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/contribute/'
     | '/elders/'
     | '/admin/creators'
+    | '/admin/edit'
     | '/admin/queue'
     | '/contribute/record'
     | '/admin/'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/elders'
     | '/admin/creators'
+    | '/admin/edit'
     | '/admin/queue'
     | '/contribute/record'
     | '/admin'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/contribute/'
     | '/elders/'
     | '/_authenticated/admin/creators'
+    | '/_authenticated/admin/edit'
     | '/_authenticated/admin/queue'
     | '/_authenticated/contribute/record'
     | '/_authenticated/admin/'
@@ -472,6 +484,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminQueueRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/edit': {
+      id: '/_authenticated/admin/edit'
+      path: '/edit'
+      fullPath: '/admin/edit'
+      preLoaderRoute: typeof AuthenticatedAdminEditRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/creators': {
       id: '/_authenticated/admin/creators'
       path: '/creators'
@@ -484,6 +503,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminCreatorsRoute: typeof AuthenticatedAdminCreatorsRoute
+  AuthenticatedAdminEditRoute: typeof AuthenticatedAdminEditRoute
   AuthenticatedAdminQueueRoute: typeof AuthenticatedAdminQueueRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -491,6 +511,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminCreatorsRoute: AuthenticatedAdminCreatorsRoute,
+    AuthenticatedAdminEditRoute: AuthenticatedAdminEditRoute,
     AuthenticatedAdminQueueRoute: AuthenticatedAdminQueueRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
