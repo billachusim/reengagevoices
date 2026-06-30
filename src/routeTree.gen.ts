@@ -25,6 +25,8 @@ import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
 import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -105,12 +107,24 @@ const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedContributeRecordRoute =
+  AuthenticatedContributeRecordRouteImport.update({
+    id: '/contribute/record',
+    path: '/contribute/record',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -122,12 +136,14 @@ export interface FileRoutesByFullPath {
   '/collections/': typeof CollectionsIndexRoute
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
+  '/contribute/record': typeof AuthenticatedContributeRecordRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -139,6 +155,7 @@ export interface FileRoutesByTo {
   '/collections': typeof CollectionsIndexRoute
   '/contribute': typeof ContributeIndexRoute
   '/elders': typeof EldersIndexRoute
+  '/contribute/record': typeof AuthenticatedContributeRecordRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,6 +164,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
@@ -158,6 +176,7 @@ export interface FileRoutesById {
   '/collections/': typeof CollectionsIndexRoute
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
+  '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,6 +185,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/search'
+    | '/account'
     | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -177,12 +197,14 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/contribute/'
     | '/elders/'
+    | '/contribute/record'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/browse'
     | '/search'
+    | '/account'
     | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -194,6 +216,7 @@ export interface FileRouteTypes {
     | '/collections'
     | '/contribute'
     | '/elders'
+    | '/contribute/record'
   id:
     | '__root__'
     | '/'
@@ -201,6 +224,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/search'
+    | '/_authenticated/account'
     | '/_authenticated/library'
     | '/collections/$slug'
     | '/elders/$slug'
@@ -212,6 +236,7 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/contribute/'
     | '/elders/'
+    | '/_authenticated/contribute/record'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -346,15 +371,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibraryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contribute/record': {
+      id: '/_authenticated/contribute/record'
+      path: '/contribute/record'
+      fullPath: '/contribute/record'
+      preLoaderRoute: typeof AuthenticatedContributeRecordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedContributeRecordRoute: typeof AuthenticatedContributeRecordRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedContributeRecordRoute: AuthenticatedContributeRecordRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -380,13 +423,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
