@@ -73,14 +73,21 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     transcriptOriginal: story.transcript_original ?? "",
     transcriptEnglish: story.transcript_english ?? "",
     description: story.description ?? "",
+    elderName: story.elder_name ?? "",
+    region: story.region_name ?? "",
+    tribe: story.tribe_name ?? "",
+    language: story.language_name ?? "",
+    storyType: story.story_type ?? "",
+    mood: story.mood ?? "",
   });
+  const [isFeatured, setIsFeatured] = useState(story.is_featured);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
   const embed = youtubeEmbedUrl(form.youtubeUrl);
 
   const save = useMutation({
-    mutationFn: () => updateStory({ data: { storyId: story.id, ...form } }),
+    mutationFn: () => updateStory({ data: { storyId: story.id, ...form, isFeatured } }),
     onSuccess: () => {
       toast.success("Story updated.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
