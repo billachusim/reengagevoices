@@ -9,8 +9,21 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import "@fontsource/fraunces/400.css";
+import "@fontsource/fraunces/500.css";
+import "@fontsource/fraunces/600.css";
+import "@fontsource/fraunces/700.css";
+import "@fontsource/figtree/400.css";
+import "@fontsource/figtree/500.css";
+import "@fontsource/figtree/600.css";
+
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
+import { AuthProvider } from "@/hooks/use-auth";
+import { AudioProvider } from "@/components/player/audio-provider";
+import { AppShell } from "@/components/app-shell";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
