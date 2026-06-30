@@ -129,6 +129,44 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
             )}
           </div>
 
+          <label className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2.5 text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              className="h-4 w-4 accent-primary"
+            />
+            Feature this story on the homepage
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Elder</label>
+              <input value={form.elderName} onChange={set("elderName")} placeholder="Elder name" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Region</label>
+              <input value={form.region} onChange={set("region")} placeholder="Region" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Tribe</label>
+              <input value={form.tribe} onChange={set("tribe")} placeholder="Tribe" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Language</label>
+              <input value={form.language} onChange={set("language")} placeholder="Language" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Story type</label>
+              <input value={form.storyType} onChange={set("storyType")} placeholder="e.g. Folktale" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Mood</label>
+              <input value={form.mood} onChange={set("mood")} placeholder="e.g. Joyful" className={inputCls} />
+            </div>
+          </div>
+
+
           <div className="flex flex-wrap gap-2">
             {story.audio_url && (
               <button
