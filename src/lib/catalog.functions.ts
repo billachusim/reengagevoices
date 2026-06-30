@@ -26,6 +26,7 @@ function mapStory(row: any): StoryDTO {
     play_count: row.play_count ?? 0,
     transcript_original: row.transcript_original ?? null,
     transcript_english: row.transcript_english ?? null,
+    youtube_url: row.youtube_url ?? null,
     elder: row.elder ?? null,
     region: row.region ?? null,
     tribe: row.tribe ?? null,
