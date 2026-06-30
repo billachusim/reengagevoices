@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Play, Pause } from "lucide-react";
 import type { StoryDTO } from "@/lib/types";
-import { coverGradient, elderPortrait, formatDuration } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait, formatDuration } from "@/lib/constants";
 import { usePlayer } from "@/components/player/audio-provider";
 import { cn } from "@/lib/utils";
 
