@@ -5,7 +5,7 @@ import { getMyCreatorStats, type MySubmission } from "@/lib/creator.functions";
 import { StoryRow } from "@/components/story-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { coverGradient, elderPortrait } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/library")({
   component: LibraryPage,
