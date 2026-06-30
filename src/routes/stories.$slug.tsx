@@ -84,13 +84,11 @@ function StoryPage() {
           </>
         )}
         <div className="relative z-10 flex flex-col gap-5 text-white sm:flex-row sm:items-end">
-          <div className="h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-warm sm:h-48 sm:w-48">
-            {cover ? (
-              <img src={cover} alt={story.title} className="h-full w-full object-cover" />
-            ) : (
-              portrait && <img src={portrait} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
-            )}
-          </div>
+          {!cover && portrait && (
+            <div className="h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-warm sm:h-48 sm:w-48">
+              <img src={portrait} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
+            </div>
+          )}
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-white/80">Story</p>
             <h1 className="font-serif text-3xl font-bold leading-tight sm:text-5xl">{story.title}</h1>
