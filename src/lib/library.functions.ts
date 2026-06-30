@@ -51,7 +51,7 @@ export const getLibrary = createServerFn({ method: "GET" })
       supabase.from("saves").select("created_at, story:stories(" + STORY_SELECT + ")").eq("user_id", userId).order("created_at", { ascending: false }),
       supabase.from("follows").select("elder:elders(id,slug,name,bio,region:regions(slug,name),tribe:tribes(slug,name),language:languages!primary_language_id(slug,name))").eq("user_id", userId),
       supabase.from("play_history").select("played_at, story:stories(" + STORY_SELECT + ")").eq("user_id", userId).order("played_at", { ascending: false }).limit(30),
-      supabase.from("collections").select("id,slug,title,description,collection_items(count)").eq("curator_id", userId).order("created_at", { ascending: false }),
+      supabase.from("collections").select("id,slug,title,description,cover_url,collection_items(position,story:stories(cover_url))").eq("curator_id", userId).order("created_at", { ascending: false }),
     ]);
     const saved: StoryDTO[] = (savesRes.data ?? []).map((r: any) => r.story).filter(Boolean).map(mapStory);
     const following: ElderDTO[] = (followsRes.data ?? []).map((r: any) => r.elder).filter(Boolean).map((e: any) => ({
