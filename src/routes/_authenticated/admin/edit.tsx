@@ -74,6 +74,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
   const qc = useQueryClient();
   const [form, setForm] = useState({
     youtubeUrl: story.youtube_url ?? "",
+    coverUrl: story.cover_url ?? "",
     transcriptOriginal: story.transcript_original ?? "",
     transcriptEnglish: story.transcript_english ?? "",
     description: story.description ?? "",
@@ -85,10 +86,39 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     mood: story.mood ?? "",
   });
   const [isFeatured, setIsFeatured] = useState(story.is_featured);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
   const embed = youtubeEmbedUrl(form.youtubeUrl);
+
+  const onCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${story.id}/${Date.now()}.${ext}`;
+      const up = await supabase.storage.from("story-covers").upload(path, file, {
+        cacheControl: "31536000",
+        upsert: true,
+        contentType: file.type,
+      });
+      if (up.error) throw up.error;
+      const signed = await supabase.storage.from("story-covers").createSignedUrl(path, COVER_URL_TTL);
+      if (signed.error || !signed.data?.signedUrl) throw signed.error ?? new Error("Could not create URL");
+      setForm((f) => ({ ...f, coverUrl: signed.data.signedUrl }));
+      toast.success("Cover uploaded.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
 
   const save = useMutation({
     mutationFn: () => updateStory({ data: { storyId: story.id, ...form, isFeatured } }),
