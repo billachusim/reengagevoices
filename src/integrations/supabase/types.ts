@@ -479,6 +479,7 @@ export type Database = {
           transcript_original: string | null
           tribe_id: string | null
           updated_at: string
+          youtube_url: string | null
         }
         Insert: {
           audio_url?: string | null
@@ -501,6 +502,7 @@ export type Database = {
           transcript_original?: string | null
           tribe_id?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Update: {
           audio_url?: string | null
@@ -523,6 +525,7 @@ export type Database = {
           transcript_original?: string | null
           tribe_id?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Relationships: [
           {
@@ -659,23 +662,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      approve_pending_story: {
-        Args: {
-          _description?: string
-          _elder_name: string
-          _language?: string
-          _mood?: string
-          _pending_id: string
-          _point_award?: number
-          _region?: string
-          _story_type?: string
-          _title: string
-          _transcript?: string
-          _tribe?: string
-          _verify_threshold?: number
-        }
-        Returns: string
-      }
+      approve_pending_story:
+        | {
+            Args: {
+              _description?: string
+              _elder_name: string
+              _language?: string
+              _mood?: string
+              _pending_id: string
+              _point_award?: number
+              _region?: string
+              _story_type?: string
+              _title: string
+              _transcript?: string
+              _tribe?: string
+              _verify_threshold?: number
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _description?: string
+              _elder_name: string
+              _language?: string
+              _mood?: string
+              _pending_id: string
+              _point_award?: number
+              _region?: string
+              _story_type?: string
+              _title: string
+              _transcript?: string
+              _tribe?: string
+              _verify_threshold?: number
+              _youtube_url?: string
+            }
+            Returns: string
+          }
       award_listen_point: {
         Args: {
           _listen_award?: number
@@ -720,6 +742,7 @@ export type Database = {
           transcript_original: string | null
           tribe_id: string | null
           updated_at: string
+          youtube_url: string | null
         }[]
         SetofOptions: {
           from: "*"
@@ -737,6 +760,16 @@ export type Database = {
           _grant: boolean
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: undefined
+      }
+      update_story: {
+        Args: {
+          _description?: string
+          _story_id: string
+          _transcript_english?: string
+          _transcript_original?: string
+          _youtube_url?: string
         }
         Returns: undefined
       }
