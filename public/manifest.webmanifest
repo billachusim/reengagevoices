@@ -1,0 +1,16 @@
+{
+  "name": "ReEngage Voices",
+  "short_name": "ReEngage",
+  "description": "An audio archive of African elders' stories, songs, proverbs and lived memory.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f0e3",
+  "theme_color": "#c66a2e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

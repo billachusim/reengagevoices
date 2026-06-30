@@ -1,29 +1,114 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Play } from "lucide-react";
+import { storiesQuery, collectionsQuery, eldersQuery, facetsQuery } from "@/lib/queries";
+import { StoryCard } from "@/components/story-card";
+import { Section, Rail } from "@/components/rail";
+import { ScallopDivider } from "@/components/scallop-divider";
+import { usePlayer } from "@/components/player/audio-provider";
+import { coverGradient, elderPortrait } from "@/lib/constants";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "ReEngage Voices — African elders' stories, in their own voices" },
+      { name: "description", content: "Listen to folktales, songs, proverbs and lived memory from elders across Africa. Browse by region, tribe, language and theme." },
+      { property: "og:title", content: "ReEngage Voices" },
+      { property: "og:description", content: "An audio archive of African elders' stories, in their own voices." },
     ],
   }),
-  component: Index,
+  loader: ({ context }) => {
+    context.queryClient.ensureQueryData(storiesQuery);
+    context.queryClient.ensureQueryData(collectionsQuery);
+    context.queryClient.ensureQueryData(eldersQuery);
+    context.queryClient.ensureQueryData(facetsQuery);
+  },
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Home() {
+  const { data: stories } = useSuspenseQuery(storiesQuery);
+  const { data: collections } = useSuspenseQuery(collectionsQuery);
+  const { data: elders } = useSuspenseQuery(eldersQuery);
+  const { data: facets } = useSuspenseQuery(facetsQuery);
+  const player = usePlayer();
+
+  const featured = stories[0];
+  const mostPlayed = [...stories].sort((a, b) => b.play_count - a.play_count).slice(0, 8);
+  const recent = stories.slice(0, 8);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div>
+      {/* Hero */}
+      {featured && (
+        <div className="relative grain overflow-hidden bg-gradient-warm px-5 py-10 text-white sm:px-8 sm:py-14">
+          <div className="relative z-10 max-w-2xl">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/80">Featured story</p>
+            <h1 className="font-serif text-3xl font-bold leading-tight sm:text-5xl">{featured.title}</h1>
+            <p className="mt-3 max-w-xl text-sm text-white/90 sm:text-base">{featured.description}</p>
+            <p className="mt-2 text-sm text-white/80">{featured.elder?.name} · {featured.tribe?.name} · {featured.language?.name}</p>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => player.playStory(featured, stories)}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow"
+              >
+                <Play className="h-4 w-4" /> Play story
+              </button>
+              <Link to="/stories/$slug" params={{ slug: featured.slug }} className="inline-flex items-center rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
+                Details
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+      <ScallopDivider />
+
+      <div className="px-5 py-6 sm:px-8">
+        <Section title="Recently added">
+          <Rail>{recent.map((s) => <div key={s.id} className="w-40 shrink-0 sm:w-44"><StoryCard story={s} queue={recent} /></div>)}</Rail>
+        </Section>
+
+        <Section title="Collections" action={<Link to="/collections" className="text-xs font-medium text-muted-foreground hover:text-foreground">See all</Link>}>
+          <Rail>
+            {collections.map((c) => (
+              <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="w-52 shrink-0">
+                <div className="grain flex aspect-[4/3] flex-col justify-end rounded-xl p-4 text-white shadow-warm" style={{ backgroundImage: coverGradient(c.slug) }}>
+                  <h3 className="font-serif text-lg font-semibold leading-tight">{c.title}</h3>
+                  <p className="text-xs text-white/80">{c.story_count} stories</p>
+                </div>
+              </Link>
+            ))}
+          </Rail>
+        </Section>
+
+        <Section title="Most played">
+          <Rail>{mostPlayed.map((s) => <div key={s.id} className="w-40 shrink-0 sm:w-44"><StoryCard story={s} queue={mostPlayed} /></div>)}</Rail>
+        </Section>
+
+        <Section title="Voices to follow" action={<Link to="/elders" className="text-xs font-medium text-muted-foreground hover:text-foreground">See all</Link>}>
+          <Rail>
+            {elders.map((e) => (
+              <Link key={e.id} to="/elders/$slug" params={{ slug: e.slug }} className="w-32 shrink-0 text-center sm:w-36">
+                <div className="mx-auto aspect-square w-full overflow-hidden rounded-full shadow-warm" style={{ backgroundImage: coverGradient(e.slug) }}>
+                  {elderPortrait(e.slug) && <img src={elderPortrait(e.slug)} alt={e.name} loading="lazy" className="h-full w-full object-cover" />}
+                </div>
+                <p className="mt-2 truncate text-sm font-medium">{e.name}</p>
+                <p className="truncate text-xs text-muted-foreground">{e.tribe?.name}</p>
+              </Link>
+            ))}
+          </Rail>
+        </Section>
+
+        <Section title="Browse by theme">
+          <div className="flex flex-wrap gap-2">
+            {facets.themes.map((t) => (
+              <Link key={t.slug} to="/themes/$slug" params={{ slug: t.slug }} className="rounded-full border bg-card px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
+                {t.name}
+              </Link>
+            ))}
+          </div>
+        </Section>
+      </div>
     </div>
   );
 }

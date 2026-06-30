@@ -9,38 +9,284 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EldersIndexRouteImport } from './routes/elders.index'
+import { Route as ContributeIndexRouteImport } from './routes/contribute.index'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as TribesSlugRouteImport } from './routes/tribes.$slug'
+import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
+import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
+import { Route as RegionsSlugRouteImport } from './routes/regions.$slug'
+import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
+import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
+import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
+import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrowseRoute = BrowseRouteImport.update({
+  id: '/browse',
+  path: '/browse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EldersIndexRoute = EldersIndexRouteImport.update({
+  id: '/elders/',
+  path: '/elders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributeIndexRoute = ContributeIndexRouteImport.update({
+  id: '/contribute/',
+  path: '/contribute/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TribesSlugRoute = TribesSlugRouteImport.update({
+  id: '/tribes/$slug',
+  path: '/tribes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesSlugRoute = ThemesSlugRouteImport.update({
+  id: '/themes/$slug',
+  path: '/themes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesSlugRoute = StoriesSlugRouteImport.update({
+  id: '/stories/$slug',
+  path: '/stories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegionsSlugRoute = RegionsSlugRouteImport.update({
+  id: '/regions/$slug',
+  path: '/regions/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LanguagesSlugRoute = LanguagesSlugRouteImport.update({
+  id: '/languages/$slug',
+  path: '/languages/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EldersSlugRoute = EldersSlugRouteImport.update({
+  id: '/elders/$slug',
+  path: '/elders/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedContributeRecordRoute =
+  AuthenticatedContributeRecordRouteImport.update({
+    id: '/contribute/record',
+    path: '/contribute/record',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/browse': typeof BrowseRoute
+  '/search': typeof SearchRoute
+  '/account': typeof AuthenticatedAccountRoute
+  '/library': typeof AuthenticatedLibraryRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/elders/$slug': typeof EldersSlugRoute
+  '/languages/$slug': typeof LanguagesSlugRoute
+  '/regions/$slug': typeof RegionsSlugRoute
+  '/stories/$slug': typeof StoriesSlugRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/tribes/$slug': typeof TribesSlugRoute
+  '/collections/': typeof CollectionsIndexRoute
+  '/contribute/': typeof ContributeIndexRoute
+  '/elders/': typeof EldersIndexRoute
+  '/contribute/record': typeof AuthenticatedContributeRecordRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/browse': typeof BrowseRoute
+  '/search': typeof SearchRoute
+  '/account': typeof AuthenticatedAccountRoute
+  '/library': typeof AuthenticatedLibraryRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/elders/$slug': typeof EldersSlugRoute
+  '/languages/$slug': typeof LanguagesSlugRoute
+  '/regions/$slug': typeof RegionsSlugRoute
+  '/stories/$slug': typeof StoriesSlugRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/tribes/$slug': typeof TribesSlugRoute
+  '/collections': typeof CollectionsIndexRoute
+  '/contribute': typeof ContributeIndexRoute
+  '/elders': typeof EldersIndexRoute
+  '/contribute/record': typeof AuthenticatedContributeRecordRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/browse': typeof BrowseRoute
+  '/search': typeof SearchRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/elders/$slug': typeof EldersSlugRoute
+  '/languages/$slug': typeof LanguagesSlugRoute
+  '/regions/$slug': typeof RegionsSlugRoute
+  '/stories/$slug': typeof StoriesSlugRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/tribes/$slug': typeof TribesSlugRoute
+  '/collections/': typeof CollectionsIndexRoute
+  '/contribute/': typeof ContributeIndexRoute
+  '/elders/': typeof EldersIndexRoute
+  '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/browse'
+    | '/search'
+    | '/account'
+    | '/library'
+    | '/collections/$slug'
+    | '/elders/$slug'
+    | '/languages/$slug'
+    | '/regions/$slug'
+    | '/stories/$slug'
+    | '/themes/$slug'
+    | '/tribes/$slug'
+    | '/collections/'
+    | '/contribute/'
+    | '/elders/'
+    | '/contribute/record'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/browse'
+    | '/search'
+    | '/account'
+    | '/library'
+    | '/collections/$slug'
+    | '/elders/$slug'
+    | '/languages/$slug'
+    | '/regions/$slug'
+    | '/stories/$slug'
+    | '/themes/$slug'
+    | '/tribes/$slug'
+    | '/collections'
+    | '/contribute'
+    | '/elders'
+    | '/contribute/record'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/browse'
+    | '/search'
+    | '/_authenticated/account'
+    | '/_authenticated/library'
+    | '/collections/$slug'
+    | '/elders/$slug'
+    | '/languages/$slug'
+    | '/regions/$slug'
+    | '/stories/$slug'
+    | '/themes/$slug'
+    | '/tribes/$slug'
+    | '/collections/'
+    | '/contribute/'
+    | '/elders/'
+    | '/_authenticated/contribute/record'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  BrowseRoute: typeof BrowseRoute
+  SearchRoute: typeof SearchRoute
+  CollectionsSlugRoute: typeof CollectionsSlugRoute
+  EldersSlugRoute: typeof EldersSlugRoute
+  LanguagesSlugRoute: typeof LanguagesSlugRoute
+  RegionsSlugRoute: typeof RegionsSlugRoute
+  StoriesSlugRoute: typeof StoriesSlugRoute
+  ThemesSlugRoute: typeof ThemesSlugRoute
+  TribesSlugRoute: typeof TribesSlugRoute
+  CollectionsIndexRoute: typeof CollectionsIndexRoute
+  ContributeIndexRoute: typeof ContributeIndexRoute
+  EldersIndexRoute: typeof EldersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/browse': {
+      id: '/browse'
+      path: '/browse'
+      fullPath: '/browse'
+      preLoaderRoute: typeof BrowseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +294,132 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/elders/': {
+      id: '/elders/'
+      path: '/elders'
+      fullPath: '/elders/'
+      preLoaderRoute: typeof EldersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contribute/': {
+      id: '/contribute/'
+      path: '/contribute'
+      fullPath: '/contribute/'
+      preLoaderRoute: typeof ContributeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tribes/$slug': {
+      id: '/tribes/$slug'
+      path: '/tribes/$slug'
+      fullPath: '/tribes/$slug'
+      preLoaderRoute: typeof TribesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes/$slug': {
+      id: '/themes/$slug'
+      path: '/themes/$slug'
+      fullPath: '/themes/$slug'
+      preLoaderRoute: typeof ThemesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stories/$slug': {
+      id: '/stories/$slug'
+      path: '/stories/$slug'
+      fullPath: '/stories/$slug'
+      preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regions/$slug': {
+      id: '/regions/$slug'
+      path: '/regions/$slug'
+      fullPath: '/regions/$slug'
+      preLoaderRoute: typeof RegionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/languages/$slug': {
+      id: '/languages/$slug'
+      path: '/languages/$slug'
+      fullPath: '/languages/$slug'
+      preLoaderRoute: typeof LanguagesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elders/$slug': {
+      id: '/elders/$slug'
+      path: '/elders/$slug'
+      fullPath: '/elders/$slug'
+      preLoaderRoute: typeof EldersSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$slug': {
+      id: '/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof CollectionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/library': {
+      id: '/_authenticated/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contribute/record': {
+      id: '/_authenticated/contribute/record'
+      path: '/contribute/record'
+      fullPath: '/contribute/record'
+      preLoaderRoute: typeof AuthenticatedContributeRecordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedContributeRecordRoute: typeof AuthenticatedContributeRecordRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedContributeRecordRoute: AuthenticatedContributeRecordRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  BrowseRoute: BrowseRoute,
+  SearchRoute: SearchRoute,
+  CollectionsSlugRoute: CollectionsSlugRoute,
+  EldersSlugRoute: EldersSlugRoute,
+  LanguagesSlugRoute: LanguagesSlugRoute,
+  RegionsSlugRoute: RegionsSlugRoute,
+  StoriesSlugRoute: StoriesSlugRoute,
+  ThemesSlugRoute: ThemesSlugRoute,
+  TribesSlugRoute: TribesSlugRoute,
+  CollectionsIndexRoute: CollectionsIndexRoute,
+  ContributeIndexRoute: ContributeIndexRoute,
+  EldersIndexRoute: EldersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

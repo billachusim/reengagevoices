@@ -9,8 +9,21 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import "@fontsource/fraunces/400.css";
+import "@fontsource/fraunces/500.css";
+import "@fontsource/fraunces/600.css";
+import "@fontsource/fraunces/700.css";
+import "@fontsource/figtree/400.css";
+import "@fontsource/figtree/500.css";
+import "@fontsource/figtree/600.css";
+
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
+import { AuthProvider } from "@/hooks/use-auth";
+import { AudioProvider } from "@/components/player/audio-provider";
+import { AppShell } from "@/components/app-shell";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -76,21 +89,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "ReEngage Voices — African elders' stories, in their own voices" },
+      { name: "description", content: "An audio archive of African elders' folktales, songs, proverbs and lived memory — browse by region, tribe, language and theme, with transcripts and provenance." },
+      { name: "author", content: "ReEngage Voices" },
+      { name: "theme-color", content: "#c66a2e" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "ReEngage" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { property: "og:title", content: "ReEngage Voices" },
+      { property: "og:description", content: "An audio archive of African elders' stories, songs, proverbs and lived memory." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
+      { rel: "icon", href: "/icons/icon-192.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,
@@ -115,11 +131,28 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AuthProvider>
+        <AudioProvider>
+          <AppShell>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </AppShell>
+          <Toaster position="top-center" />
+        </AudioProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
