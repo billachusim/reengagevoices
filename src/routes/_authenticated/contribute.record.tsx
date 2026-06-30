@@ -128,7 +128,7 @@ function RecordPage() {
           <select value={form.mood} onChange={set("mood")} className="rounded-lg border bg-background px-3 py-2.5 text-sm"><option value="">Mood</option>{moods.map((t) => <option key={t.slug} value={t.name}>{t.name}</option>)}</select>
         </div>
         <textarea placeholder="Transcript or summary (optional)" value={form.transcript} onChange={set("transcript")} rows={4} className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm" />
-        <button disabled={mut.isPending} className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60">{mut.isPending ? "Submitting…" : "Submit for review"}</button>
+        <button disabled={mut.isPending || !audioBlob} className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60">{mut.isPending ? "Uploading & submitting…" : "Submit for review"}</button>
       </form>
     </div>
   );
