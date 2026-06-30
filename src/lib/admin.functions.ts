@@ -273,6 +273,7 @@ export interface AdminStoryRow {
   language_name: string | null;
   story_type: string | null;
   mood: string | null;
+  cover_url: string | null;
 }
 
 // Admin-only: list published stories for editing (newest first, optional search).
