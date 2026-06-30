@@ -31,8 +31,12 @@ interface PlayerCtx {
 
 const Ctx = createContext<PlayerCtx | null>(null);
 
+const INTRO_SRC = "/audio/intro.mp3";
+
 export function AudioProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const introRef = useRef<HTMLAudioElement | null>(null);
+  const introPlayingRef = useRef(false);
   const [queue, setQueue] = useState<StoryDTO[]>([]);
   const [index, setIndex] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -48,14 +52,38 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   if (typeof window !== "undefined" && !audioRef.current) {
     audioRef.current = new Audio();
   }
+  if (typeof window !== "undefined" && !introRef.current) {
+    introRef.current = new Audio(INTRO_SRC);
+    introRef.current.preload = "auto";
+  }
+
+  const stopIntro = useCallback(() => {
+    const intro = introRef.current;
+    if (intro) {
+      intro.pause();
+      intro.onended = null;
+    }
+    introPlayingRef.current = false;
+  }, []);
 
   const load = useCallback((story: StoryDTO, autoplay = true) => {
     const audio = audioRef.current;
     if (!audio || !story.audio_url) return;
+    stopIntro();
     audio.src = story.audio_url;
     audio.volume = volume;
     if (autoplay) {
-      audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      const intro = introRef.current;
+      const startStory = () => audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      if (intro) {
+        introPlayingRef.current = true;
+        intro.volume = volume;
+        intro.currentTime = 0;
+        intro.onended = () => { introPlayingRef.current = false; intro.onended = null; startStory(); };
+        intro.play().then(() => setIsPlaying(true)).catch(() => { introPlayingRef.current = false; intro.onended = null; startStory(); });
+      } else {
+        startStory();
+      }
     }
     if (!countedRef.current.has(story.id)) {
       countedRef.current.add(story.id);
