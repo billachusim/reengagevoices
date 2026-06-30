@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getModerationQueue, approveSubmission, rejectSubmission, type QueueItem } from "@/lib/admin.functions";
+import { getModerationQueue, approveSubmission, rejectSubmission, transcribeAudio, type QueueItem } from "@/lib/admin.functions";
+import { Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
