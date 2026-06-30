@@ -1,68 +1,69 @@
-# ReEngage Voices — Build Plan (with installable PWA + mobile-app feel)
+# Admin & Creator Program
 
-A Spotify-style audio platform for African elders' stories on this project's **TanStack Start** stack (file-based routing + server functions + Lovable Cloud), warm/earthy visuals, a persistent dark player bar, and **installable PWA** behavior with a native mobile-app feel.
+Building two connected things: an **admin console** to review submissions, and a **creator program** where young people record elders, earn in-app points on approval, and can become verified.
 
-> Stack note: spec mentions Vite + React Router DOM, but this is TanStack Start. Routes map 1:1 to `src/routes/*`; data via `createServerFn` + TanStack Query.
+## My take (what I'd recommend)
 
-> Open item: send your WhatsApp number — I'll wire a `WHATSAPP_NUMBER` constant with a placeholder until then (one-line change).
+- **Reuse what's there.** `pending_stories`, `user_roles`, and `has_role()` already exist. We don't rebuild — we add an admin review surface and a points ledger.
+- **Points as a ledger, not a single number.** Store every award as a row (reason, amount, related story). That way the profile total is always auditable, you can adjust rules later, and "why do I have X points?" is answerable. A cached total lives on the profile for fast display.
+- **Verification = a flag earned by milestones.** Start simple: a `verified` boolean on the profile, granted by an admin (manually) or auto-suggested once a creator hits N approved stories. No identity docs for now — just a trust badge.
+- **Approval is the moment everything happens.** When an admin approves a `pending_story`: it becomes a real published `story`, the elder gets created/linked, the creator gets points, and they get notified. One clean transaction.
+- **Keep moderation honest.** Reject needs a reason (shown to the creator so they can resubmit). Track who reviewed and when (columns already exist).
 
-## 1. Installable PWA + mobile-app shell
-- **Manifest-only installability** (per Lovable PWA guidance — no service worker, since you asked for install/home-screen, not offline): `public/manifest.webmanifest` with name, short_name, `display: "standalone"`, theme/background colors (warm cream + ochre), and icon set (192/512 + maskable + `apple-touch-icon`). Head tags for `manifest`, `theme-color`, `apple-touch-icon`, favicons added in `__root.tsx`.
-- App icons generated from the ReEngage logo.
-- **Adaptive navigation**: desktop/tablet uses the cream collapsible shadcn Sidebar; **mobile uses a fixed bottom tab bar** (Home · Browse · Search · Library · Contribute) sitting just above the persistent player — the native-app pattern.
-- **Tabs & badges**: shadcn `Tabs` for in-page sections (transcript original/English, library sub-views); badge counts on tabs/nav (e.g. Library save count, Following count, unplayed/"new" markers) and tag/status chips throughout.
-- Safe-area insets (`env(safe-area-inset-*)`) so bottom tabs + player clear the iPhone home indicator. Dense, scannable, touch-friendly spacing.
+## What gets built
 
-## 2. Design foundation
-- Tokens in `src/styles.css` (oklch): cream `--background`, ochre `--primary`, terracotta `--accent`, dark `--night` (player bar), `--gradient-warm`, `--shadow-warm`, grain utility, scallop divider.
-- Fonts via `@fontsource` (serif display + clean sans), mapped in `@theme`.
-- Recreated components: `Waveform`, `ScallopDivider`, `StoryCard`, circular multicolor ReEngage logo, floating WhatsApp button.
+### 1. Database (one migration)
 
-## 3. Backend (Lovable Cloud) — enabled first
-Schema (migration, GRANTs + RLS per platform rules):
-- `profiles`, `user_roles` (+ `app_role` enum + `has_role()` security-definer fn)
-- `regions` (self-referential), `tribes`, `languages`, `themes` (`kind`: type|mood)
-- `elders`, `elder_languages`
-- `stories` (`status`: draft|pending|published, `play_count`, transcripts original+english, audio/cover urls), `story_themes`
-- `collections`, `collection_items`
-- `saves`, `follows`, `play_history`, `pending_stories`
+- **`points_ledger`** — `user_id`, `amount`, `reason` (enum: `story_approved`, `bonus`, `adjustment`), `story_id` (nullable), `note`, `created_at`. RLS: creators read their own rows; admins read all; only server/admin writes.
+- **`profiles`** additions: `points` (int, cached total), `is_verified` (bool), `creator_since` (timestamp).
+- **`pending_stories`** additions: `review_note` (text, rejection reason), plus the proposed-taxonomy fields are already captured in `payload`.
+- **`app_notifications`** (optional but recommended) — lightweight in-app notices: `user_id`, `type`, `title`, `body`, `read`, `created_at`, so creators see "Your story was approved (+50 pts)".
+- Helper function `approve_pending_story(...)` (security definer) OR do the same work inside a server function — I'll keep the logic in a server function with the admin client so it's easier to evolve.
+- GRANTs + RLS on every new table.
 
-RLS: published stories + taxonomy readable by `anon`+`authenticated`; user-owned rows scoped to `auth.uid()`; story writes restricted to owner or moderator/admin.
+### 2. Server functions (`src/lib/admin.functions.ts`)
 
-Storage buckets: `story-audio`, `story-covers`, `elder-portraits` (public); `pending-audio` (private).
+All gated by `requireSupabaseAuth` + an `has_role(uid,'admin'/'moderator')` check inside the handler:
+- `getPendingStories` — the review queue with submitter info.
+- `approveStory` — creates/links elder + taxonomy, inserts published `story`, awards points (default **50 pts/approved story**, configurable constant), writes a notification.
+- `rejectStory` — sets status + `review_note`, notifies submitter.
+- `getCreators` / `setVerified` / `adjustPoints` — admin management of creators.
+- `grantRole` — promote a user to moderator/admin (admin-only).
+- Creator-facing: `getMyCreatorStats` (points, ledger, submission statuses), `getMyNotifications`.
 
-Server logic: `search-stories` RPC, `increment-play-count`, `submit-story` moderation intake. Auth: email/password + Google (Lovable broker).
+### 3. Routes
 
-Seed (~12 published stories): Yorùbá, Twi/Ashanti, Tamasheq, Zulu; 4 languages, 4 regions (country→region→village), all six themes; generated elder portraits + royalty-free placeholder audio.
+- **`/_authenticated/admin/`** — dashboard: counts (pending, published this week, creators), recent activity. Gated by an admin role layout.
+- **`/_authenticated/admin/queue`** — review queue: play the submitted audio, edit/confirm metadata, pick/create elder + taxonomy, Approve or Reject (with reason).
+- **`/_authenticated/admin/creators`** — list creators, points, approved counts, verify toggle, manual point adjust, role grant.
+- **`/_authenticated/admin/route.tsx`** — pathless gate that redirects non-admins (checks role via a server fn).
+- **Creator dashboard** added to `/_authenticated/library` (or a new `/contribute/dashboard`): your points, verified badge, submission statuses with rejection reasons, resubmit link.
 
-## 4. Routes (`src/routes/`)
-- `/` editorial home (Featured, Recently added, Continue listening, Editor's picks, Browse-by rails)
-- `/browse` faceted grid + sticky filter rail; filters in URL via `validateSearch` (Region hierarchical, Tribe, Language, Type, Mood, Duration, Sort); per-facet empty states
-- `/search` shadcn Command palette across stories/elders/regions/tribes/languages/collections/transcripts
-- `/stories/$slug` hero, big play→queue related, waveform + chapter markers, transcript tabs, linked chips, elder mini-card, related rails, save/add-to-playlist/share/download-transcript
-- `/elders`, `/elders/$slug`
-- `/regions/$slug`, `/tribes/$slug`, `/languages/$slug`, `/themes/$slug`
-- `/collections`, `/collections/$slug`
-- `/_authenticated/library` (Saved, Playlists CRUD, History, Following — as tabs with badge counts)
-- `/contribute`, `/_authenticated/contribute/record` (Web Audio → WAV 16kHz mono + metadata form → moderation)
-- `/auth`, `/_authenticated/account`
+### 4. UI touches
 
-Public routes read via public server fns; signed-in routes under managed `_authenticated/` layout.
+- Verified badge (small check) shown on creator names and in account.
+- Points chip in the top bar / account page.
+- Notification bell with unread count (uses badges, matches the existing mobile-app feel).
+- Admin nav entry appears only for admins.
 
-## 5. Player
-`AudioProvider` context: play/pause, prev/next from queue, shuffle, repeat-one, scrubbable waveform, volume, queue slide-over (Sheet) with reorder/clear, journey mode (continuous playback through a tribe/region/theme), no preview cap. Mini cover+title+elder always visible; mobile player sits above the bottom tab bar.
+## Build order
 
-## 6. Build order (kept runnable at each step)
-1. Cloud enable + schema + seed + design tokens/fonts/logo + PWA manifest/icons.
-2. Adaptive shell (sidebar + mobile bottom tabs) + routing + AudioProvider + persistent player + seeded home.
-3. Browse + filters + story page + elder/region/tribe/language/theme pages (public read).
-4. Auth + Library (tabs + badges: saves, playlists, follows, history).
-5. Contribute (Agadi page + recorder + moderation) + Search RPC + Collections + queue panel + journey mode + polish.
+1. Migration: ledger, profile fields, notifications, RLS/GRANTs.
+2. Admin server functions + admin route gate.
+3. Admin queue (approve/reject → publish + points + notify).
+4. Admin creators management (verify, adjust, roles).
+5. Creator dashboard + verified badge + notifications.
+6. Seed: grant your account `admin` so you can test immediately.
+
+## Open questions (defaults I'll use if you don't weigh in)
+
+- **Points per approved story:** default **50**. Bonus when verified? (default: no, keep flat for now.)
+- **Verification:** admin-granted manually, with an auto-suggestion at **5 approved stories**. OK?
+- **Who's the first admin?** I'll grant admin to the account you're signed in with so you can test.
 
 ## Technical notes
-- Filters/sort/search via `validateSearch` + `loaderDeps`, not `useState`.
-- Reads: loader `ensureQueryData` + `useSuspenseQuery`; mutations via `useServerFn` + `useMutation` + invalidate.
-- `play_count` + `submit-story` through server functions; admin/service-role only inside handler bodies.
-- PWA is manifest-only (installable, no offline). If you later want true offline caching, that's an added service-worker step.
 
-I'll implement in the order above; you'll have a clickable, installable app early and depth layered on after.
+- Approval logic lives in a server function using the admin client (loaded inside the handler), after verifying the caller's admin role — never trust client claims.
+- Points total on `profiles` is a cache; the `points_ledger` is the source of truth.
+- Notifications are in-app only for now (no email/push), matching "just points for now".
+- No identity verification / KYC — `is_verified` is a trust flag only.
