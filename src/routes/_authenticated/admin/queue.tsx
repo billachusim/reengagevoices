@@ -104,6 +104,7 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
           storyType: form.storyType,
           mood: form.mood,
           transcript: form.transcript,
+          youtubeUrl: form.youtubeUrl,
           pointAward: Number(form.pointAward) || 0,
         },
       }),
