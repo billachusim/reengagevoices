@@ -22,7 +22,7 @@ export const Route = createFileRoute("/stories/$slug")({
   },
   head: ({ loaderData, params }) => ({
     meta: [
-      { title: `Story — ReEngage Voices` },
+      { title: `Story — ReEngage African Voice` },
       { name: "description", content: "Listen to this story from an African elder, with transcript and provenance." },
       { property: "og:title", content: params.slug },
     ],

@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — ReEngage Voices" }, { name: "description", content: "Sign in to save stories, follow elders and build playlists." }] }),
+  head: () => ({ meta: [{ title: "Sign in — ReEngage African Voice" }, { name: "description", content: "Sign in to save stories, follow elders and build playlists." }] }),
   component: AuthPage,
 });
 
@@ -52,7 +52,7 @@ function AuthPage() {
     <div className="grid min-h-full place-items-center px-5 py-12">
       <div className="w-full max-w-sm rounded-2xl border bg-card p-6 shadow-warm">
         <img src={LOGO_SRC} alt="" width={48} height={48} className="mx-auto h-12 w-12" />
-        <h1 className="mt-3 text-center font-serif text-2xl font-bold">{mode === "signin" ? "Welcome back" : "Join ReEngage Voices"}</h1>
+        <h1 className="mt-3 text-center font-serif text-2xl font-bold">{mode === "signin" ? "Welcome back" : "Join ReEngage African Voice"}</h1>
         <p className="mb-5 mt-1 text-center text-sm text-muted-foreground">Save stories, follow elders, build playlists.</p>
         <button onClick={google} className="mb-4 flex w-full items-center justify-center gap-2 rounded-full border py-2.5 text-sm font-medium hover:bg-accent">
           Continue with Google

@@ -14,7 +14,7 @@ export const Route = createFileRoute("/elders/$slug")({
     const data = await context.queryClient.ensureQueryData(elderQuery(params.slug));
     if (!data) throw notFound();
   },
-  head: () => ({ meta: [{ title: "Elder — ReEngage Voices" }, { name: "description", content: "An elder's profile and recorded stories." }] }),
+  head: () => ({ meta: [{ title: "Elder — ReEngage African Voice" }, { name: "description", content: "An elder's profile and recorded stories." }] }),
   component: ElderPage,
   errorComponent: RouteError,
   notFoundComponent: () => <RouteNotFound message="We couldn't find this elder." />,
