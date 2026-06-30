@@ -266,6 +266,13 @@ export interface AdminStoryRow {
   transcript_original: string | null;
   transcript_english: string | null;
   description: string | null;
+  is_featured: boolean;
+  elder_name: string | null;
+  region_name: string | null;
+  tribe_name: string | null;
+  language_name: string | null;
+  story_type: string | null;
+  mood: string | null;
 }
 
 // Admin-only: list published stories for editing (newest first, optional search).
@@ -276,14 +283,35 @@ export const listAdminStories = createServerFn({ method: "GET" })
     await assertStaff(context.supabase, context.userId);
     let query = context.supabase
       .from("stories")
-      .select("id,slug,title,audio_url,youtube_url,transcript_original,transcript_english,description")
+      .select(
+        "id,slug,title,audio_url,youtube_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
+      )
       .eq("status", "published")
       .order("published_at", { ascending: false })
       .limit(50);
     if (data.q && data.q.trim()) query = query.ilike("title", `%${data.q.trim()}%`);
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
-    return (rows ?? []) as AdminStoryRow[];
+    return (rows ?? []).map((r: any): AdminStoryRow => {
+      const themes = (r.story_themes ?? []).map((st: any) => st.theme).filter(Boolean);
+      return {
+        id: r.id,
+        slug: r.slug,
+        title: r.title,
+        audio_url: r.audio_url,
+        youtube_url: r.youtube_url,
+        transcript_original: r.transcript_original,
+        transcript_english: r.transcript_english,
+        description: r.description,
+        is_featured: r.is_featured ?? false,
+        elder_name: r.elder?.name ?? null,
+        region_name: r.region?.name ?? null,
+        tribe_name: r.tribe?.name ?? null,
+        language_name: r.language?.name ?? null,
+        story_type: themes.find((t: any) => t.kind === "type")?.name ?? null,
+        mood: themes.find((t: any) => t.kind === "mood")?.name ?? null,
+      };
+    });
   });
 
 // Admin-only: update a published story's editable fields.
@@ -297,6 +325,13 @@ export const updateStory = createServerFn({ method: "POST" })
         transcriptOriginal: z.string().max(8000).optional(),
         transcriptEnglish: z.string().max(8000).optional(),
         description: z.string().max(2000).optional(),
+        elderName: z.string().max(120).optional(),
+        region: z.string().max(120).optional(),
+        tribe: z.string().max(120).optional(),
+        language: z.string().max(120).optional(),
+        storyType: z.string().max(60).optional(),
+        mood: z.string().max(60).optional(),
+        isFeatured: z.boolean().optional(),
       })
       .parse(d),
   )
@@ -308,7 +343,15 @@ export const updateStory = createServerFn({ method: "POST" })
       _transcript_original: data.transcriptOriginal ?? undefined,
       _transcript_english: data.transcriptEnglish ?? undefined,
       _description: data.description ?? undefined,
+      _elder_name: data.elderName ?? undefined,
+      _region: data.region ?? undefined,
+      _tribe: data.tribe ?? undefined,
+      _language: data.language ?? undefined,
+      _story_type: data.storyType ?? undefined,
+      _mood: data.mood ?? undefined,
+      _is_featured: data.isFeatured ?? undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
