@@ -6,7 +6,8 @@ import { StoryCard } from "@/components/story-card";
 import { Section, Rail } from "@/components/rail";
 import { ScallopDivider } from "@/components/scallop-divider";
 import { usePlayer } from "@/components/player/audio-provider";
-import { coverGradient, elderPortrait } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait } from "@/lib/constants";
+import { youtubeId } from "@/lib/youtube";
 
 export const Route = createFileRoute("/")({
   head: () => ({
