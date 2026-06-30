@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EldersIndexRouteImport } from './routes/elders.index'
 import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
+import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
 
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
@@ -23,40 +25,64 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EldersIndexRoute = EldersIndexRouteImport.update({
+  id: '/elders/',
+  path: '/elders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoriesSlugRoute = StoriesSlugRouteImport.update({
   id: '/stories/$slug',
   path: '/stories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EldersSlugRoute = EldersSlugRouteImport.update({
+  id: '/elders/$slug',
+  path: '/elders/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/elders/$slug': typeof EldersSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/elders/': typeof EldersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/elders/$slug': typeof EldersSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/elders': typeof EldersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/elders/$slug': typeof EldersSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/elders/': typeof EldersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse' | '/stories/$slug'
+  fullPaths: '/' | '/browse' | '/elders/$slug' | '/stories/$slug' | '/elders/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/stories/$slug'
-  id: '__root__' | '/' | '/browse' | '/stories/$slug'
+  to: '/' | '/browse' | '/elders/$slug' | '/stories/$slug' | '/elders'
+  id:
+    | '__root__'
+    | '/'
+    | '/browse'
+    | '/elders/$slug'
+    | '/stories/$slug'
+    | '/elders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
+  EldersSlugRoute: typeof EldersSlugRoute
   StoriesSlugRoute: typeof StoriesSlugRoute
+  EldersIndexRoute: typeof EldersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +101,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/elders/': {
+      id: '/elders/'
+      path: '/elders'
+      fullPath: '/elders/'
+      preLoaderRoute: typeof EldersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stories/$slug': {
       id: '/stories/$slug'
       path: '/stories/$slug'
       fullPath: '/stories/$slug'
       preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elders/$slug': {
+      id: '/elders/$slug'
+      path: '/elders/$slug'
+      fullPath: '/elders/$slug'
+      preLoaderRoute: typeof EldersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +128,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
+  EldersSlugRoute: EldersSlugRoute,
   StoriesSlugRoute: StoriesSlugRoute,
+  EldersIndexRoute: EldersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
