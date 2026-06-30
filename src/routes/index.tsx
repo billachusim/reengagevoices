@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Play } from "lucide-react";
+import { Play, Video } from "lucide-react";
 import { storiesQuery, collectionsQuery, eldersQuery, facetsQuery } from "@/lib/queries";
 import { StoryCard } from "@/components/story-card";
 import { Section, Rail } from "@/components/rail";
