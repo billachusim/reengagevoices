@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getLibrary } from "@/lib/library.functions";
+import { getMyCreatorStats, type MySubmission } from "@/lib/creator.functions";
 import { StoryRow } from "@/components/story-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +13,11 @@ export const Route = createFileRoute("/_authenticated/library")({
 
 function LibraryPage() {
   const { data, isLoading } = useQuery({ queryKey: ["library"], queryFn: () => getLibrary() });
+  const { data: creator } = useQuery({ queryKey: ["creator-stats"], queryFn: () => getMyCreatorStats() });
   if (isLoading || !data) return <div className="px-5 py-10 text-sm text-muted-foreground sm:px-8">Loading your library…</div>;
   const { saved, following, history, playlists } = data;
+  const submissions = creator?.submissions ?? [];
+
   return (
     <div className="px-5 py-6 sm:px-8">
       <h1 className="mb-5 font-serif text-2xl font-bold sm:text-3xl">Your library</h1>
