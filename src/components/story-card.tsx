@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Play, Pause } from "lucide-react";
 import type { StoryDTO } from "@/lib/types";
-import { coverGradient, elderPortrait, formatDuration } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait, formatDuration } from "@/lib/constants";
 import { usePlayer } from "@/components/player/audio-provider";
 import { cn } from "@/lib/utils";
 
@@ -9,12 +9,17 @@ export function StoryCard({ story, queue }: { story: StoryDTO; queue?: StoryDTO[
   const { playStory, current, isPlaying, toggle } = usePlayer();
   const isCurrent = current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const cover = coverImage(story);
 
   return (
     <div className="group flex flex-col">
       <div className="relative aspect-square overflow-hidden rounded-xl shadow-warm" style={{ backgroundImage: coverGradient(story.slug) }}>
-        {portrait && (
-          <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-55 mix-blend-luminosity transition group-hover:scale-105 group-hover:opacity-70" />
+        {cover ? (
+          <img src={cover} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-105" />
+        ) : (
+          portrait && (
+            <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-55 mix-blend-luminosity transition group-hover:scale-105 group-hover:opacity-70" />
+          )
         )}
         <Link to="/stories/$slug" params={{ slug: story.slug }} className="absolute inset-0" aria-label={story.title} />
         <button
@@ -39,6 +44,7 @@ export function StoryRow({ story, queue, index }: { story: StoryDTO; queue?: Sto
   const { playStory, current, isPlaying, toggle } = usePlayer();
   const isCurrent = current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const cover = coverImage(story);
   return (
     <div className={cn("group flex items-center gap-3 rounded-lg p-2 hover:bg-muted/60", isCurrent && "bg-muted/60")}>
       <button
@@ -47,7 +53,11 @@ export function StoryRow({ story, queue, index }: { story: StoryDTO; queue?: Sto
         style={{ backgroundImage: coverGradient(story.slug) }}
         aria-label="Play"
       >
-        {portrait && <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />}
+        {cover ? (
+          <img src={cover} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          portrait && <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
+        )}
         <span className="relative">
           {isCurrent && isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-[1px]" />}
         </span>

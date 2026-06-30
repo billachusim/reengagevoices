@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Play, Pause, Heart, Plus, Share2, FileText } from "lucide-react";
+import { Play, Pause, Heart, Plus, Share2, FileText, Video } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { storyQuery } from "@/lib/queries";
@@ -13,7 +13,7 @@ import { RouteError, RouteNotFound } from "@/components/route-states";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
-import { coverGradient, elderPortrait, formatDuration } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait, formatDuration } from "@/lib/constants";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
 export const Route = createFileRoute("/stories/$slug")({
@@ -59,7 +59,12 @@ function StoryPage() {
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const cover = coverImage(story);
   const embedUrl = youtubeEmbedUrl(story.youtube_url);
+
+  const scrollToWatch = () => {
+    document.getElementById("watch")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const share = async () => {
     const url = window.location.href;
@@ -72,9 +77,19 @@ function StoryPage() {
   return (
     <div>
       <div className="grain relative overflow-hidden px-5 py-8 sm:px-8 sm:py-12" style={{ backgroundImage: coverGradient(story.slug) }}>
+        {cover && (
+          <>
+            <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/30" />
+          </>
+        )}
         <div className="relative z-10 flex flex-col gap-5 text-white sm:flex-row sm:items-end">
           <div className="h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-warm sm:h-48 sm:w-48">
-            {portrait && <img src={portrait} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />}
+            {cover ? (
+              <img src={cover} alt={story.title} className="h-full w-full object-cover" />
+            ) : (
+              portrait && <img src={portrait} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
+            )}
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-white/80">Story</p>
@@ -87,6 +102,9 @@ function StoryPage() {
               <button onClick={() => (isCurrent ? player.toggle() : player.playStory(story, [story, ...related]))} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow">
                 {isCurrent && player.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {isCurrent && player.isPlaying ? "Pause" : "Play"}
               </button>
+              {embedUrl && (
+                <button onClick={scrollToWatch} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Video className="h-4 w-4" /> Watch video</button>
+              )}
               <button onClick={() => { player.addToQueue(story); toast.success("Added to queue"); }} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Plus className="h-4 w-4" /> Queue</button>
               <button onClick={share} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Share2 className="h-4 w-4" /> Share</button>
             </div>
@@ -111,6 +129,7 @@ function StoryPage() {
 
         {/* Video */}
         {embedUrl && (
+          <div id="watch" className="scroll-mt-20">
           <Section title="Watch">
             <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-xl border bg-black">
               <iframe
@@ -123,6 +142,7 @@ function StoryPage() {
               />
             </div>
           </Section>
+          </div>
         )}
 
 
