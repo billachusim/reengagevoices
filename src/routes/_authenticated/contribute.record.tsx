@@ -2,14 +2,27 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Mic, Square } from "lucide-react";
+import { Mic, Square, Upload } from "lucide-react";
 import { useRef } from "react";
 import { submitStory } from "@/lib/library.functions";
 import { facetsQuery } from "@/lib/queries";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/contribute/record")({
   component: RecordPage,
 });
+
+const MAX_AUDIO_BYTES = 20 * 1024 * 1024; // 20MB
+const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10; // ~10 years
+
+function extFor(type: string) {
+  if (type.includes("webm")) return "webm";
+  if (type.includes("mpeg") || type.includes("mp3")) return "mp3";
+  if (type.includes("wav")) return "wav";
+  if (type.includes("ogg")) return "ogg";
+  if (type.includes("mp4") || type.includes("m4a") || type.includes("aac")) return "m4a";
+  return "audio";
+}
 
 function RecordPage() {
   const navigate = useNavigate();
@@ -17,6 +30,8 @@ function RecordPage() {
   const { data: facets } = useQuery(facetsQuery);
   const [recording, setRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string>("");
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [fileName, setFileName] = useState<string>("");
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [form, setForm] = useState({ elderName: "", title: "", region: "", tribe: "", language: "", storyType: "", mood: "", transcript: "" });
@@ -29,6 +44,8 @@ function RecordPage() {
       mr.ondataavailable = (e) => chunksRef.current.push(e.data);
       mr.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        setAudioBlob(blob);
+        setFileName("");
         setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach((t) => t.stop());
       };
@@ -39,8 +56,34 @@ function RecordPage() {
   };
   const stop = () => { mediaRef.current?.stop(); setRecording(false); };
 
+  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_AUDIO_BYTES) { toast.error("That file is larger than 20MB."); return; }
+    setAudioBlob(file);
+    setFileName(file.name);
+    setAudioUrl(URL.createObjectURL(file));
+  };
+
+  const uploadAndSubmit = async () => {
+    if (!audioBlob) throw new Error("Please record or upload an audio clip first.");
+    const { data: auth } = await supabase.auth.getUser();
+    const uid = auth.user?.id;
+    if (!uid) throw new Error("You need to be signed in.");
+    const ext = extFor(audioBlob.type || "");
+    const path = `${uid}/${Date.now()}.${ext}`;
+    const up = await supabase.storage.from("story-audio").upload(path, audioBlob, {
+      contentType: audioBlob.type || "audio/webm",
+      upsert: false,
+    });
+    if (up.error) throw new Error(up.error.message);
+    const signed = await supabase.storage.from("story-audio").createSignedUrl(path, SIGNED_URL_TTL);
+    if (signed.error || !signed.data?.signedUrl) throw new Error(signed.error?.message ?? "Could not finalize audio.");
+    await submitStory({ data: { ...form, audioUrl: signed.data.signedUrl } });
+  };
+
   const mut = useMutation({
-    mutationFn: () => submitStory({ data: { ...form } }),
+    mutationFn: uploadAndSubmit,
     onSuccess: () => { qc.invalidateQueries(); toast.success("Submitted for review. Thank you!"); navigate({ to: "/library" }); },
     onError: (e: any) => toast.error(e.message ?? "Could not submit"),
   });
@@ -56,13 +99,21 @@ function RecordPage() {
 
       <div className="my-6 flex flex-col items-center gap-3 rounded-2xl border bg-card p-6">
         {!recording ? (
-          <button onClick={start} className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground"><Mic className="h-7 w-7" /></button>
+          <button type="button" onClick={start} className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground"><Mic className="h-7 w-7" /></button>
         ) : (
-          <button onClick={stop} className="grid h-16 w-16 animate-pulse place-items-center rounded-full bg-destructive text-destructive-foreground"><Square className="h-6 w-6" /></button>
+          <button type="button" onClick={stop} className="grid h-16 w-16 animate-pulse place-items-center rounded-full bg-destructive text-destructive-foreground"><Square className="h-6 w-6" /></button>
         )}
-        <p className="text-xs text-muted-foreground">{recording ? "Recording… tap to stop" : audioUrl ? "Recording captured" : "Tap to start recording"}</p>
+        <p className="text-xs text-muted-foreground">{recording ? "Recording… tap to stop" : fileName ? `Selected: ${fileName}` : audioUrl ? "Recording captured" : "Tap to start recording"}</p>
         {audioUrl && <audio controls src={audioUrl} className="w-full" />}
+        <div className="flex w-full items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" />
+        </div>
+        <label className="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted">
+          <Upload className="h-4 w-4" /> Upload an audio file
+          <input type="file" accept="audio/*" onChange={onPickFile} className="hidden" />
+        </label>
       </div>
+
 
       <form onSubmit={(e) => { e.preventDefault(); mut.mutate(); }} className="space-y-3">
         <input required placeholder="Elder's name" value={form.elderName} onChange={set("elderName")} className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm" />
@@ -77,7 +128,7 @@ function RecordPage() {
           <select value={form.mood} onChange={set("mood")} className="rounded-lg border bg-background px-3 py-2.5 text-sm"><option value="">Mood</option>{moods.map((t) => <option key={t.slug} value={t.name}>{t.name}</option>)}</select>
         </div>
         <textarea placeholder="Transcript or summary (optional)" value={form.transcript} onChange={set("transcript")} rows={4} className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm" />
-        <button disabled={mut.isPending} className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60">{mut.isPending ? "Submitting…" : "Submit for review"}</button>
+        <button disabled={mut.isPending || !audioBlob} className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60">{mut.isPending ? "Uploading & submitting…" : "Submit for review"}</button>
       </form>
     </div>
   );
