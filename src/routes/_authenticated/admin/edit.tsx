@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X } from "lucide-react";
 import {
   listAdminStories,
   updateStory,
@@ -11,6 +11,10 @@ import {
   type AdminStoryRow,
 } from "@/lib/admin.functions";
 import { youtubeEmbedUrl } from "@/lib/youtube";
+import { supabase } from "@/integrations/supabase/client";
+
+const COVER_URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
+
 
 export const Route = createFileRoute("/_authenticated/admin/edit")({
   component: EditStoriesPage,
