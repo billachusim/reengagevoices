@@ -13,7 +13,7 @@ import { RouteError, RouteNotFound } from "@/components/route-states";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
-import { coverGradient, elderPortrait, formatDuration } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait, formatDuration } from "@/lib/constants";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
 export const Route = createFileRoute("/stories/$slug")({
