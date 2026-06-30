@@ -107,6 +107,24 @@ function StoryPage() {
 
         {story.description && <p className="mb-6 max-w-2xl text-sm text-muted-foreground">{story.description}</p>}
 
+        {/* Video */}
+        {embedUrl && (
+          <Section title="Watch">
+            <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-xl border bg-black">
+              <iframe
+                src={embedUrl}
+                title={`${story.title} — video`}
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </Section>
+        )}
+
+
+
         {/* Transcript */}
         <Section title="Transcript">
           <Tabs value={tab} onValueChange={setTab}>
