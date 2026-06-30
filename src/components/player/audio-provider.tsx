@@ -160,6 +160,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const setVolume = useCallback((v: number) => {
     setVolumeState(v);
     if (audioRef.current) audioRef.current.volume = v;
+    if (introRef.current) introRef.current.volume = v;
   }, []);
 
   const toggleShuffle = useCallback(() => setShuffle((s) => !s), []);
