@@ -149,7 +149,7 @@ export const getCollections = createServerFn({ method: "GET" }).handler(async ()
   const sb = publicClient();
   const { data, error } = await sb
     .from("collections")
-    .select("id,slug,title,description,cover_url,collection_items(position,count,story:stories(cover_url))")
+    .select("id,slug,title,description,cover_url,collection_items(position,story:stories(cover_url))")
     .eq("is_public", true)
     .order("created_at");
   if (error) throw new Error(error.message);
