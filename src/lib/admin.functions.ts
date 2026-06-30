@@ -304,10 +304,10 @@ export const updateStory = createServerFn({ method: "POST" })
     await assertStaff(context.supabase, context.userId);
     const { error } = await context.supabase.rpc("update_story", {
       _story_id: data.storyId,
-      _youtube_url: data.youtubeUrl ?? null,
-      _transcript_original: data.transcriptOriginal ?? null,
-      _transcript_english: data.transcriptEnglish ?? null,
-      _description: data.description ?? null,
+      _youtube_url: data.youtubeUrl ?? undefined,
+      _transcript_original: data.transcriptOriginal ?? undefined,
+      _transcript_english: data.transcriptEnglish ?? undefined,
+      _description: data.description ?? undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
