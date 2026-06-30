@@ -11,8 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EldersIndexRouteImport } from './routes/elders.index'
+import { Route as ContributeIndexRouteImport } from './routes/contribute.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as TribesSlugRouteImport } from './routes/tribes.$slug'
 import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
@@ -21,6 +24,7 @@ import { Route as RegionsSlugRouteImport } from './routes/regions.$slug'
 import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
 import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
+import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -32,6 +36,15 @@ const BrowseRoute = BrowseRouteImport.update({
   path: '/browse',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -40,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
 const EldersIndexRoute = EldersIndexRouteImport.update({
   id: '/elders/',
   path: '/elders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributeIndexRoute = ContributeIndexRouteImport.update({
+  id: '/contribute/',
+  path: '/contribute/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
@@ -82,11 +100,18 @@ const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
   path: '/collections/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
   '/languages/$slug': typeof LanguagesSlugRoute
@@ -95,12 +120,15 @@ export interface FileRoutesByFullPath {
   '/themes/$slug': typeof ThemesSlugRoute
   '/tribes/$slug': typeof TribesSlugRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
   '/languages/$slug': typeof LanguagesSlugRoute
@@ -109,13 +137,17 @@ export interface FileRoutesByTo {
   '/themes/$slug': typeof ThemesSlugRoute
   '/tribes/$slug': typeof TribesSlugRoute
   '/collections': typeof CollectionsIndexRoute
+  '/contribute': typeof ContributeIndexRoute
   '/elders': typeof EldersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
+  '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
   '/languages/$slug': typeof LanguagesSlugRoute
@@ -124,14 +156,17 @@ export interface FileRoutesById {
   '/themes/$slug': typeof ThemesSlugRoute
   '/tribes/$slug': typeof TribesSlugRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/browse'
     | '/search'
+    | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
     | '/languages/$slug'
@@ -140,12 +175,15 @@ export interface FileRouteTypes {
     | '/themes/$slug'
     | '/tribes/$slug'
     | '/collections/'
+    | '/contribute/'
     | '/elders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/browse'
     | '/search'
+    | '/library'
     | '/collections/$slug'
     | '/elders/$slug'
     | '/languages/$slug'
@@ -154,12 +192,16 @@ export interface FileRouteTypes {
     | '/themes/$slug'
     | '/tribes/$slug'
     | '/collections'
+    | '/contribute'
     | '/elders'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/browse'
     | '/search'
+    | '/_authenticated/library'
     | '/collections/$slug'
     | '/elders/$slug'
     | '/languages/$slug'
@@ -168,11 +210,14 @@ export interface FileRouteTypes {
     | '/themes/$slug'
     | '/tribes/$slug'
     | '/collections/'
+    | '/contribute/'
     | '/elders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   SearchRoute: typeof SearchRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
@@ -183,6 +228,7 @@ export interface RootRouteChildren {
   ThemesSlugRoute: typeof ThemesSlugRoute
   TribesSlugRoute: typeof TribesSlugRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  ContributeIndexRoute: typeof ContributeIndexRoute
   EldersIndexRoute: typeof EldersIndexRoute
 }
 
@@ -202,6 +248,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -214,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/elders'
       fullPath: '/elders/'
       preLoaderRoute: typeof EldersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contribute/': {
+      id: '/contribute/'
+      path: '/contribute'
+      fullPath: '/contribute/'
+      preLoaderRoute: typeof ContributeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/': {
@@ -272,11 +339,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/library': {
+      id: '/_authenticated/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   SearchRoute: SearchRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
@@ -287,8 +374,19 @@ const rootRouteChildren: RootRouteChildren = {
   ThemesSlugRoute: ThemesSlugRoute,
   TribesSlugRoute: TribesSlugRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  ContributeIndexRoute: ContributeIndexRoute,
   EldersIndexRoute: EldersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
