@@ -66,6 +66,7 @@ export const approveSubmission = createServerFn({ method: "POST" })
         mood: z.string().max(60).optional(),
         transcript: z.string().max(8000).optional(),
         description: z.string().max(2000).optional(),
+        youtubeUrl: z.string().max(500).optional(),
         pointAward: z.number().int().min(0).max(1000).optional(),
       })
       .parse(d),
@@ -84,6 +85,7 @@ export const approveSubmission = createServerFn({ method: "POST" })
       _mood: data.mood || undefined,
       _transcript: data.transcript || undefined,
       _description: data.description || undefined,
+      _youtube_url: data.youtubeUrl || undefined,
       _point_award: data.pointAward ?? 25,
     });
     if (error) throw new Error(error.message);
