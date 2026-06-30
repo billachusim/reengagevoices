@@ -311,6 +311,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
         language_name: r.language?.name ?? null,
         story_type: themes.find((t: any) => t.kind === "type")?.name ?? null,
         mood: themes.find((t: any) => t.kind === "mood")?.name ?? null,
+        cover_url: r.cover_url ?? null,
       };
     });
   });
