@@ -5,7 +5,7 @@ import { RouteError } from "@/components/route-states";
 import { coverGradient } from "@/lib/constants";
 
 export const Route = createFileRoute("/collections/")({
-  head: () => ({ meta: [{ title: "Collections — ReEngage African Voice" }, { name: "description", content: "Curated collections of African elders' stories." }] }),
+  head: () => ({ meta: [{ title: "Collections — ReEngage African Voices" }, { name: "description", content: "Curated collections of African elders' stories." }] }),
   loader: ({ context }) => { context.queryClient.ensureQueryData(collectionsQuery); },
   component: Collections,
   errorComponent: RouteError,
