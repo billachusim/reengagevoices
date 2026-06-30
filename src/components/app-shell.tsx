@@ -45,6 +45,9 @@ function Brand() {
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const saved = useSavedCount();
+  const { user, isStaff } = useAuth();
+  const linkCls =
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition hover:bg-sidebar-accent hover:text-sidebar-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-foreground";
   return (
     <nav className="flex flex-col gap-1">
       {NAV.map((item) => (
@@ -53,7 +56,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
           to={item.to}
           onClick={onNavigate}
           activeOptions={{ exact: (item as any).exact }}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition hover:bg-sidebar-accent hover:text-sidebar-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-foreground"
+          className={linkCls}
         >
           <item.icon className="h-5 w-5" />
           <span className="flex-1">{item.label}</span>
@@ -62,16 +65,23 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
       ))}
       <div className="my-2 h-px bg-sidebar-border" />
       {SECONDARY.map((item) => (
-        <Link
-          key={item.to}
-          to={item.to}
-          onClick={onNavigate}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition hover:bg-sidebar-accent hover:text-sidebar-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-foreground"
-        >
+        <Link key={item.to} to={item.to} onClick={onNavigate} className={linkCls}>
           <item.icon className="h-5 w-5" />
           {item.label}
         </Link>
       ))}
+      {user && (
+        <Link to="/creator" onClick={onNavigate} className={linkCls}>
+          <Sparkles className="h-5 w-5" />
+          Creator program
+        </Link>
+      )}
+      {isStaff && (
+        <Link to="/admin" onClick={onNavigate} className={linkCls}>
+          <Shield className="h-5 w-5" />
+          Admin
+        </Link>
+      )}
     </nav>
   );
 }
