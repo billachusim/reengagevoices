@@ -142,6 +142,7 @@ function StoryPage() {
               />
             </div>
           </Section>
+          </div>
         )}
 
 
