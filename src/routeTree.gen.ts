@@ -9,12 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EldersIndexRouteImport } from './routes/elders.index'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
 import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
+import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
@@ -30,6 +38,11 @@ const EldersIndexRoute = EldersIndexRouteImport.update({
   path: '/elders/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoriesSlugRoute = StoriesSlugRouteImport.update({
   id: '/stories/$slug',
   path: '/stories/$slug',
@@ -40,53 +53,96 @@ const EldersSlugRoute = EldersSlugRouteImport.update({
   path: '/elders/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/search': typeof SearchRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/collections/': typeof CollectionsIndexRoute
   '/elders/': typeof EldersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/search': typeof SearchRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/collections': typeof CollectionsIndexRoute
   '/elders': typeof EldersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/search': typeof SearchRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/collections/': typeof CollectionsIndexRoute
   '/elders/': typeof EldersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse' | '/elders/$slug' | '/stories/$slug' | '/elders/'
+  fullPaths:
+    | '/'
+    | '/browse'
+    | '/search'
+    | '/collections/$slug'
+    | '/elders/$slug'
+    | '/stories/$slug'
+    | '/collections/'
+    | '/elders/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/elders/$slug' | '/stories/$slug' | '/elders'
+  to:
+    | '/'
+    | '/browse'
+    | '/search'
+    | '/collections/$slug'
+    | '/elders/$slug'
+    | '/stories/$slug'
+    | '/collections'
+    | '/elders'
   id:
     | '__root__'
     | '/'
     | '/browse'
+    | '/search'
+    | '/collections/$slug'
     | '/elders/$slug'
     | '/stories/$slug'
+    | '/collections/'
     | '/elders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
+  SearchRoute: typeof SearchRoute
+  CollectionsSlugRoute: typeof CollectionsSlugRoute
   EldersSlugRoute: typeof EldersSlugRoute
   StoriesSlugRoute: typeof StoriesSlugRoute
+  CollectionsIndexRoute: typeof CollectionsIndexRoute
   EldersIndexRoute: typeof EldersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/browse': {
       id: '/browse'
       path: '/browse'
@@ -108,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EldersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stories/$slug': {
       id: '/stories/$slug'
       path: '/stories/$slug'
@@ -122,14 +185,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EldersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections/$slug': {
+      id: '/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof CollectionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
+  SearchRoute: SearchRoute,
+  CollectionsSlugRoute: CollectionsSlugRoute,
   EldersSlugRoute: EldersSlugRoute,
   StoriesSlugRoute: StoriesSlugRoute,
+  CollectionsIndexRoute: CollectionsIndexRoute,
   EldersIndexRoute: EldersIndexRoute,
 }
 export const routeTree = rootRouteImport
