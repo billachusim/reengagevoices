@@ -129,6 +129,7 @@ function StoryPage() {
 
         {/* Video */}
         {embedUrl && (
+          <div id="watch" className="scroll-mt-20">
           <Section title="Watch">
             <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-xl border bg-black">
               <iframe
