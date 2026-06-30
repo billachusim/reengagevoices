@@ -163,6 +163,38 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
             )}
           </div>
 
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Cover image</label>
+            <div className="flex gap-2">
+              <input value={form.coverUrl} onChange={set("coverUrl")} placeholder="Paste an image URL…" className={inputCls} />
+              <input ref={fileRef} type="file" accept="image/*" onChange={onCoverFile} className="hidden" />
+              <button
+                type="button"
+                disabled={uploading}
+                onClick={() => fileRef.current?.click()}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium hover:bg-muted disabled:opacity-60"
+              >
+                <Upload className="h-3.5 w-3.5" /> {uploading ? "Uploading…" : "Upload"}
+              </button>
+            </div>
+            {form.coverUrl && (
+              <div className="relative mt-2 aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                <img src={form.coverUrl} alt="" className="h-full w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, coverUrl: "" }))}
+                  className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white"
+                  aria-label="Remove cover"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground">Used as the story header. Leave empty to fall back to the elder portrait / gradient.</p>
+          </div>
+
+
+
           <label className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2.5 text-sm font-medium">
             <input
               type="checkbox"
