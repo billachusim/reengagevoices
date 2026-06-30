@@ -26,6 +26,11 @@ export function elderPortrait(slug?: string | null): string | undefined {
   return slug ? ELDER_PORTRAITS[slug] : undefined;
 }
 
+// A story's dedicated cover photo, when one has been set.
+export function coverImage(story: { cover_url?: string | null }): string | undefined {
+  return story.cover_url?.trim() ? story.cover_url : undefined;
+}
+
 // Deterministic warm gradient for story covers, keyed by slug.
 const COVER_GRADIENTS = [
   "linear-gradient(135deg, oklch(0.7 0.14 70), oklch(0.55 0.16 35))",
