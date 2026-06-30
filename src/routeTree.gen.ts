@@ -27,6 +27,7 @@ import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
 
 const SearchRoute = SearchRouteImport.update({
@@ -118,6 +119,11 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedContributeRecordRoute =
   AuthenticatedContributeRecordRouteImport.update({
     id: '/contribute/record',
@@ -130,7 +136,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -144,13 +150,13 @@ export interface FileRoutesByFullPath {
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
   '/account': typeof AuthenticatedAccountRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -164,6 +170,7 @@ export interface FileRoutesByTo {
   '/contribute': typeof ContributeIndexRoute
   '/elders': typeof EldersIndexRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -172,7 +179,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/search': typeof SearchRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -186,6 +193,7 @@ export interface FileRoutesById {
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
   '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -208,13 +216,13 @@ export interface FileRouteTypes {
     | '/contribute/'
     | '/elders/'
     | '/contribute/record'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/browse'
     | '/search'
-    | '/admin'
     | '/account'
     | '/library'
     | '/collections/$slug'
@@ -228,6 +236,7 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/elders'
     | '/contribute/record'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/contribute/'
     | '/elders/'
     | '/_authenticated/contribute/record'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -397,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/contribute/record': {
       id: '/_authenticated/contribute/record'
       path: '/contribute/record'
@@ -407,15 +424,29 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedContributeRecordRoute: typeof AuthenticatedContributeRecordRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedContributeRecordRoute: AuthenticatedContributeRecordRoute,
