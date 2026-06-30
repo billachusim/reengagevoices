@@ -63,7 +63,11 @@ export const getLibrary = createServerFn({ method: "GET" })
       const s = (r as any).story;
       if (s && !seen.has(s.id)) { seen.add(s.id); historyStories.push(mapStory(s)); }
     }
-    const playlists = (playlistsRes.data ?? []).map((c: any) => ({ id: c.id, slug: c.slug, title: c.title, description: c.description, story_count: c.collection_items?.[0]?.count ?? 0 }));
+    const playlists = (playlistsRes.data ?? []).map((c: any) => {
+      const items = (c.collection_items ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+      const firstCover = items.map((i: any) => i.story?.cover_url).find((u: any) => u && String(u).trim());
+      return { id: c.id, slug: c.slug, title: c.title, description: c.description, story_count: items.length, cover_url: (c.cover_url && String(c.cover_url).trim()) ? c.cover_url : (firstCover ?? null) };
+    });
     return { saved, following, history: historyStories, playlists };
   });
 
