@@ -44,6 +44,7 @@ export interface CollectionDTO {
   title: string;
   description: string | null;
   story_count: number;
+  cover_url: string | null;
 }
 
 export interface FacetsDTO {

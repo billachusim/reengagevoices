@@ -5,7 +5,7 @@ import { getMyCreatorStats, type MySubmission } from "@/lib/creator.functions";
 import { StoryRow } from "@/components/story-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { coverGradient, elderPortrait } from "@/lib/constants";
+import { coverGradient, coverImage, elderPortrait } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/library")({
   component: LibraryPage,
@@ -38,9 +38,17 @@ function LibraryPage() {
           {playlists.length === 0 ? <Empty text="You haven't created any playlists yet." /> : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {playlists.map((c) => (
-                <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="grain flex aspect-[16/9] flex-col justify-end rounded-xl p-4 text-white shadow-warm" style={{ backgroundImage: coverGradient(c.slug) }}>
-                  <h3 className="font-serif text-lg font-semibold">{c.title}</h3>
-                  <p className="text-xs text-white/80">{c.story_count} stories</p>
+                <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="grain relative flex aspect-[16/9] flex-col justify-end overflow-hidden rounded-xl p-4 text-white shadow-warm" style={{ backgroundImage: coverGradient(c.slug) }}>
+                  {coverImage(c) && (
+                    <>
+                      <img src={coverImage(c)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
+                    </>
+                  )}
+                  <div className="relative">
+                    <h3 className="font-serif text-lg font-semibold">{c.title}</h3>
+                    <p className="text-xs text-white/80">{c.story_count} stories</p>
+                  </div>
                 </Link>
               ))}
             </div>
