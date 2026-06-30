@@ -73,10 +73,17 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
     storyType: p.storyType ?? "",
     mood: p.mood ?? "",
     transcript: p.transcript ?? "",
+    youtubeUrl: p.youtubeUrl ?? "",
     pointAward: 25,
   });
   const [reason, setReason] = useState("");
   const editable = item.status === "pending";
+
+  const transcribe = useMutation({
+    mutationFn: () => transcribeAudio({ data: { audioUrl: item.audio_url! } }),
+    onSuccess: (res) => { setForm((f) => ({ ...f, transcript: res.text })); toast.success("Transcribed."); },
+    onError: (e: any) => toast.error(e.message ?? "Could not transcribe"),
+  });
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["moderation-queue"] });
