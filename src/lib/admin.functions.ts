@@ -334,6 +334,7 @@ export const updateStory = createServerFn({ method: "POST" })
         storyType: z.string().max(60).optional(),
         mood: z.string().max(60).optional(),
         isFeatured: z.boolean().optional(),
+        coverUrl: z.string().max(1000).optional(),
       })
       .parse(d),
   )
