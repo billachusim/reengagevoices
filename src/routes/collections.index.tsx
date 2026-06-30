@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { collectionsQuery } from "@/lib/queries";
 import { RouteError } from "@/components/route-states";
-import { coverGradient } from "@/lib/constants";
+import { coverGradient, coverImage } from "@/lib/constants";
 
 export const Route = createFileRoute("/collections/")({
   head: () => ({ meta: [{ title: "Collections — ReEngage African Voices" }, { name: "description", content: "Curated collections of African elders' stories." }] }),
