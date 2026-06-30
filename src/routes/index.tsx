@@ -33,7 +33,7 @@ function Home() {
   const { data: facets } = useSuspenseQuery(facetsQuery);
   const player = usePlayer();
 
-  const featured = stories[0];
+  const featured = stories.find((s) => s.is_featured) ?? stories[0];
   const mostPlayed = [...stories].sort((a, b) => b.play_count - a.play_count).slice(0, 8);
   const recent = stories.slice(0, 8);
 
