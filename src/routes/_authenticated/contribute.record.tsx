@@ -99,13 +99,21 @@ function RecordPage() {
 
       <div className="my-6 flex flex-col items-center gap-3 rounded-2xl border bg-card p-6">
         {!recording ? (
-          <button onClick={start} className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground"><Mic className="h-7 w-7" /></button>
+          <button type="button" onClick={start} className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground"><Mic className="h-7 w-7" /></button>
         ) : (
-          <button onClick={stop} className="grid h-16 w-16 animate-pulse place-items-center rounded-full bg-destructive text-destructive-foreground"><Square className="h-6 w-6" /></button>
+          <button type="button" onClick={stop} className="grid h-16 w-16 animate-pulse place-items-center rounded-full bg-destructive text-destructive-foreground"><Square className="h-6 w-6" /></button>
         )}
-        <p className="text-xs text-muted-foreground">{recording ? "Recording… tap to stop" : audioUrl ? "Recording captured" : "Tap to start recording"}</p>
+        <p className="text-xs text-muted-foreground">{recording ? "Recording… tap to stop" : fileName ? `Selected: ${fileName}` : audioUrl ? "Recording captured" : "Tap to start recording"}</p>
         {audioUrl && <audio controls src={audioUrl} className="w-full" />}
+        <div className="flex w-full items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" />
+        </div>
+        <label className="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted">
+          <Upload className="h-4 w-4" /> Upload an audio file
+          <input type="file" accept="audio/*" onChange={onPickFile} className="hidden" />
+        </label>
       </div>
+
 
       <form onSubmit={(e) => { e.preventDefault(); mut.mutate(); }} className="space-y-3">
         <input required placeholder="Elder's name" value={form.elderName} onChange={set("elderName")} className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm" />
