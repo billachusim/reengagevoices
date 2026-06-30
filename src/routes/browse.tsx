@@ -54,7 +54,7 @@ function Browse() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
-  const set = (patch: Partial<BrowseSearch>) => navigate({ search: (prev) => ({ ...prev, ...patch }) });
+  const set = (patch: Partial<BrowseSearch>) => navigate({ search: (prev: BrowseSearch) => ({ ...prev, ...patch }) });
 
   const villages = facets.regions.filter((r) => r.village);
   const types = facets.themes.filter((t) => t.kind === "type");
