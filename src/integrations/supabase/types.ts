@@ -86,6 +86,39 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_stats: {
+        Row: {
+          approved_count: number
+          created_at: string
+          points: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          approved_count?: number
+          created_at?: string
+          points?: number
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          approved_count?: number
+          created_at?: string
+          points?: number
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       elder_languages: {
         Row: {
           elder_id: string
@@ -230,6 +263,7 @@ export type Database = {
           created_at: string
           id: string
           payload: Json
+          reject_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["story_status"]
@@ -240,6 +274,7 @@ export type Database = {
           created_at?: string
           id?: string
           payload?: Json
+          reject_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["story_status"]
@@ -250,6 +285,7 @@ export type Database = {
           created_at?: string
           id?: string
           payload?: Json
+          reject_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["story_status"]
@@ -282,6 +318,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "play_history_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      point_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          listener_id: string | null
+          points: number
+          story_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          listener_id?: string | null
+          points: number
+          story_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          listener_id?: string | null
+          points?: number
+          story_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_events_story_id_fkey"
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
@@ -399,6 +473,7 @@ export type Database = {
           region_id: string | null
           slug: string
           status: Database["public"]["Enums"]["story_status"]
+          submitted_by: string | null
           title: string
           transcript_english: string | null
           transcript_original: string | null
@@ -420,6 +495,7 @@ export type Database = {
           region_id?: string | null
           slug: string
           status?: Database["public"]["Enums"]["story_status"]
+          submitted_by?: string | null
           title: string
           transcript_english?: string | null
           transcript_original?: string | null
@@ -441,6 +517,7 @@ export type Database = {
           region_id?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["story_status"]
+          submitted_by?: string | null
           title?: string
           transcript_english?: string | null
           transcript_original?: string | null
@@ -582,6 +659,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_pending_story: {
+        Args: {
+          _description?: string
+          _elder_name: string
+          _language?: string
+          _mood?: string
+          _pending_id: string
+          _point_award?: number
+          _region?: string
+          _story_type?: string
+          _title: string
+          _transcript?: string
+          _tribe?: string
+          _verify_threshold?: number
+        }
+        Returns: string
+      }
+      award_listen_point: {
+        Args: {
+          _listen_award?: number
+          _listener_id: string
+          _story_id: string
+          _verify_threshold?: number
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -590,6 +693,10 @@ export type Database = {
         Returns: boolean
       }
       increment_play_count: { Args: { _story_id: string }; Returns: undefined }
+      reject_pending_story: {
+        Args: { _pending_id: string; _reason: string }
+        Returns: undefined
+      }
       search_stories: {
         Args: { q: string }
         Returns: {
@@ -607,6 +714,7 @@ export type Database = {
           region_id: string | null
           slug: string
           status: Database["public"]["Enums"]["story_status"]
+          submitted_by: string | null
           title: string
           transcript_english: string | null
           transcript_original: string | null
@@ -620,10 +728,22 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      set_creator_verified: {
+        Args: { _user_id: string; _verified: boolean }
+        Returns: undefined
+      }
+      set_user_role: {
+        Args: {
+          _grant: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
-      story_status: "draft" | "pending" | "published"
+      story_status: "draft" | "pending" | "published" | "rejected"
       theme_kind: "type" | "mood"
     }
     CompositeTypes: {
@@ -753,7 +873,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
-      story_status: ["draft", "pending", "published"],
+      story_status: ["draft", "pending", "published", "rejected"],
       theme_kind: ["type", "mood"],
     },
   },
