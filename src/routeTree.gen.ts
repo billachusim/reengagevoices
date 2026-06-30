@@ -14,7 +14,11 @@ import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EldersIndexRouteImport } from './routes/elders.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as TribesSlugRouteImport } from './routes/tribes.$slug'
+import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
 import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
+import { Route as RegionsSlugRouteImport } from './routes/regions.$slug'
+import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
 import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 
@@ -43,9 +47,29 @@ const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   path: '/collections/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TribesSlugRoute = TribesSlugRouteImport.update({
+  id: '/tribes/$slug',
+  path: '/tribes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesSlugRoute = ThemesSlugRouteImport.update({
+  id: '/themes/$slug',
+  path: '/themes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoriesSlugRoute = StoriesSlugRouteImport.update({
   id: '/stories/$slug',
   path: '/stories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegionsSlugRoute = RegionsSlugRouteImport.update({
+  id: '/regions/$slug',
+  path: '/regions/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LanguagesSlugRoute = LanguagesSlugRouteImport.update({
+  id: '/languages/$slug',
+  path: '/languages/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EldersSlugRoute = EldersSlugRouteImport.update({
@@ -65,7 +89,11 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
+  '/languages/$slug': typeof LanguagesSlugRoute
+  '/regions/$slug': typeof RegionsSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/tribes/$slug': typeof TribesSlugRoute
   '/collections/': typeof CollectionsIndexRoute
   '/elders/': typeof EldersIndexRoute
 }
@@ -75,7 +103,11 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
+  '/languages/$slug': typeof LanguagesSlugRoute
+  '/regions/$slug': typeof RegionsSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/tribes/$slug': typeof TribesSlugRoute
   '/collections': typeof CollectionsIndexRoute
   '/elders': typeof EldersIndexRoute
 }
@@ -86,7 +118,11 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/elders/$slug': typeof EldersSlugRoute
+  '/languages/$slug': typeof LanguagesSlugRoute
+  '/regions/$slug': typeof RegionsSlugRoute
   '/stories/$slug': typeof StoriesSlugRoute
+  '/themes/$slug': typeof ThemesSlugRoute
+  '/tribes/$slug': typeof TribesSlugRoute
   '/collections/': typeof CollectionsIndexRoute
   '/elders/': typeof EldersIndexRoute
 }
@@ -98,7 +134,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/collections/$slug'
     | '/elders/$slug'
+    | '/languages/$slug'
+    | '/regions/$slug'
     | '/stories/$slug'
+    | '/themes/$slug'
+    | '/tribes/$slug'
     | '/collections/'
     | '/elders/'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +148,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/collections/$slug'
     | '/elders/$slug'
+    | '/languages/$slug'
+    | '/regions/$slug'
     | '/stories/$slug'
+    | '/themes/$slug'
+    | '/tribes/$slug'
     | '/collections'
     | '/elders'
   id:
@@ -118,7 +162,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/collections/$slug'
     | '/elders/$slug'
+    | '/languages/$slug'
+    | '/regions/$slug'
     | '/stories/$slug'
+    | '/themes/$slug'
+    | '/tribes/$slug'
     | '/collections/'
     | '/elders/'
   fileRoutesById: FileRoutesById
@@ -129,7 +177,11 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
   EldersSlugRoute: typeof EldersSlugRoute
+  LanguagesSlugRoute: typeof LanguagesSlugRoute
+  RegionsSlugRoute: typeof RegionsSlugRoute
   StoriesSlugRoute: typeof StoriesSlugRoute
+  ThemesSlugRoute: typeof ThemesSlugRoute
+  TribesSlugRoute: typeof TribesSlugRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   EldersIndexRoute: typeof EldersIndexRoute
 }
@@ -171,11 +223,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tribes/$slug': {
+      id: '/tribes/$slug'
+      path: '/tribes/$slug'
+      fullPath: '/tribes/$slug'
+      preLoaderRoute: typeof TribesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes/$slug': {
+      id: '/themes/$slug'
+      path: '/themes/$slug'
+      fullPath: '/themes/$slug'
+      preLoaderRoute: typeof ThemesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stories/$slug': {
       id: '/stories/$slug'
       path: '/stories/$slug'
       fullPath: '/stories/$slug'
       preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regions/$slug': {
+      id: '/regions/$slug'
+      path: '/regions/$slug'
+      fullPath: '/regions/$slug'
+      preLoaderRoute: typeof RegionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/languages/$slug': {
+      id: '/languages/$slug'
+      path: '/languages/$slug'
+      fullPath: '/languages/$slug'
+      preLoaderRoute: typeof LanguagesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/elders/$slug': {
@@ -201,7 +281,11 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
   EldersSlugRoute: EldersSlugRoute,
+  LanguagesSlugRoute: LanguagesSlugRoute,
+  RegionsSlugRoute: RegionsSlugRoute,
   StoriesSlugRoute: StoriesSlugRoute,
+  ThemesSlugRoute: ThemesSlugRoute,
+  TribesSlugRoute: TribesSlugRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   EldersIndexRoute: EldersIndexRoute,
 }
