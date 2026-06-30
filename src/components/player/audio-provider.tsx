@@ -89,7 +89,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       countedRef.current.add(story.id);
       incrementPlay({ data: { id: story.id } }).catch(() => {});
     }
-  }, [volume]);
+  }, [volume, stopIntro]);
 
   const playQueue = useCallback((stories: StoryDTO[], startIndex = 0) => {
     const playable = stories.filter((s) => s.audio_url);
