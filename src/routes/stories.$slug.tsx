@@ -84,9 +84,9 @@ function StoryPage() {
           </>
         )}
         <div className="relative z-10 flex flex-col gap-5 text-white sm:flex-row sm:items-end">
-          {!cover && portrait && (
+          {isPortrait && heroImage && (
             <div className="h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-warm sm:h-48 sm:w-48">
-              <img src={portrait} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
+              <img src={heroImage} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
             </div>
           )}
           <div className="min-w-0">
