@@ -9,12 +9,17 @@ export function StoryCard({ story, queue }: { story: StoryDTO; queue?: StoryDTO[
   const { playStory, current, isPlaying, toggle } = usePlayer();
   const isCurrent = current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const cover = coverImage(story);
 
   return (
     <div className="group flex flex-col">
       <div className="relative aspect-square overflow-hidden rounded-xl shadow-warm" style={{ backgroundImage: coverGradient(story.slug) }}>
-        {portrait && (
-          <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-55 mix-blend-luminosity transition group-hover:scale-105 group-hover:opacity-70" />
+        {cover ? (
+          <img src={cover} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-105" />
+        ) : (
+          portrait && (
+            <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-55 mix-blend-luminosity transition group-hover:scale-105 group-hover:opacity-70" />
+          )
         )}
         <Link to="/stories/$slug" params={{ slug: story.slug }} className="absolute inset-0" aria-label={story.title} />
         <button
