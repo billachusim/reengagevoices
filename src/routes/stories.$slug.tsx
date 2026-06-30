@@ -58,8 +58,8 @@ function StoryPage() {
   if (!data) return <RouteNotFound />;
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
-  const portrait = elderPortrait(story.elder?.slug);
-  const cover = coverImage(story);
+  const { image: heroImage, isCover, isPortrait } = storyImagery(story);
+  const cover = isCover ? heroImage : undefined;
   const embedUrl = youtubeEmbedUrl(story.youtube_url);
 
   const scrollToWatch = () => {
