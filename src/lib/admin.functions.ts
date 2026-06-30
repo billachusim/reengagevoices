@@ -353,6 +353,7 @@ export const updateStory = createServerFn({ method: "POST" })
       _story_type: data.storyType ?? undefined,
       _mood: data.mood ?? undefined,
       _is_featured: data.isFeatured ?? undefined,
+      _cover_url: data.coverUrl ?? undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
