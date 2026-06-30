@@ -55,7 +55,7 @@ function EditStoriesPage() {
               className="flex w-full items-center justify-between gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
             >
               <span className="truncate text-sm font-medium">{s.title}</span>
-              {s.youtube_url && <span className="shrink-0 text-xs text-muted-foreground">▶ video</span>}
+              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.is_featured && <span className="text-primary">★ featured</span>}{s.youtube_url && <span>▶ video</span>}</span>
             </button>
           ))
         )}
@@ -73,14 +73,21 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     transcriptOriginal: story.transcript_original ?? "",
     transcriptEnglish: story.transcript_english ?? "",
     description: story.description ?? "",
+    elderName: story.elder_name ?? "",
+    region: story.region_name ?? "",
+    tribe: story.tribe_name ?? "",
+    language: story.language_name ?? "",
+    storyType: story.story_type ?? "",
+    mood: story.mood ?? "",
   });
+  const [isFeatured, setIsFeatured] = useState(story.is_featured);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
   const embed = youtubeEmbedUrl(form.youtubeUrl);
 
   const save = useMutation({
-    mutationFn: () => updateStory({ data: { storyId: story.id, ...form } }),
+    mutationFn: () => updateStory({ data: { storyId: story.id, ...form, isFeatured } }),
     onSuccess: () => {
       toast.success("Story updated.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
@@ -121,6 +128,44 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
               </div>
             )}
           </div>
+
+          <label className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2.5 text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              className="h-4 w-4 accent-primary"
+            />
+            Feature this story on the homepage
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Elder</label>
+              <input value={form.elderName} onChange={set("elderName")} placeholder="Elder name" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Region</label>
+              <input value={form.region} onChange={set("region")} placeholder="Region" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Tribe</label>
+              <input value={form.tribe} onChange={set("tribe")} placeholder="Tribe" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Language</label>
+              <input value={form.language} onChange={set("language")} placeholder="Language" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Story type</label>
+              <input value={form.storyType} onChange={set("storyType")} placeholder="e.g. Folktale" className={inputCls} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Mood</label>
+              <input value={form.mood} onChange={set("mood")} placeholder="e.g. Joyful" className={inputCls} />
+            </div>
+          </div>
+
 
           <div className="flex flex-wrap gap-2">
             {story.audio_url && (
