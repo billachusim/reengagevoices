@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/account")({
 });
 
 function AccountPage() {
-  const { user } = useAuth();
+  const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const signOut = async () => {
@@ -28,7 +28,17 @@ function AccountPage() {
           <p className="text-sm text-muted-foreground">{user?.email}</p>
         </div>
       </div>
-      <button onClick={signOut} className="mt-8 w-full rounded-full border py-2.5 text-sm font-medium hover:bg-accent">Sign out</button>
+      <div className="mt-8 space-y-2">
+        <Link to="/creator" className="flex items-center gap-3 rounded-xl border p-3 text-sm font-medium hover:bg-accent">
+          <Sparkles className="h-5 w-5 text-primary" /> Creator program
+        </Link>
+        {isStaff && (
+          <Link to="/admin" className="flex items-center gap-3 rounded-xl border p-3 text-sm font-medium hover:bg-accent">
+            <Shield className="h-5 w-5 text-primary" /> Admin console
+          </Link>
+        )}
+        <button onClick={signOut} className="w-full rounded-full border py-2.5 text-sm font-medium hover:bg-accent">Sign out</button>
+      </div>
     </div>
   );
 }
