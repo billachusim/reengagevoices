@@ -59,7 +59,12 @@ function StoryPage() {
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const cover = coverImage(story);
   const embedUrl = youtubeEmbedUrl(story.youtube_url);
+
+  const scrollToWatch = () => {
+    document.getElementById("watch")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const share = async () => {
     const url = window.location.href;
