@@ -44,6 +44,7 @@ export function StoryRow({ story, queue, index }: { story: StoryDTO; queue?: Sto
   const { playStory, current, isPlaying, toggle } = usePlayer();
   const isCurrent = current?.id === story.id;
   const portrait = elderPortrait(story.elder?.slug);
+  const cover = coverImage(story);
   return (
     <div className={cn("group flex items-center gap-3 rounded-lg p-2 hover:bg-muted/60", isCurrent && "bg-muted/60")}>
       <button
@@ -52,7 +53,11 @@ export function StoryRow({ story, queue, index }: { story: StoryDTO; queue?: Sto
         style={{ backgroundImage: coverGradient(story.slug) }}
         aria-label="Play"
       >
-        {portrait && <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />}
+        {cover ? (
+          <img src={cover} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          portrait && <img src={portrait} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
+        )}
         <span className="relative">
           {isCurrent && isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-[1px]" />}
         </span>
