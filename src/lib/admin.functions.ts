@@ -385,3 +385,180 @@ export const deleteStory = createServerFn({ method: "POST" })
   });
 
 
+
+/* ---------------- Elders ---------------- */
+
+export interface AdminElderRow {
+  id: string;
+  slug: string;
+  name: string;
+  bio: string | null;
+  photo_url: string | null;
+  region_name: string | null;
+  tribe_name: string | null;
+  language_name: string | null;
+  story_count: number;
+  is_homepage: boolean;
+  sort_order: number;
+}
+
+export const listAdminElders = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AdminElderRow[]> => {
+    await assertStaff(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("elders")
+      .select(
+        "id,slug,name,bio,photo_url,is_homepage,sort_order,region:regions(name),tribe:tribes(name),language:languages!primary_language_id(name),stories(count)",
+      )
+      .order("is_homepage", { ascending: false })
+      .order("sort_order")
+      .order("name");
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((r: any) => ({
+      id: r.id,
+      slug: r.slug,
+      name: r.name,
+      bio: r.bio ?? null,
+      photo_url: r.photo_url ?? null,
+      region_name: r.region?.name ?? null,
+      tribe_name: r.tribe?.name ?? null,
+      language_name: r.language?.name ?? null,
+      story_count: r.stories?.[0]?.count ?? 0,
+      is_homepage: r.is_homepage ?? false,
+      sort_order: r.sort_order ?? 0,
+    }));
+  });
+
+export const saveElder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) =>
+    z
+      .object({
+        elderId: z.string().uuid().optional(),
+        name: z.string().trim().max(120).optional(),
+        bio: z.string().max(4000).optional(),
+        photoUrl: z.string().max(2000).optional(),
+        region: z.string().max(120).optional(),
+        tribe: z.string().max(120).optional(),
+        language: z.string().max(120).optional(),
+        isHomepage: z.boolean().optional(),
+        sortOrder: z.number().int().min(0).max(9999).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertStaff(context.supabase, context.userId);
+    const { data: id, error } = await (context.supabase as any).rpc("upsert_elder", {
+      _elder_id: data.elderId ?? undefined,
+      _name: data.name ?? undefined,
+      _bio: data.bio ?? undefined,
+      _photo_url: data.photoUrl ?? undefined,
+      _region: data.region ?? undefined,
+      _tribe: data.tribe ?? undefined,
+      _language: data.language ?? undefined,
+      _is_homepage: data.isHomepage ?? undefined,
+      _sort_order: data.sortOrder ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    return { id: id as string };
+  });
+
+export const deleteElder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => z.object({ elderId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertStaff(context.supabase, context.userId);
+    const { error } = await (context.supabase as any).rpc("delete_elder", { _elder_id: data.elderId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/* ---------------- Collections ---------------- */
+
+export interface AdminCollectionRow {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  cover_url: string | null;
+  is_public: boolean;
+  is_homepage: boolean;
+  sort_order: number;
+  story_ids: string[];
+}
+
+export const listAdminCollections = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AdminCollectionRow[]> => {
+    await assertStaff(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("collections")
+      .select("id,slug,title,description,cover_url,is_public,is_homepage,sort_order,collection_items(story_id,position)")
+      .order("is_homepage", { ascending: false })
+      .order("sort_order")
+      .order("created_at");
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((c: any) => ({
+      id: c.id,
+      slug: c.slug,
+      title: c.title,
+      description: c.description ?? null,
+      cover_url: c.cover_url ?? null,
+      is_public: c.is_public ?? true,
+      is_homepage: c.is_homepage ?? false,
+      sort_order: c.sort_order ?? 0,
+      story_ids: (c.collection_items ?? [])
+        .slice()
+        .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))
+        .map((i: any) => i.story_id),
+    }));
+  });
+
+export const saveCollection = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) =>
+    z
+      .object({
+        collectionId: z.string().uuid().optional(),
+        title: z.string().trim().max(160).optional(),
+        description: z.string().max(2000).optional(),
+        coverUrl: z.string().max(2000).optional(),
+        isPublic: z.boolean().optional(),
+        isHomepage: z.boolean().optional(),
+        sortOrder: z.number().int().min(0).max(9999).optional(),
+        storyIds: z.array(z.string().uuid()).max(200).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertStaff(context.supabase, context.userId);
+    const { data: id, error } = await (context.supabase as any).rpc("upsert_collection", {
+      _collection_id: data.collectionId ?? undefined,
+      _title: data.title ?? undefined,
+      _description: data.description ?? undefined,
+      _cover_url: data.coverUrl ?? undefined,
+      _is_public: data.isPublic ?? undefined,
+      _is_homepage: data.isHomepage ?? undefined,
+      _sort_order: data.sortOrder ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    if (data.storyIds) {
+      const { error: e2 } = await (context.supabase as any).rpc("set_collection_items", {
+        _collection_id: id,
+        _story_ids: data.storyIds,
+      });
+      if (e2) throw new Error(e2.message);
+    }
+    return { id: id as string };
+  });
+
+export const deleteCollection = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => z.object({ collectionId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertStaff(context.supabase, context.userId);
+    const { error } = await (context.supabase as any).rpc("delete_collection", { _collection_id: data.collectionId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

@@ -11,7 +11,7 @@ function publicClient() {
 }
 
 const STORY_SELECT =
-  "id,slug,title,description,audio_url,cover_url,duration_seconds,play_count,transcript_original,transcript_english,youtube_url,is_featured,published_at,created_at,elder:elders(slug,name),region:regions(slug,name),tribe:tribes(slug,name),language:languages(slug,name),story_themes(theme:themes(slug,name,kind))";
+  "id,slug,title,description,audio_url,cover_url,duration_seconds,play_count,transcript_original,transcript_english,youtube_url,is_featured,published_at,created_at,elder:elders(slug,name,photo_url),region:regions(slug,name),tribe:tribes(slug,name),language:languages(slug,name),story_themes(theme:themes(slug,name,kind))";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function mapStory(row: any): StoryDTO {
@@ -98,7 +98,9 @@ export const getElders = createServerFn({ method: "GET" }).handler(async (): Pro
   const sb = publicClient();
   const { data, error } = await sb
     .from("elders")
-    .select("id,slug,name,bio,region:regions(slug,name),tribe:tribes(slug,name),language:languages!primary_language_id(slug,name),stories(count)")
+    .select("id,slug,name,bio,photo_url,is_homepage,sort_order,region:regions(slug,name),tribe:tribes(slug,name),language:languages!primary_language_id(slug,name),stories(count)")
+    .order("is_homepage", { ascending: false })
+    .order("sort_order")
     .order("name");
   if (error) throw new Error(error.message);
   return (data ?? []).map((r: any) => ({
@@ -106,10 +108,13 @@ export const getElders = createServerFn({ method: "GET" }).handler(async (): Pro
     slug: r.slug,
     name: r.name,
     bio: r.bio,
+    photo_url: r.photo_url ?? null,
     region: r.region ?? null,
     tribe: r.tribe ?? null,
     language: r.language ?? null,
     story_count: r.stories?.[0]?.count ?? 0,
+    is_homepage: r.is_homepage ?? false,
+    sort_order: r.sort_order ?? 0,
   }));
 });
 
@@ -119,7 +124,7 @@ export const getElder = createServerFn({ method: "GET" })
     const sb = publicClient();
     const { data: e, error } = await sb
       .from("elders")
-      .select("id,slug,name,bio,region:regions(slug,name),tribe:tribes(slug,name),language:languages!primary_language_id(slug,name)")
+      .select("id,slug,name,bio,photo_url,is_homepage,sort_order,region:regions(slug,name),tribe:tribes(slug,name),language:languages!primary_language_id(slug,name)")
       .eq("slug", data.slug)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -136,6 +141,7 @@ export const getElder = createServerFn({ method: "GET" })
         slug: (e as any).slug,
         name: (e as any).name,
         bio: (e as any).bio,
+        photo_url: (e as any).photo_url ?? null,
         region: (e as any).region ?? null,
         tribe: (e as any).tribe ?? null,
         language: (e as any).language ?? null,
@@ -149,8 +155,10 @@ export const getCollections = createServerFn({ method: "GET" }).handler(async ()
   const sb = publicClient();
   const { data, error } = await sb
     .from("collections")
-    .select("id,slug,title,description,cover_url,collection_items(position,story:stories(cover_url))")
+    .select("id,slug,title,description,cover_url,is_homepage,sort_order,collection_items(position,story:stories(cover_url))")
     .eq("is_public", true)
+    .order("is_homepage", { ascending: false })
+    .order("sort_order")
     .order("created_at");
   if (error) throw new Error(error.message);
   return (data ?? []).map((c: any) => {
@@ -163,6 +171,8 @@ export const getCollections = createServerFn({ method: "GET" }).handler(async ()
       description: c.description,
       story_count: c.collection_items?.[0]?.count ?? items.length,
       cover_url: (c.cover_url && String(c.cover_url).trim()) ? c.cover_url : (firstCover ?? null),
+      is_homepage: c.is_homepage ?? false,
+      sort_order: c.sort_order ?? 0,
     };
   });
 });

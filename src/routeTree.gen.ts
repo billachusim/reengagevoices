@@ -31,8 +31,10 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
 import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
+import { Route as AuthenticatedAdminEldersRouteImport } from './routes/_authenticated/admin/elders'
 import { Route as AuthenticatedAdminEditRouteImport } from './routes/_authenticated/admin/edit'
 import { Route as AuthenticatedAdminCreatorsRouteImport } from './routes/_authenticated/admin/creators'
+import { Route as AuthenticatedAdminCollectionsRouteImport } from './routes/_authenticated/admin/collections'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -144,6 +146,12 @@ const AuthenticatedAdminQueueRoute = AuthenticatedAdminQueueRouteImport.update({
   path: '/queue',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminEldersRoute =
+  AuthenticatedAdminEldersRouteImport.update({
+    id: '/elders',
+    path: '/elders',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminEditRoute = AuthenticatedAdminEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -153,6 +161,12 @@ const AuthenticatedAdminCreatorsRoute =
   AuthenticatedAdminCreatorsRouteImport.update({
     id: '/creators',
     path: '/creators',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminCollectionsRoute =
+  AuthenticatedAdminCollectionsRouteImport.update({
+    id: '/collections',
+    path: '/collections',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 
@@ -175,8 +189,10 @@ export interface FileRoutesByFullPath {
   '/collections/': typeof CollectionsIndexRoute
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
+  '/admin/collections': typeof AuthenticatedAdminCollectionsRoute
   '/admin/creators': typeof AuthenticatedAdminCreatorsRoute
   '/admin/edit': typeof AuthenticatedAdminEditRoute
+  '/admin/elders': typeof AuthenticatedAdminEldersRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -199,8 +215,10 @@ export interface FileRoutesByTo {
   '/collections': typeof CollectionsIndexRoute
   '/contribute': typeof ContributeIndexRoute
   '/elders': typeof EldersIndexRoute
+  '/admin/collections': typeof AuthenticatedAdminCollectionsRoute
   '/admin/creators': typeof AuthenticatedAdminCreatorsRoute
   '/admin/edit': typeof AuthenticatedAdminEditRoute
+  '/admin/elders': typeof AuthenticatedAdminEldersRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -226,8 +244,10 @@ export interface FileRoutesById {
   '/collections/': typeof CollectionsIndexRoute
   '/contribute/': typeof ContributeIndexRoute
   '/elders/': typeof EldersIndexRoute
+  '/_authenticated/admin/collections': typeof AuthenticatedAdminCollectionsRoute
   '/_authenticated/admin/creators': typeof AuthenticatedAdminCreatorsRoute
   '/_authenticated/admin/edit': typeof AuthenticatedAdminEditRoute
+  '/_authenticated/admin/elders': typeof AuthenticatedAdminEldersRoute
   '/_authenticated/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -253,8 +273,10 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/contribute/'
     | '/elders/'
+    | '/admin/collections'
     | '/admin/creators'
     | '/admin/edit'
+    | '/admin/elders'
     | '/admin/queue'
     | '/contribute/record'
     | '/admin/'
@@ -277,8 +299,10 @@ export interface FileRouteTypes {
     | '/collections'
     | '/contribute'
     | '/elders'
+    | '/admin/collections'
     | '/admin/creators'
     | '/admin/edit'
+    | '/admin/elders'
     | '/admin/queue'
     | '/contribute/record'
     | '/admin'
@@ -303,8 +327,10 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/contribute/'
     | '/elders/'
+    | '/_authenticated/admin/collections'
     | '/_authenticated/admin/creators'
     | '/_authenticated/admin/edit'
+    | '/_authenticated/admin/elders'
     | '/_authenticated/admin/queue'
     | '/_authenticated/contribute/record'
     | '/_authenticated/admin/'
@@ -484,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminQueueRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/elders': {
+      id: '/_authenticated/admin/elders'
+      path: '/elders'
+      fullPath: '/admin/elders'
+      preLoaderRoute: typeof AuthenticatedAdminEldersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/edit': {
       id: '/_authenticated/admin/edit'
       path: '/edit'
@@ -498,20 +531,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCreatorsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/collections': {
+      id: '/_authenticated/admin/collections'
+      path: '/collections'
+      fullPath: '/admin/collections'
+      preLoaderRoute: typeof AuthenticatedAdminCollectionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminCollectionsRoute: typeof AuthenticatedAdminCollectionsRoute
   AuthenticatedAdminCreatorsRoute: typeof AuthenticatedAdminCreatorsRoute
   AuthenticatedAdminEditRoute: typeof AuthenticatedAdminEditRoute
+  AuthenticatedAdminEldersRoute: typeof AuthenticatedAdminEldersRoute
   AuthenticatedAdminQueueRoute: typeof AuthenticatedAdminQueueRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminCollectionsRoute: AuthenticatedAdminCollectionsRoute,
     AuthenticatedAdminCreatorsRoute: AuthenticatedAdminCreatorsRoute,
     AuthenticatedAdminEditRoute: AuthenticatedAdminEditRoute,
+    AuthenticatedAdminEldersRoute: AuthenticatedAdminEldersRoute,
     AuthenticatedAdminQueueRoute: AuthenticatedAdminQueueRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }

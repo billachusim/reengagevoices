@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tan
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Inbox, Users, Pencil } from "lucide-react";
+import { LayoutDashboard, Inbox, Users, Pencil, UserRound, Library } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
@@ -12,6 +12,8 @@ const TABS = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/queue", label: "Queue", icon: Inbox },
   { to: "/admin/edit", label: "Edit stories", icon: Pencil },
+  { to: "/admin/elders", label: "Elders", icon: UserRound },
+  { to: "/admin/collections", label: "Collections", icon: Library },
   { to: "/admin/creators", label: "Creators", icon: Users },
 ];
 
