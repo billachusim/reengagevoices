@@ -334,6 +334,16 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
             Feature this story on the homepage
           </label>
 
+          <label className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2.5 text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+              className="h-4 w-4 accent-primary"
+            />
+            Published (uncheck to hide this story as a draft)
+
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">Elder</label>
