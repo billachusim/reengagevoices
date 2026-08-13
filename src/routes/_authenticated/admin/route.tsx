@@ -12,6 +12,8 @@ const TABS = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/queue", label: "Queue", icon: Inbox },
   { to: "/admin/edit", label: "Edit stories", icon: Pencil },
+  { to: "/admin/elders", label: "Elders", icon: UserRound },
+  { to: "/admin/collections", label: "Collections", icon: Library },
   { to: "/admin/creators", label: "Creators", icon: Users },
 ];
 
