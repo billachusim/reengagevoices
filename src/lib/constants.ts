@@ -26,6 +26,13 @@ export function elderPortrait(slug?: string | null): string | undefined {
   return slug ? ELDER_PORTRAITS[slug] : undefined;
 }
 
+// An elder's picture: an uploaded/linked photo wins, else the bundled portrait.
+export function elderImage(elder?: { slug?: string | null; photo_url?: string | null } | null): string | undefined {
+  if (!elder) return undefined;
+  if (elder.photo_url && elder.photo_url.trim()) return elder.photo_url;
+  return elderPortrait(elder.slug);
+}
+
 // A story's dedicated cover photo, when one has been set.
 export function coverImage(story: { cover_url?: string | null }): string | undefined {
   return story.cover_url?.trim() ? story.cover_url : undefined;
