@@ -710,6 +710,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_story: { Args: { _story_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -767,52 +768,29 @@ export type Database = {
         }
         Returns: undefined
       }
-      update_story:
-        | {
-            Args: {
-              _description?: string
-              _story_id: string
-              _transcript_english?: string
-              _transcript_original?: string
-              _youtube_url?: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              _description?: string
-              _elder_name?: string
-              _is_featured?: boolean
-              _language?: string
-              _mood?: string
-              _region?: string
-              _story_id: string
-              _story_type?: string
-              _transcript_english?: string
-              _transcript_original?: string
-              _tribe?: string
-              _youtube_url?: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              _cover_url?: string
-              _description?: string
-              _elder_name?: string
-              _is_featured?: boolean
-              _language?: string
-              _mood?: string
-              _region?: string
-              _story_id: string
-              _story_type?: string
-              _transcript_english?: string
-              _transcript_original?: string
-              _tribe?: string
-              _youtube_url?: string
-            }
-            Returns: undefined
-          }
+      update_story: {
+        Args: {
+          _audio_url?: string
+          _cover_url?: string
+          _description?: string
+          _duration_seconds?: number
+          _elder_name?: string
+          _is_featured?: boolean
+          _language?: string
+          _mood?: string
+          _regenerate_slug?: boolean
+          _region?: string
+          _status?: string
+          _story_id: string
+          _story_type?: string
+          _title?: string
+          _transcript_english?: string
+          _transcript_original?: string
+          _tribe?: string
+          _youtube_url?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
