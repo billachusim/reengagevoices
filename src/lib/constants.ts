@@ -45,11 +45,11 @@ export function coverImage(story: { cover_url?: string | null }): string | undef
 // thumbnail is needed; `isPortrait` means the fallback portrait is in use.
 export function storyImagery(story: {
   cover_url?: string | null;
-  elder?: { slug?: string | null } | null;
+  elder?: { slug?: string | null; photo_url?: string | null } | null;
 }): { image?: string; isCover: boolean; isPortrait: boolean } {
   const cover = coverImage(story);
   if (cover) return { image: cover, isCover: true, isPortrait: false };
-  const portrait = elderPortrait(story.elder?.slug);
+  const portrait = elderImage(story.elder);
   if (portrait) return { image: portrait, isCover: false, isPortrait: true };
   return { image: undefined, isCover: false, isPortrait: false };
 }
