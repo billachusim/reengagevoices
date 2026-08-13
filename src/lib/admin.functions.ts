@@ -261,7 +261,9 @@ export interface AdminStoryRow {
   id: string;
   slug: string;
   title: string;
+  status: string;
   audio_url: string | null;
+  duration_seconds: number;
   youtube_url: string | null;
   transcript_original: string | null;
   transcript_english: string | null;
@@ -276,7 +278,7 @@ export interface AdminStoryRow {
   cover_url: string | null;
 }
 
-// Admin-only: list published stories for editing (newest first, optional search).
+// Admin-only: list stories for editing (newest first, optional search).
 export const listAdminStories = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: any) => z.object({ q: z.string().max(120).optional() }).parse(d ?? {}))
@@ -285,9 +287,9 @@ export const listAdminStories = createServerFn({ method: "GET" })
     let query = context.supabase
       .from("stories")
       .select(
-        "id,slug,title,audio_url,youtube_url,cover_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
+        "id,slug,title,status,audio_url,duration_seconds,youtube_url,cover_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
       )
-      .eq("status", "published")
+      .in("status", ["published", "draft"])
       .order("published_at", { ascending: false })
       .limit(50);
     if (data.q && data.q.trim()) query = query.ilike("title", `%${data.q.trim()}%`);
@@ -299,7 +301,9 @@ export const listAdminStories = createServerFn({ method: "GET" })
         id: r.id,
         slug: r.slug,
         title: r.title,
+        status: r.status,
         audio_url: r.audio_url,
+        duration_seconds: r.duration_seconds ?? 0,
         youtube_url: r.youtube_url,
         transcript_original: r.transcript_original,
         transcript_english: r.transcript_english,
@@ -316,13 +320,18 @@ export const listAdminStories = createServerFn({ method: "GET" })
     });
   });
 
-// Admin-only: update a published story's editable fields.
+// Admin-only: update a story's editable fields.
 export const updateStory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: any) =>
     z
       .object({
         storyId: z.string().uuid(),
+        title: z.string().trim().min(1).max(160).optional(),
+        regenerateSlug: z.boolean().optional(),
+        audioUrl: z.string().max(2000).optional(),
+        durationSeconds: z.number().int().min(0).max(86400).optional(),
+        status: z.enum(["published", "draft"]).optional(),
         youtubeUrl: z.string().max(500).optional(),
         transcriptOriginal: z.string().max(8000).optional(),
         transcriptEnglish: z.string().max(8000).optional(),
@@ -334,7 +343,7 @@ export const updateStory = createServerFn({ method: "POST" })
         storyType: z.string().max(60).optional(),
         mood: z.string().max(60).optional(),
         isFeatured: z.boolean().optional(),
-        coverUrl: z.string().max(1000).optional(),
+        coverUrl: z.string().max(2000).optional(),
       })
       .parse(d),
   )
@@ -342,6 +351,11 @@ export const updateStory = createServerFn({ method: "POST" })
     await assertStaff(context.supabase, context.userId);
     const { error } = await context.supabase.rpc("update_story", {
       _story_id: data.storyId,
+      _title: data.title ?? undefined,
+      _regenerate_slug: data.regenerateSlug ?? false,
+      _audio_url: data.audioUrl ?? undefined,
+      _duration_seconds: data.durationSeconds ?? undefined,
+      _status: data.status ?? undefined,
       _youtube_url: data.youtubeUrl ?? undefined,
       _transcript_original: data.transcriptOriginal ?? undefined,
       _transcript_english: data.transcriptEnglish ?? undefined,
@@ -354,8 +368,20 @@ export const updateStory = createServerFn({ method: "POST" })
       _mood: data.mood ?? undefined,
       _is_featured: data.isFeatured ?? undefined,
       _cover_url: data.coverUrl ?? undefined,
-    });
+    } as any);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// Admin-only: permanently delete a story and its links.
+export const deleteStory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => z.object({ storyId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertStaff(context.supabase, context.userId);
+    const { error } = await (context.supabase as any).rpc("delete_story", { _story_id: data.storyId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 
