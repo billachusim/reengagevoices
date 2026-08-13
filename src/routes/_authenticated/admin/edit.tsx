@@ -363,7 +363,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
 
 
           <div className="flex flex-wrap gap-2">
-            {story.audio_url && (
+            {form.audioUrl && (
               <button
                 type="button"
                 disabled={transcribe.isPending}
