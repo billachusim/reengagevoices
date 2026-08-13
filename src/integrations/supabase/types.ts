@@ -57,8 +57,10 @@ export type Database = {
           curator_id: string | null
           description: string | null
           id: string
+          is_homepage: boolean
           is_public: boolean
           slug: string
+          sort_order: number
           title: string
           updated_at: string
         }
@@ -68,8 +70,10 @@ export type Database = {
           curator_id?: string | null
           description?: string | null
           id?: string
+          is_homepage?: boolean
           is_public?: boolean
           slug: string
+          sort_order?: number
           title: string
           updated_at?: string
         }
@@ -79,8 +83,10 @@ export type Database = {
           curator_id?: string | null
           description?: string | null
           id?: string
+          is_homepage?: boolean
           is_public?: boolean
           slug?: string
+          sort_order?: number
           title?: string
           updated_at?: string
         }
@@ -154,33 +160,39 @@ export type Database = {
           bio: string | null
           created_at: string
           id: string
+          is_homepage: boolean
           name: string
           photo_url: string | null
           primary_language_id: string | null
           region_id: string | null
           slug: string
+          sort_order: number
           tribe_id: string | null
         }
         Insert: {
           bio?: string | null
           created_at?: string
           id?: string
+          is_homepage?: boolean
           name: string
           photo_url?: string | null
           primary_language_id?: string | null
           region_id?: string | null
           slug: string
+          sort_order?: number
           tribe_id?: string | null
         }
         Update: {
           bio?: string | null
           created_at?: string
           id?: string
+          is_homepage?: boolean
           name?: string
           photo_url?: string | null
           primary_language_id?: string | null
           region_id?: string | null
           slug?: string
+          sort_order?: number
           tribe_id?: string | null
         }
         Relationships: [
@@ -710,6 +722,11 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_collection: {
+        Args: { _collection_id: string }
+        Returns: undefined
+      }
+      delete_elder: { Args: { _elder_id: string }; Returns: undefined }
       delete_story: { Args: { _story_id: string }; Returns: undefined }
       has_role: {
         Args: {
@@ -756,6 +773,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      set_collection_items: {
+        Args: { _collection_id: string; _story_ids: string[] }
+        Returns: undefined
+      }
       set_creator_verified: {
         Args: { _user_id: string; _verified: boolean }
         Returns: undefined
@@ -790,6 +811,32 @@ export type Database = {
           _youtube_url?: string
         }
         Returns: undefined
+      }
+      upsert_collection: {
+        Args: {
+          _collection_id?: string
+          _cover_url?: string
+          _description?: string
+          _is_homepage?: boolean
+          _is_public?: boolean
+          _sort_order?: number
+          _title?: string
+        }
+        Returns: string
+      }
+      upsert_elder: {
+        Args: {
+          _bio?: string
+          _elder_id?: string
+          _is_homepage?: boolean
+          _language?: string
+          _name?: string
+          _photo_url?: string
+          _region?: string
+          _sort_order?: number
+          _tribe?: string
+        }
+        Returns: string
       }
     }
     Enums: {
