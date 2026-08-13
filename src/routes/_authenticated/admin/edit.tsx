@@ -97,8 +97,10 @@ function EditStoriesPage() {
 function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => void }) {
   const qc = useQueryClient();
   const [form, setForm] = useState({
+    title: story.title,
     youtubeUrl: story.youtube_url ?? "",
     coverUrl: story.cover_url ?? "",
+    audioUrl: story.audio_url ?? "",
     transcriptOriginal: story.transcript_original ?? "",
     transcriptEnglish: story.transcript_english ?? "",
     description: story.description ?? "",
@@ -110,8 +112,14 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     mood: story.mood ?? "",
   });
   const [isFeatured, setIsFeatured] = useState(story.is_featured);
+  const [published, setPublished] = useState(story.status === "published");
+  const [duration, setDuration] = useState(story.duration_seconds ?? 0);
+  const [regenerateSlug, setRegenerateSlug] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingAudio, setUploadingAudio] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
@@ -142,6 +150,47 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
       setUploading(false);
     }
   };
+
+  const onAudioFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("audio/")) { toast.error("Please choose an audio file."); return; }
+    setUploadingAudio(true);
+    try {
+      const secs = await readDuration(file);
+      const ext = file.name.split(".").pop() || "mp3";
+      const path = `${story.id}/${Date.now()}.${ext}`;
+      const up = await supabase.storage.from("story-audio").upload(path, file, {
+        cacheControl: "31536000",
+        upsert: true,
+        contentType: file.type,
+      });
+      if (up.error) throw up.error;
+      const signed = await supabase.storage.from("story-audio").createSignedUrl(path, COVER_URL_TTL);
+      if (signed.error || !signed.data?.signedUrl) throw signed.error ?? new Error("Could not create URL");
+      setForm((f) => ({ ...f, audioUrl: signed.data.signedUrl }));
+      setDuration(secs);
+      toast.success("Audio uploaded. Save to apply.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Upload failed");
+    } finally {
+      setUploadingAudio(false);
+    }
+  };
+
+  const remove = useMutation({
+    mutationFn: () => deleteStory({ data: { storyId: story.id } }),
+    onSuccess: () => {
+      toast.success("Story deleted.");
+      qc.invalidateQueries({ queryKey: ["admin-stories"] });
+      qc.invalidateQueries({ queryKey: ["stories"] });
+      onClose();
+    },
+    onError: (e: any) => toast.error(e.message ?? "Could not delete"),
+  });
+
+
 
 
   const save = useMutation({
