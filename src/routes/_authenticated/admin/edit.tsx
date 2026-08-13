@@ -342,6 +342,8 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
               className="h-4 w-4 accent-primary"
             />
             Published (uncheck to hide this story as a draft)
+          </label>
+
 
 
           <div className="grid grid-cols-2 gap-3">
