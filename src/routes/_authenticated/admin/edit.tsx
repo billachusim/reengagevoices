@@ -240,6 +240,48 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
         <h2 className="mb-3 font-serif text-lg font-bold">{story.title}</h2>
         <div className="space-y-3">
           <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Title</label>
+            <input value={form.title} onChange={set("title")} placeholder="Story title" className={inputCls} />
+            {form.title.trim() !== story.title && (
+              <label className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
+                <input type="checkbox" checked={regenerateSlug} onChange={(e) => setRegenerateSlug(e.target.checked)} className="h-3.5 w-3.5 accent-primary" />
+                Update the link to match the new title (breaks existing shared links)
+              </label>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Audio</label>
+            {form.audioUrl ? (
+              <div className="space-y-2 rounded-lg border bg-card p-2">
+                <audio src={form.audioUrl} controls className="w-full" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{fmtDuration(duration)}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setForm((f) => ({ ...f, audioUrl: "" })); setDuration(0); }}
+                    className="inline-flex items-center gap-1 rounded-full border px-2 py-1 hover:bg-muted"
+                  >
+                    <X className="h-3.5 w-3.5" /> Remove
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">No audio attached.</p>
+            )}
+            <input ref={audioRef} type="file" accept="audio/*" onChange={onAudioFile} className="hidden" />
+            <button
+              type="button"
+              disabled={uploadingAudio}
+              onClick={() => audioRef.current?.click()}
+              className="mt-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-60"
+            >
+              <Upload className="h-3.5 w-3.5" /> {uploadingAudio ? "Uploading…" : form.audioUrl ? "Replace audio" : "Upload audio"}
+            </button>
+          </div>
+
+          <div>
+
             <label className="mb-1 block text-xs font-medium text-muted-foreground">YouTube link</label>
             <input value={form.youtubeUrl} onChange={set("youtubeUrl")} placeholder="https://youtu.be/…" className={inputCls} />
             {form.youtubeUrl && !embed && <p className="mt-1 text-xs text-destructive">Not a recognizable YouTube link.</p>}
