@@ -1,50 +1,35 @@
-## Goal
+# Full story management in Admin → Edit
 
-1. Let admins set a story's cover/header image directly from the admin edit screen — by pasting an image URL **or** uploading a file — so headers no longer fall back to the gradient/elder placeholder.
-2. Resolve the second ask: yes, a small shared rule is worth extracting. The story card and detail header currently re-implement the same "cover → elder portrait → gradient" precedence inline, and the detail page separately decides when a thumbnail is redundant. One helper makes that a single source of truth.
+Right now the admin edit panel can change the video link, cover, description, transcripts, people/place metadata and the featured flag — but **not the title and not the audio**. That is why the old title keeps showing everywhere, and why there is no way to replace or remove a story's recording. This adds both, plus a delete action, so a story can be fully managed in one place.
 
-## Part 1 — Cover image field in admin edit
+## What gets added
 
-### Database
-- Extend the existing `update_story` RPC with a new optional `_cover_url text` parameter that writes `cover_url = NULLIF(trim(...), '')` on the story. (Recreate the function with the extra arg; all current behavior unchanged.)
+### 1. Editable title (persists everywhere)
+- A "Title" field at the top of the edit panel.
+- Saving updates the story title used on the homepage hero, cards, story page, player and search.
+- The story's web address (slug) **stays the same** so existing shared links and embeds keep working. An optional "Update the link to match the new title" checkbox regenerates the slug when you explicitly want it.
 
-### Storage
-- Create a public `story-covers` storage bucket for uploaded cover images (covers must be publicly readable to render as `<img src>`).
-- Add RLS policies on `storage.objects`: public read for the bucket; insert/update/delete limited to admins/moderators (reuse the `has_role` check).
+### 2. Audio management
+- The panel shows the current recording with a small player and its duration, or "No audio" when empty.
+- **Replace / upload audio**: file picker (mp3, m4a, wav, webm, ogg) uploads to the existing private `story-audio` bucket and stores a long-lived signed URL — same approach as the recorder and the cover upload.
+- **Remove audio**: clears the recording from the story.
+- Duration is read from the uploaded file in the browser and saved, so cards and the player show correct lengths.
+- The existing "Transcribe with AI" button becomes usable right after an upload, since it reads the newly saved audio.
 
-### Server functions (`src/lib/admin.functions.ts`)
-- Add `cover_url` to `AdminStoryRow` and to the `listAdminStories` select.
-- Add `coverUrl: z.string().max(1000).optional()` to the `updateStory` validator and pass `_cover_url` to the RPC.
-- Add an admin-only `uploadStoryCover` server function (uses `requireSupabaseAuth` + staff check) that accepts the file, stores it in `story-covers`, and returns the public URL. (Mirrors the existing audio-upload approach.)
+### 3. Full-story controls
+- **Unpublish / republish** toggle (moves the story between published and draft) so a story can be pulled off the site without deleting it.
+- **Delete story** with a confirm step, for genuine mistakes.
+- List rows gain a "🎵 audio" marker alongside the existing ★ featured / 🖼 cover / ▶ video markers, so gaps are visible at a glance.
 
-### UI (`src/routes/_authenticated/admin/edit.tsx`)
-- Add a "Cover image" field to the edit panel with:
-  - A URL text input (`coverUrl`) wired into `form`.
-  - A file picker that uploads via `uploadStoryCover` and fills the URL on success (with an uploading state).
-  - A small live preview thumbnail of the current cover, and a "Remove" action that clears it.
-- Include `coverUrl` in the existing `updateStory` save mutation. Invalidate `stories`/`story` queries so the new header shows immediately.
-- Show a "🖼 cover" marker in the story list row when a story already has a cover (next to the existing ★/▶ markers).
+## Backend check and changes
 
-## Part 2 — Shared thumbnail-vs-background rule (refactor)
-
-### The single rule (in `src/lib/constants.ts`)
-Add a helper that encodes the precedence and the "is a separate thumbnail needed" decision once:
-
-```text
-storyImage(story):
-  primary   = coverImage(story) ?? elderPortrait(elder.slug) ?? null
-  isCover   = !!coverImage(story)            // real cover photo
-  isPortrait= !isCover && !!elderPortrait    // elder fallback
-```
-
-Rule shared by both surfaces: **if a cover exists it is the background/primary image and no extra thumbnail is rendered; otherwise the elder portrait fills the same slot; otherwise the gradient alone.**
-
-### Apply it
-- `src/components/story-card.tsx` (Card + Row): replace the duplicated `cover`/`portrait` branching with the helper, keeping the current look (cover = full-cover image; portrait = luminosity-blended fallback; gradient otherwise).
-- `src/routes/stories.$slug.tsx` header: use the helper so the thumbnail box renders only when the primary image is the portrait fallback (cover stays background-only) — same behavior as today, now driven by the shared rule instead of an inline `!cover && portrait` check.
-
-No visual change is intended from Part 2; it removes the divergent inline copies so future tweaks happen in one place.
+- Extend the `update_story` database function with `_title`, `_slug`, `_audio_url`, `_duration_seconds` and `_status`, keeping every existing argument and behaviour unchanged. Title is trimmed and required to be non-empty; audio URL and cover are cleared when passed empty.
+- Add a moderator/admin-guarded `delete_story` function that removes the story and its theme links, saves, history and point events.
+- Storage: add insert/update/delete policies on the `story-audio` bucket for admins and moderators (today only the submitter can write there), so staff can replace a recording.
+- `listAdminStories` starts returning `duration_seconds` and `status`, and lists drafts as well as published stories so unpublished ones remain reachable.
+- `updateStory` server function gains the matching validated fields; a new admin-only `deleteStory` server function wraps the new database function.
 
 ## Notes
-- Migration runs first (schema + RPC + bucket policies); typed client regenerates after approval, then the code changes land.
-- Cover precedence everywhere stays: explicit cover → elder portrait → warm gradient.
+- Changing the title does not rename the audio or cover files; those are content-addressed and unaffected.
+- Where a story shows the video's own title (inside the YouTube player itself), that text comes from YouTube and can only be changed on the YouTube channel — everything rendered by this app uses the story title you set here.
+- Migration runs first, then the code changes.
