@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search, Upload, X } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X, Trash2 } from "lucide-react";
 import {
   listAdminStories,
   updateStory,
+  deleteStory,
   transcribeAudio,
   translateToEnglish,
   type AdminStoryRow,
@@ -14,6 +15,28 @@ import { youtubeEmbedUrl } from "@/lib/youtube";
 import { supabase } from "@/integrations/supabase/client";
 
 const COVER_URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
+
+function readDuration(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const el = document.createElement("audio");
+    el.preload = "metadata";
+    el.onloadedmetadata = () => {
+      const d = Number.isFinite(el.duration) ? Math.round(el.duration) : 0;
+      URL.revokeObjectURL(url);
+      resolve(d);
+    };
+    el.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
+    el.src = url;
+  });
+}
+
+function fmtDuration(s: number) {
+  if (!s) return "unknown length";
+  const m = Math.floor(s / 60);
+  return `${m}:${String(s % 60).padStart(2, "0")}`;
+}
+
 
 
 export const Route = createFileRoute("/_authenticated/admin/edit")({
