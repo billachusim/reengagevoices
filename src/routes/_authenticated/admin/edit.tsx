@@ -194,7 +194,20 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
 
 
   const save = useMutation({
-    mutationFn: () => updateStory({ data: { storyId: story.id, ...form, isFeatured } }),
+    mutationFn: () => {
+      if (!form.title.trim()) throw new Error("Title cannot be empty.");
+      return updateStory({
+        data: {
+          storyId: story.id,
+          ...form,
+          title: form.title.trim(),
+          isFeatured,
+          regenerateSlug,
+          durationSeconds: duration,
+          status: published ? "published" : "draft",
+        },
+      });
+    },
     onSuccess: () => {
       toast.success("Story updated.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
@@ -206,10 +219,11 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
   });
 
   const transcribe = useMutation({
-    mutationFn: () => transcribeAudio({ data: { audioUrl: story.audio_url! } }),
+    mutationFn: () => transcribeAudio({ data: { audioUrl: form.audioUrl } }),
     onSuccess: (res) => { setForm((f) => ({ ...f, transcriptOriginal: res.text })); toast.success("Transcribed."); },
     onError: (e: any) => toast.error(e.message ?? "Could not transcribe"),
   });
+
 
   const translate = useMutation({
     mutationFn: () => translateToEnglish({ data: { text: form.transcriptOriginal } }),
