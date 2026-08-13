@@ -406,6 +406,31 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
               {save.isPending ? "Saving…" : "Save changes"}
             </button>
           </div>
+
+          <div className="pt-1">
+            {confirmDelete ? (
+              <div className="flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-2 text-xs">
+                <span className="flex-1">Delete this story permanently?</span>
+                <button onClick={() => setConfirmDelete(false)} className="rounded-full border px-3 py-1 font-medium">No</button>
+                <button
+                  disabled={remove.isPending}
+                  onClick={() => remove.mutate()}
+                  className="rounded-full bg-destructive px-3 py-1 font-semibold text-destructive-foreground disabled:opacity-60"
+                >
+                  {remove.isPending ? "Deleting…" : "Yes, delete"}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive hover:underline"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete story
+              </button>
+            )}
+          </div>
+
         </div>
       </div>
     </div>
