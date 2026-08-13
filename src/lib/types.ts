@@ -33,10 +33,13 @@ export interface ElderDTO {
   slug: string;
   name: string;
   bio: string | null;
+  photo_url?: string | null;
   region: Ref | null;
   tribe: Ref | null;
   language: Ref | null;
   story_count?: number;
+  is_homepage?: boolean;
+  sort_order?: number;
 }
 
 export interface CollectionDTO {
@@ -46,6 +49,8 @@ export interface CollectionDTO {
   description: string | null;
   story_count: number;
   cover_url: string | null;
+  is_homepage?: boolean;
+  sort_order?: number;
 }
 
 export interface FacetsDTO {
