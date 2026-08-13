@@ -1,6 +1,7 @@
 export interface Ref {
   slug: string;
   name: string;
+  photo_url?: string | null;
 }
 
 export interface ThemeRef extends Ref {
