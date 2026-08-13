@@ -6,7 +6,7 @@ import { StoryCard } from "@/components/story-card";
 import { Section, Rail } from "@/components/rail";
 import { ScallopDivider } from "@/components/scallop-divider";
 import { usePlayer } from "@/components/player/audio-provider";
-import { coverGradient, coverImage, elderPortrait } from "@/lib/constants";
+import { coverGradient, coverImage, elderImage } from "@/lib/constants";
 import { youtubeId } from "@/lib/youtube";
 
 export const Route = createFileRoute("/")({
@@ -37,6 +37,9 @@ function Home() {
   const featured = stories.find((s) => s.is_featured) ?? stories[0];
   const mostPlayed = [...stories].sort((a, b) => b.play_count - a.play_count).slice(0, 8);
   const recent = stories.slice(0, 8);
+  // Curated first (admin "show on homepage" + order), then auto-fill.
+  const homeElders = elders.slice(0, 8);
+  const homeCollections = collections.slice(0, 8);
 
   return (
     <div>
@@ -80,9 +83,9 @@ function Home() {
 
         <Section title="Collections" action={<Link to="/collections" className="text-xs font-medium text-muted-foreground hover:text-foreground">See all</Link>}>
           <Rail>
-            {collections.map((c) => (
+            {homeCollections.map((c) => (
               <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="w-52 shrink-0">
-                <div className="grain flex aspect-[4/3] flex-col justify-end rounded-xl p-4 text-white shadow-warm" style={{ backgroundImage: coverGradient(c.slug) }}>
+                <div className="grain flex aspect-[4/3] flex-col justify-end rounded-xl p-4 text-white shadow-warm" style={c.cover_url ? { backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.15)), url(${c.cover_url})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundImage: coverGradient(c.slug) }}>
                   <h3 className="font-serif text-lg font-semibold leading-tight">{c.title}</h3>
                   <p className="text-xs text-white/80">{c.story_count} stories</p>
                 </div>
@@ -97,10 +100,10 @@ function Home() {
 
         <Section title="Voices to follow" action={<Link to="/elders" className="text-xs font-medium text-muted-foreground hover:text-foreground">See all</Link>}>
           <Rail>
-            {elders.map((e) => (
+            {homeElders.map((e) => (
               <Link key={e.id} to="/elders/$slug" params={{ slug: e.slug }} className="w-32 shrink-0 text-center sm:w-36">
                 <div className="mx-auto aspect-square w-full overflow-hidden rounded-full shadow-warm" style={{ backgroundImage: coverGradient(e.slug) }}>
-                  {elderPortrait(e.slug) && <img src={elderPortrait(e.slug)} alt={e.name} loading="lazy" className="h-full w-full object-cover" />}
+                  {elderImage(e) && <img src={elderImage(e)} alt={e.name} loading="lazy" className="h-full w-full object-cover" />}
                 </div>
                 <p className="mt-2 truncate text-sm font-medium">{e.name}</p>
                 <p className="truncate text-xs text-muted-foreground">{e.tribe?.name}</p>

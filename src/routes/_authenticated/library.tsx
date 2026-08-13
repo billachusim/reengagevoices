@@ -5,7 +5,7 @@ import { getMyCreatorStats, type MySubmission } from "@/lib/creator.functions";
 import { StoryRow } from "@/components/story-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { coverGradient, coverImage, elderPortrait } from "@/lib/constants";
+import { coverGradient, coverImage, elderImage } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/library")({
   component: LibraryPage,
@@ -60,7 +60,7 @@ function LibraryPage() {
               {following.map((e) => (
                 <Link key={e.id} to="/elders/$slug" params={{ slug: e.slug }} className="text-center">
                   <div className="mx-auto aspect-square w-full overflow-hidden rounded-full shadow-warm" style={{ backgroundImage: coverGradient(e.slug) }}>
-                    {elderPortrait(e.slug) && <img src={elderPortrait(e.slug)} alt={e.name} loading="lazy" className="h-full w-full object-cover" />}
+                    {elderImage(e) && <img src={elderImage(e)} alt={e.name} loading="lazy" className="h-full w-full object-cover" />}
                   </div>
                   <p className="mt-2 text-sm font-medium">{e.name}</p>
                 </Link>

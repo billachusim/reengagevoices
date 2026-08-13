@@ -7,7 +7,7 @@ import { StoryRow } from "@/components/story-card";
 import { RouteError, RouteNotFound } from "@/components/route-states";
 import { usePlayer } from "@/components/player/audio-provider";
 import { useAuth } from "@/hooks/use-auth";
-import { coverGradient, elderPortrait } from "@/lib/constants";
+import { coverGradient, elderImage } from "@/lib/constants";
 
 export const Route = createFileRoute("/elders/$slug")({
   loader: async ({ context, params }) => {
@@ -48,7 +48,7 @@ function ElderPage() {
     <div>
       <div className="grain relative flex flex-col items-center gap-4 px-5 py-10 text-center text-white sm:flex-row sm:items-end sm:text-left sm:px-8" style={{ backgroundImage: coverGradient(elder.slug) }}>
         <div className="h-36 w-36 overflow-hidden rounded-full shadow-warm">
-          {elderPortrait(elder.slug) && <img src={elderPortrait(elder.slug)} alt={elder.name} className="h-full w-full object-cover" />}
+          {elderImage(elder) && <img src={elderImage(elder)} alt={elder.name} className="h-full w-full object-cover" />}
         </div>
         <div className="relative z-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-white/80">Elder</p>
