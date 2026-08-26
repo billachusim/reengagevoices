@@ -76,8 +76,9 @@ function Home() {
             <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
               <div className="p-6 sm:p-8">
                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-                  Editor's pick
+                  Featured story
                 </span>
+
                 <h2 className="mt-4 font-serif text-2xl font-bold leading-tight sm:text-4xl">{featured.title}</h2>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{featured.description}</p>
                 <p className="mt-3 text-sm text-muted-foreground">
@@ -102,10 +103,11 @@ function Home() {
               </div>
               <div
                 className="aspect-[16/10] w-full bg-muted bg-cover bg-center md:aspect-auto md:min-h-[280px]"
-                style={coverImage(featured) ? { backgroundImage: `url(${coverImage(featured)})` } : { backgroundImage: coverGradient(featured.slug) }}
+                style={elderImage(featured.elder) ? { backgroundImage: `url(${elderImage(featured.elder)})` } : { backgroundImage: coverGradient(featured.slug) }}
                 role="img"
-                aria-label={featured.title}
+                aria-label={featured.elder?.name ?? featured.title}
               />
+
             </div>
           </div>
         </section>
