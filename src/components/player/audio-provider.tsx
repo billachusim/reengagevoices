@@ -222,6 +222,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={{
       queue, current, index, isPlaying, progress, currentTime, duration, volume, shuffle, repeat,
       playStory, playQueue, toggle, next, prev, seek, setVolume, toggleShuffle, cycleRepeat, addToQueue, removeFromQueue, clearQueue,
+      previewLimited, previewSeconds: PREVIEW_SECONDS,
     }}>
       {children}
     </Ctx.Provider>
