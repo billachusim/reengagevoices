@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Play, Pause, Heart, Plus, Share2, FileText, Video, Headphones, Lock } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { storyQuery } from "@/lib/queries";
 import { getMyActivity, toggleSave } from "@/lib/library.functions";
