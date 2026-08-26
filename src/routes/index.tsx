@@ -8,7 +8,7 @@ import { ScallopDivider } from "@/components/scallop-divider";
 import { HowItWorks } from "@/components/how-it-works";
 import { SiteFooter } from "@/components/site-footer";
 import { usePlayer } from "@/components/player/audio-provider";
-import { coverGradient, coverImage, elderImage } from "@/lib/constants";
+import { coverGradient, elderImage } from "@/lib/constants";
 import { youtubeId } from "@/lib/youtube";
 import heroElder from "@/assets/hero-elder.jpg";
 
