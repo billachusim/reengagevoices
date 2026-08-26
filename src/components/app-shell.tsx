@@ -198,7 +198,7 @@ function WhatsAppButton() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-[100dvh] flex-col bg-background">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
       <div className="flex min-h-0 flex-1">
         <aside className="hidden w-64 shrink-0 flex-col gap-4 border-r bg-sidebar py-4 md:flex">
           <Brand />
