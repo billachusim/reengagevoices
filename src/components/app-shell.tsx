@@ -17,7 +17,7 @@ const NAV = [
 ];
 const SECONDARY = [
   { to: "/elders", label: "Elders", icon: Users },
-  { to: "/collections", label: "Collections", icon: ListMusic },
+  { to: "/collections", label: "Audio, video & written", icon: ListMusic },
   { to: "/contribute", label: "Contribute", icon: Mic },
 ];
 
