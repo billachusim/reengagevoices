@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Home, Compass, Search, Library, Mic, Users, ListMusic, LogIn, Menu, Sparkles, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
