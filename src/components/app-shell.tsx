@@ -139,7 +139,7 @@ function BottomTabs() {
     { to: "/browse", label: "Browse", icon: Compass },
     { to: "/search", label: "Search", icon: Search },
     { to: "/library", label: "Library", icon: Library },
-    { to: "/contribute", label: "Share", icon: Mic },
+    { to: "/contribute", label: "Record", icon: Mic },
   ];
   const isActive = (to: string, exact?: boolean) => (exact ? path === to : path === to || path.startsWith(to + "/"));
   return (
