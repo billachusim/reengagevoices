@@ -73,13 +73,7 @@ function Home() {
       {featured && (
         <section className="grain bg-secondary/40 px-5 py-10 sm:px-8 sm:py-14">
           <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-warm">
-            <div className="grid gap-0 md:grid-cols-[1.1fr_1fr]">
-              <div
-                className="aspect-[16/10] w-full bg-muted bg-cover bg-center md:aspect-auto md:min-h-[280px]"
-                style={coverImage(featured) ? { backgroundImage: `url(${coverImage(featured)})` } : { backgroundImage: coverGradient(featured.slug) }}
-                role="img"
-                aria-label={featured.title}
-              />
+            <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
               <div className="p-6 sm:p-8">
                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
                   Editor's pick
@@ -106,6 +100,12 @@ function Home() {
                   </Link>
                 </div>
               </div>
+              <div
+                className="aspect-[16/10] w-full bg-muted bg-cover bg-center md:aspect-auto md:min-h-[280px]"
+                style={coverImage(featured) ? { backgroundImage: `url(${coverImage(featured)})` } : { backgroundImage: coverGradient(featured.slug) }}
+                role="img"
+                aria-label={featured.title}
+              />
             </div>
           </div>
         </section>
