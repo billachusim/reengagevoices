@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { StoryDTO } from "@/lib/types";
 import { incrementPlay } from "@/lib/catalog.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 type RepeatMode = "off" | "one";
 
@@ -27,13 +28,20 @@ interface PlayerCtx {
   addToQueue: (story: StoryDTO) => void;
   removeFromQueue: (index: number) => void;
   clearQueue: () => void;
+  previewLimited: boolean;
+  previewSeconds: number;
 }
 
 const Ctx = createContext<PlayerCtx | null>(null);
 
 const INTRO_SRC = "/audio/intro.mp3";
+export const PREVIEW_SECONDS = 30;
 
 export function AudioProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const userRef = useRef(user);
+  userRef.current = user;
+  const [previewLimited, setPreviewLimited] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const introRef = useRef<HTMLAudioElement | null>(null);
   const introPlayingRef = useRef(false);
@@ -70,6 +78,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const audio = audioRef.current;
     if (!audio || !story.audio_url) return;
     stopIntro();
+    setPreviewLimited(false);
     audio.src = story.audio_url;
     audio.volume = volume;
     if (autoplay) {
@@ -178,7 +187,15 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const onTime = () => { setCurrentTime(audio.currentTime); setDuration(audio.duration || 0); };
+    const onTime = () => {
+      if (!userRef.current && audio.currentTime >= PREVIEW_SECONDS) {
+        audio.pause();
+        audio.currentTime = Math.min(audio.currentTime, PREVIEW_SECONDS);
+        setPreviewLimited(true);
+      }
+      setCurrentTime(audio.currentTime);
+      setDuration(audio.duration || 0);
+    };
     const onEnd = () => {
       if (repeat === "one") { audio.currentTime = 0; audio.play().catch(() => {}); return; }
       next();
@@ -205,6 +222,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={{
       queue, current, index, isPlaying, progress, currentTime, duration, volume, shuffle, repeat,
       playStory, playQueue, toggle, next, prev, seek, setVolume, toggleShuffle, cycleRepeat, addToQueue, removeFromQueue, clearQueue,
+      previewLimited, previewSeconds: PREVIEW_SECONDS,
     }}>
       {children}
     </Ctx.Provider>

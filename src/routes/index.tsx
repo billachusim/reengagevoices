@@ -1,13 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Play, Video } from "lucide-react";
+import { Play, Video, ArrowRight } from "lucide-react";
 import { storiesQuery, collectionsQuery, eldersQuery, facetsQuery } from "@/lib/queries";
 import { StoryCard } from "@/components/story-card";
 import { Section, Rail } from "@/components/rail";
 import { ScallopDivider } from "@/components/scallop-divider";
+import { HowItWorks } from "@/components/how-it-works";
+import { SiteFooter } from "@/components/site-footer";
 import { usePlayer } from "@/components/player/audio-provider";
 import { coverGradient, coverImage, elderImage } from "@/lib/constants";
 import { youtubeId } from "@/lib/youtube";
+import heroElder from "@/assets/hero-elder.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,7 +46,30 @@ function Home() {
 
   return (
     <div>
-      {/* Hero */}
+      {/* Landing hero */}
+      <section className="relative isolate overflow-hidden bg-night px-5 py-20 text-night-foreground sm:px-8 sm:py-28">
+        <img src={heroElder} alt="" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover opacity-40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-night/80 via-night/85 to-night" />
+        <div className="relative z-10 mx-auto max-w-3xl text-center">
+          <h1 className="font-serif text-4xl font-bold leading-[1.1] sm:text-6xl">
+            Every voice holds a lifetime of meaning
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-night-foreground/80 sm:text-base">
+            Welcome to ReEngage African Voices — an archive of African heritage stories, oral histories, and lived
+            experiences. Explore interviews, audio recordings, and writings that keep our past alive.
+          </p>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <Link to="/browse" className="inline-flex items-center gap-2 rounded-full bg-night-foreground px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-night">
+              Explore stories <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+            <Link to="/contribute" className="inline-flex items-center gap-2 rounded-full border border-night-foreground/40 px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+              Submit your voice
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured story */}
       {featured && (
         <div
           className="relative grain overflow-hidden bg-gradient-warm px-5 py-10 text-white sm:px-8 sm:py-14"
@@ -60,7 +86,7 @@ function Home() {
                 onClick={() => player.playStory(featured, stories)}
                 className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow"
               >
-                <Play className="h-4 w-4" /> Play story
+                <Play className="h-4 w-4" /> Play audio
               </button>
               {youtubeId(featured.youtube_url) && (
                 <Link to="/stories/$slug" params={{ slug: featured.slug }} hash="watch" className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
@@ -122,6 +148,9 @@ function Home() {
           </div>
         </Section>
       </div>
+
+      <HowItWorks />
+      <SiteFooter />
     </div>
   );
 }

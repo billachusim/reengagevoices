@@ -9,8 +9,7 @@ import gogoNomvula from "@/assets/elders/gogo-nomvula.jpg";
 export const LOGO_SRC = logo;
 
 // WhatsApp "Share your story" / Agadi chatbot link.
-// TODO: replace with the project owner's real WhatsApp number (digits only, incl. country code).
-export const WHATSAPP_NUMBER = "2340000000000";
+export const WHATSAPP_NUMBER = "2349168410880";
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 export const ELDER_PORTRAITS: Record<string, string> = {
