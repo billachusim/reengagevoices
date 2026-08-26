@@ -15,6 +15,12 @@ export function PlayerBar() {
 
   return (
     <div className="border-t border-white/10 bg-night text-night-foreground">
+      {p.previewLimited && (
+        <div className="flex flex-wrap items-center justify-center gap-2 bg-primary px-3 py-1.5 text-center text-xs font-medium text-primary-foreground">
+          You&apos;ve heard the free {p.previewSeconds}-second preview.
+          <Link to="/auth" className="underline underline-offset-2">Sign in to keep listening</Link>
+        </div>
+      )}
       <div className="flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3">
         {/* track meta */}
         <Link to="/stories/$slug" params={{ slug: s.slug }} className="flex min-w-0 items-center gap-3 sm:w-64">
