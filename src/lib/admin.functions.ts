@@ -470,8 +470,10 @@ export const deleteElder = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertStaff(context.supabase, context.userId);
     const { error } = await (context.supabase as any).rpc("delete_elder", { _elder_id: data.elderId });
-    if (error) throw new Error(error.message);
-    return { ok: true };
+    // Expected refusals (e.g. the elder still has stories) come back as a
+    // result, not a thrown error, so the admin sees a toast instead of a crash.
+    if (error) return { ok: false as const, message: error.message.replace(/^.*?Cannot delete:/, "Cannot delete:") };
+    return { ok: true as const, message: "" };
   });
 
 /* ---------------- Collections ---------------- */
