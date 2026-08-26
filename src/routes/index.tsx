@@ -71,34 +71,44 @@ function Home() {
 
       {/* Featured story */}
       {featured && (
-        <div
-          className="relative grain overflow-hidden bg-gradient-warm px-5 py-10 text-white sm:px-8 sm:py-14"
-          style={coverImage(featured) ? { backgroundImage: `url(${coverImage(featured)})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
-        >
-          {coverImage(featured) && <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/35" />}
-          <div className="relative z-10 max-w-2xl">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/80">Featured story</p>
-            <h1 className="font-serif text-3xl font-bold leading-tight sm:text-5xl">{featured.title}</h1>
-            <p className="mt-3 max-w-xl text-sm text-white/90 sm:text-base">{featured.description}</p>
-            <p className="mt-2 text-sm text-white/80">{featured.elder?.name} · {featured.tribe?.name} · {featured.language?.name}</p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <button
-                onClick={() => player.playStory(featured, stories)}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow"
-              >
-                <Play className="h-4 w-4" /> Play audio
-              </button>
-              {youtubeId(featured.youtube_url) && (
-                <Link to="/stories/$slug" params={{ slug: featured.slug }} hash="watch" className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
-                  <Video className="h-4 w-4" /> Watch video
-                </Link>
-              )}
-              <Link to="/stories/$slug" params={{ slug: featured.slug }} className="inline-flex items-center rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
-                Details
-              </Link>
+        <section className="grain bg-secondary/40 px-5 py-10 sm:px-8 sm:py-14">
+          <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-warm">
+            <div className="grid gap-0 md:grid-cols-[1.1fr_1fr]">
+              <div
+                className="aspect-[16/10] w-full bg-muted bg-cover bg-center md:aspect-auto md:min-h-[280px]"
+                style={coverImage(featured) ? { backgroundImage: `url(${coverImage(featured)})` } : { backgroundImage: coverGradient(featured.slug) }}
+                role="img"
+                aria-label={featured.title}
+              />
+              <div className="p-6 sm:p-8">
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
+                  Editor's pick
+                </span>
+                <h2 className="mt-4 font-serif text-2xl font-bold leading-tight sm:text-4xl">{featured.title}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{featured.description}</p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {[featured.elder?.name, featured.tribe?.name, featured.language?.name].filter(Boolean).join(" · ")}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => player.playStory(featured, stories)}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow"
+                  >
+                    <Play className="h-4 w-4" /> Play audio
+                  </button>
+                  {youtubeId(featured.youtube_url) && (
+                    <Link to="/stories/$slug" params={{ slug: featured.slug }} hash="watch" className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold">
+                      <Video className="h-4 w-4" /> Watch video
+                    </Link>
+                  )}
+                  <Link to="/stories/$slug" params={{ slug: featured.slug }} className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-sm font-semibold">
+                    Details
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       )}
       <ScallopDivider />
 
