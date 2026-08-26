@@ -163,11 +163,11 @@ function StoryPage() {
         {/* Media: audio / video */}
         {!isWritten && (
           <div id="watch" className="mb-8 max-w-2xl scroll-mt-24 overflow-hidden rounded-2xl border bg-card">
-            {activeMode === "video" && embedUrl ? (
-              <div className="aspect-video w-full bg-black">
+            {embedUrl && (
+              <div className={activeMode === "video" ? "aspect-video w-full bg-black" : "aspect-video w-full bg-black opacity-90"}>
                 <iframe
-                  key={videoKey}
-                  src={`${embedUrl}?autoplay=1`}
+                  ref={frameRef}
+                  src={`${embedUrl}?enablejsapi=1&rel=0`}
                   title={`${story.title} — video`}
                   className="h-full w-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -175,11 +175,13 @@ function StoryPage() {
                   allowFullScreen
                 />
               </div>
-            ) : (
+            )}
+            {hasAudio && activeMode === "audio" && (
               <div className="p-5">
                 <div className="h-20 text-foreground"><Waveform seed={story.slug} progress={isCurrent ? player.progress : 0} bars={120} onSeek={isCurrent ? player.seek : undefined} /></div>
               </div>
             )}
+
             <div className="flex items-center gap-2 border-t bg-muted/50 p-3">
               {hasAudio && (
                 <button
