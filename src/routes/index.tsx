@@ -156,8 +156,27 @@ function Home() {
               </Link>
             ))}
           </div>
-        </Section>
-      </div>
+         </Section>
+       </div>
+
+       {/* The Voices Archive CTA */}
+       <section className="bg-night px-5 py-14 sm:px-8 sm:py-20">
+         <div className="mx-auto max-w-5xl">
+           <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-clay">
+             The Voices Archive
+           </p>
+           <h2 className="mt-4 max-w-2xl font-serif text-3xl font-bold leading-[1.1] text-night-foreground sm:text-5xl">
+             Every story, every format.
+           </h2>
+           <Link
+             to="/browse"
+             className="mt-8 inline-flex items-center gap-2 rounded-full bg-night-foreground px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-night"
+           >
+             Browse the archive <ArrowRight className="h-3.5 w-3.5" />
+           </Link>
+         </div>
+       </section>
+
 
       <HowItWorks />
       <SiteFooter />
