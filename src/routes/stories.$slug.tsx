@@ -216,7 +216,7 @@ function StoryPage() {
               <TabsTrigger value="original">{story.language?.name ?? "Original"}</TabsTrigger>
             </TabsList>
             <TabsContent value="english">
-              <GatedText text={story.transcript_english} signedIn={!!user} id="watch" />
+              <GatedText text={story.transcript_english} signedIn={!!user} id={isWritten ? "watch" : undefined} />
             </TabsContent>
             <TabsContent value="original">
               <GatedText text={story.transcript_original} signedIn={!!user} />
