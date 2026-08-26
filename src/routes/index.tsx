@@ -86,7 +86,7 @@ function Home() {
                 onClick={() => player.playStory(featured, stories)}
                 className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow"
               >
-                <Play className="h-4 w-4" /> Play story
+                <Play className="h-4 w-4" /> Play audio
               </button>
               {youtubeId(featured.youtube_url) && (
                 <Link to="/stories/$slug" params={{ slug: featured.slug }} hash="watch" className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold">
@@ -148,6 +148,9 @@ function Home() {
           </div>
         </Section>
       </div>
+
+      <HowItWorks />
+      <SiteFooter />
     </div>
   );
 }
