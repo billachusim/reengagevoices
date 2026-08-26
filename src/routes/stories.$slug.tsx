@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Play, Pause, Heart, Plus, Share2, FileText, Video } from "lucide-react";
+import { Play, Pause, Heart, Plus, Share2, FileText, Video, Headphones, Lock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { storyQuery } from "@/lib/queries";
@@ -50,20 +50,62 @@ function SaveButton({ storyId }: { storyId: string }) {
   );
 }
 
+const PREVIEW_CHARS = 700;
+
+function GatedText({ text, signedIn, id }: { text: string | null; signedIn: boolean; id?: string }) {
+  if (!text || !text.trim()) return <p className="mt-3 text-sm text-muted-foreground">Coming soon.</p>;
+  const gated = !signedIn && text.length > PREVIEW_CHARS;
+  const shown = gated ? text.slice(0, PREVIEW_CHARS) + "…" : text;
+  return (
+    <div id={id} className="scroll-mt-24">
+      <article className="mt-3 max-w-2xl whitespace-pre-line font-serif text-[15px] leading-relaxed text-foreground/90">
+        {shown}
+      </article>
+      {gated && (
+        <div className="mt-4 flex max-w-2xl flex-wrap items-center gap-3 rounded-xl border bg-muted/50 p-4">
+          <Lock className="h-4 w-4 text-muted-foreground" />
+          <p className="flex-1 text-sm text-muted-foreground">Sign in free to read the whole story and listen without limits.</p>
+          <Link to="/auth" className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">Sign in</Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StoryPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(storyQuery(slug));
   const player = usePlayer();
   const [tab, setTab] = useState("english");
+  const [mode, setMode] = useState<"audio" | "video">("audio");
+  const [videoKey, setVideoKey] = useState(0);
+  const { user } = useAuth();
   if (!data) return <RouteNotFound />;
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
   const { image: heroImage, isCover, isPortrait } = storyImagery(story);
   const cover = isCover ? heroImage : undefined;
   const embedUrl = youtubeEmbedUrl(story.youtube_url);
+  const hasAudio = !!story.audio_url;
+  const isWritten = !hasAudio && !embedUrl;
+  const activeMode: "audio" | "video" = !hasAudio && embedUrl ? "video" : mode;
 
   const scrollToWatch = () => {
     document.getElementById("watch")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const playAudio = () => {
+    setMode("audio");
+    setVideoKey((k) => k + 1); // unmount/remount the iframe so the video stops
+    if (isCurrent) player.toggle();
+    else player.playStory(story, [story, ...related].filter((s) => s.audio_url));
+    setTimeout(scrollToWatch, 50);
+  };
+
+  const showVideo = () => {
+    setMode("video");
+    if (isCurrent && player.isPlaying) player.toggle();
+    setTimeout(scrollToWatch, 50);
   };
 
   const share = async () => {
@@ -97,13 +139,18 @@ function StoryPage() {
               {" · "}{story.tribe?.name} · {story.language?.name} · {formatDuration(story.duration_seconds)}
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <button onClick={() => (isCurrent ? player.toggle() : player.playStory(story, [story, ...related]))} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow">
-                {isCurrent && player.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {isCurrent && player.isPlaying ? "Pause" : "Play"}
-              </button>
-              {embedUrl && (
-                <button onClick={scrollToWatch} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Video className="h-4 w-4" /> Watch video</button>
+              {hasAudio && (
+                <button onClick={playAudio} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow">
+                  {isCurrent && player.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {isCurrent && player.isPlaying ? "Pause" : "Play audio"}
+                </button>
               )}
-              <button onClick={() => { player.addToQueue(story); toast.success("Added to queue"); }} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Plus className="h-4 w-4" /> Queue</button>
+              {embedUrl && (
+                <button onClick={showVideo} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Video className="h-4 w-4" /> Watch video</button>
+              )}
+              {isWritten && (
+                <button onClick={scrollToWatch} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow"><FileText className="h-4 w-4" /> Read story</button>
+              )}
+              {hasAudio && <button onClick={() => { player.addToQueue(story); toast.success("Added to queue"); }} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Plus className="h-4 w-4" /> Queue</button>}
               <button onClick={share} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-medium"><Share2 className="h-4 w-4" /> Share</button>
             </div>
           </div>
@@ -118,49 +165,61 @@ function StoryPage() {
           ))}
         </div>
 
-        {/* Waveform */}
-        <div className="mb-6 rounded-xl border bg-card p-4">
-          <div className="h-16 text-foreground"><Waveform seed={story.slug} progress={isCurrent ? player.progress : 0} bars={120} onSeek={isCurrent ? player.seek : undefined} /></div>
-        </div>
-
         {story.description && <p className="mb-6 max-w-2xl text-sm text-muted-foreground">{story.description}</p>}
 
-        {/* Video */}
-        {embedUrl && (
-          <div id="watch" className="scroll-mt-20">
-          <Section title="Watch">
-            <div className="mt-3 aspect-video w-full max-w-2xl overflow-hidden rounded-xl border bg-black">
-              <iframe
-                src={embedUrl}
-                title={`${story.title} — video`}
-                className="h-full w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              />
+        {/* Media: audio / video */}
+        {!isWritten && (
+          <div id="watch" className="mb-8 max-w-2xl scroll-mt-24 overflow-hidden rounded-2xl border bg-card">
+            {activeMode === "video" && embedUrl ? (
+              <div className="aspect-video w-full bg-black">
+                <iframe
+                  key={videoKey}
+                  src={`${embedUrl}?autoplay=1`}
+                  title={`${story.title} — video`}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="p-5">
+                <div className="h-20 text-foreground"><Waveform seed={story.slug} progress={isCurrent ? player.progress : 0} bars={120} onSeek={isCurrent ? player.seek : undefined} /></div>
+              </div>
+            )}
+            <div className="flex items-center gap-2 border-t bg-muted/50 p-3">
+              {hasAudio && (
+                <button
+                  onClick={playAudio}
+                  className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${activeMode === "audio" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-background"}`}
+                >
+                  <Headphones className="h-4 w-4" /> Audio
+                </button>
+              )}
+              {embedUrl && (
+                <button
+                  onClick={showVideo}
+                  className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${activeMode === "video" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-background"}`}
+                >
+                  <Video className="h-4 w-4" /> Video
+                </button>
+              )}
             </div>
-          </Section>
           </div>
         )}
 
-
-
         {/* Transcript */}
-        <Section title="Transcript">
+        <Section title={isWritten ? "The story" : "Transcript"}>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
               <TabsTrigger value="english">English</TabsTrigger>
               <TabsTrigger value="original">{story.language?.name ?? "Original"}</TabsTrigger>
             </TabsList>
             <TabsContent value="english">
-              <article className="mt-3 max-w-2xl whitespace-pre-line font-serif text-[15px] leading-relaxed text-foreground/90">
-                {story.transcript_english || "Transcript coming soon."}
-              </article>
+              <GatedText text={story.transcript_english} signedIn={!!user} id="watch" />
             </TabsContent>
             <TabsContent value="original">
-              <article className="mt-3 max-w-2xl whitespace-pre-line font-serif text-[15px] leading-relaxed text-foreground/90">
-                {story.transcript_original || "Transcript coming soon."}
-              </article>
+              <GatedText text={story.transcript_original} signedIn={!!user} />
             </TabsContent>
           </Tabs>
         </Section>
