@@ -13,7 +13,7 @@ import { RouteError, RouteNotFound } from "@/components/route-states";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
-import { coverGradient, storyImagery, formatDuration } from "@/lib/constants";
+import { coverGradient, elderImage, formatDuration } from "@/lib/constants";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
 export const Route = createFileRoute("/stories/$slug")({
@@ -83,7 +83,7 @@ function StoryPage() {
   if (!data) return <RouteNotFound />;
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
-  const { image: heroImage } = storyImagery(story);
+  const heroImage = elderImage(story.elder);
   const embedUrl = youtubeEmbedUrl(story.youtube_url);
   const hasAudio = !!story.audio_url;
   const isWritten = !hasAudio && !embedUrl;
