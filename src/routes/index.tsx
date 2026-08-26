@@ -1,13 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Play, Video } from "lucide-react";
+import { Play, Video, ArrowRight } from "lucide-react";
 import { storiesQuery, collectionsQuery, eldersQuery, facetsQuery } from "@/lib/queries";
 import { StoryCard } from "@/components/story-card";
 import { Section, Rail } from "@/components/rail";
 import { ScallopDivider } from "@/components/scallop-divider";
+import { HowItWorks } from "@/components/how-it-works";
+import { SiteFooter } from "@/components/site-footer";
 import { usePlayer } from "@/components/player/audio-provider";
 import { coverGradient, coverImage, elderImage } from "@/lib/constants";
 import { youtubeId } from "@/lib/youtube";
+import heroElder from "@/assets/hero-elder.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
