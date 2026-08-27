@@ -54,24 +54,39 @@ function EditStoriesPage() {
     staleTime: 10_000,
   });
   const [active, setActive] = useState<AdminStoryRow | null>(null);
+  const [creating, setCreating] = useState(false);
 
   return (
     <div className="space-y-4">
-      <form
-        onSubmit={(e) => { e.preventDefault(); setSearch(q); }}
-        className="flex items-center gap-2"
-      >
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search published stories by title"
-            className="w-full rounded-lg border bg-background py-2 pl-9 pr-3 text-sm"
-          />
-        </div>
-        <button className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Search</button>
-      </form>
+      <div className="flex flex-wrap items-center gap-2">
+        <form
+          onSubmit={(e) => { e.preventDefault(); setSearch(q); }}
+          className="flex flex-1 items-center gap-2"
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search stories by title"
+              className="w-full rounded-lg border bg-background py-2 pl-9 pr-3 text-sm"
+            />
+          </div>
+          <button className="rounded-full border px-4 py-2 text-sm font-semibold">Search</button>
+        </form>
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+        >
+          <Plus className="h-4 w-4" /> New story
+        </button>
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        One form for every kind of story — the format is worked out from what you fill in: audio only, video only,
+        both (a full story), or transcript only (a written story).
+      </p>
 
       <div className="space-y-2">
         {(stories ?? []).length === 0 ? (
@@ -83,7 +98,12 @@ function EditStoriesPage() {
               onClick={() => setActive(s)}
               className="flex w-full items-center justify-between gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
             >
-              <span className="truncate text-sm font-medium">{s.title}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{s.title}</span>
+                <span className="mt-0.5 inline-block rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  {STORY_FORMAT_LABEL[storyFormat(s)]}
+                </span>
+              </span>
               <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.status !== "published" && <span className="text-destructive">draft</span>}{s.is_featured && <span className="text-primary">★ featured</span>}{s.cover_url && <span>🖼 cover</span>}{s.audio_url && <span>🎵 audio</span>}{s.youtube_url && <span>▶ video</span>}</span>
 
             </button>
@@ -92,11 +112,12 @@ function EditStoriesPage() {
       </div>
 
       {active && <EditPanel story={active} onClose={() => setActive(null)} />}
+      {creating && <EditPanel story={null} onClose={() => setCreating(false)} />}
     </div>
   );
 }
 
-function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => void }) {
+function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: () => void }) {
   const qc = useQueryClient();
   const [form, setForm] = useState({
     title: story.title,
