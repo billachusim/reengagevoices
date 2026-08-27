@@ -373,6 +373,56 @@ export const updateStory = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// Admin-only: create a story from scratch. Format (audio / video / full /
+// written) is derived from whichever media fields are filled in.
+export const createStory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) =>
+    z
+      .object({
+        title: z.string().trim().min(1).max(160),
+        elderName: z.string().max(120).optional(),
+        description: z.string().max(2000).optional(),
+        region: z.string().max(120).optional(),
+        tribe: z.string().max(120).optional(),
+        language: z.string().max(120).optional(),
+        storyType: z.string().max(60).optional(),
+        mood: z.string().max(60).optional(),
+        coverUrl: z.string().max(2000).optional(),
+        audioUrl: z.string().max(2000).optional(),
+        durationSeconds: z.number().int().min(0).max(86400).optional(),
+        youtubeUrl: z.string().max(500).optional(),
+        transcriptOriginal: z.string().max(8000).optional(),
+        transcriptEnglish: z.string().max(8000).optional(),
+        isFeatured: z.boolean().optional(),
+        status: z.enum(["published", "draft"]).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }): Promise<{ storyId: string }> => {
+    await assertStaff(context.supabase, context.userId);
+    const { data: id, error } = await (context.supabase as any).rpc("create_story", {
+      _title: data.title,
+      _elder_name: data.elderName ?? null,
+      _description: data.description ?? null,
+      _region: data.region ?? null,
+      _tribe: data.tribe ?? null,
+      _language: data.language ?? null,
+      _story_type: data.storyType ?? null,
+      _mood: data.mood ?? null,
+      _cover_url: data.coverUrl ?? null,
+      _audio_url: data.audioUrl ?? null,
+      _duration_seconds: data.durationSeconds ?? 0,
+      _youtube_url: data.youtubeUrl ?? null,
+      _transcript_original: data.transcriptOriginal ?? null,
+      _transcript_english: data.transcriptEnglish ?? null,
+      _is_featured: data.isFeatured ?? false,
+      _status: data.status ?? "published",
+    });
+    if (error) throw new Error(error.message);
+    return { storyId: id as string };
+  });
+
 // Admin-only: permanently delete a story and its links.
 export const deleteStory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
