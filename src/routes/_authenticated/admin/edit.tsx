@@ -165,7 +165,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
-      const path = `${story.id}/${Date.now()}.${ext}`;
+      const path = `${uploadKey}/${Date.now()}.${ext}`;
       const up = await supabase.storage.from("story-covers").upload(path, file, {
         cacheControl: "31536000",
         upsert: true,
@@ -192,7 +192,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
     try {
       const secs = await readDuration(file);
       const ext = file.name.split(".").pop() || "mp3";
-      const path = `${story.id}/${Date.now()}.${ext}`;
+      const path = `${uploadKey}/${Date.now()}.${ext}`;
       const up = await supabase.storage.from("story-audio").upload(path, file, {
         cacheControl: "31536000",
         upsert: true,
@@ -212,7 +212,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
   };
 
   const remove = useMutation({
-    mutationFn: () => deleteStory({ data: { storyId: story.id } }),
+    mutationFn: () => deleteStory({ data: { storyId: story!.id } }),
     onSuccess: () => {
       toast.success("Story deleted.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
@@ -228,9 +228,20 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
   const save = useMutation({
     mutationFn: () => {
       if (!form.title.trim()) throw new Error("Title cannot be empty.");
+      if (isNew) {
+        return createStory({
+          data: {
+            ...form,
+            title: form.title.trim(),
+            isFeatured,
+            durationSeconds: duration,
+            status: published ? "published" : "draft",
+          },
+        });
+      }
       return updateStory({
         data: {
-          storyId: story.id,
+          storyId: story!.id,
           ...form,
           title: form.title.trim(),
           isFeatured,
@@ -241,7 +252,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
       });
     },
     onSuccess: () => {
-      toast.success("Story updated.");
+      toast.success(isNew ? "Story created." : "Story updated.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
       qc.invalidateQueries({ queryKey: ["stories"] });
       qc.invalidateQueries({ queryKey: ["story"] });
@@ -269,12 +280,17 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
         className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl border bg-background p-4 sm:max-w-lg sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-3 font-serif text-lg font-bold">{story.title}</h2>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="font-serif text-lg font-bold">{isNew ? "New story" : story!.title}</h2>
+          <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+            {STORY_FORMAT_LABEL[format]}
+          </span>
+        </div>
         <div className="space-y-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">Title</label>
             <input value={form.title} onChange={set("title")} placeholder="Story title" className={inputCls} />
-            {form.title.trim() !== story.title && (
+            {!isNew && form.title.trim() !== story!.title && (
               <label className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
                 <input type="checkbox" checked={regenerateSlug} onChange={(e) => setRegenerateSlug(e.target.checked)} className="h-3.5 w-3.5 accent-primary" />
                 Update the link to match the new title (breaks existing shared links)
