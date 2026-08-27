@@ -722,6 +722,27 @@ export type Database = {
         }
         Returns: undefined
       }
+      create_story: {
+        Args: {
+          _audio_url?: string
+          _cover_url?: string
+          _description?: string
+          _duration_seconds?: number
+          _elder_name?: string
+          _is_featured?: boolean
+          _language?: string
+          _mood?: string
+          _region?: string
+          _status?: string
+          _story_type?: string
+          _title: string
+          _transcript_english?: string
+          _transcript_original?: string
+          _tribe?: string
+          _youtube_url?: string
+        }
+        Returns: string
+      }
       delete_collection: {
         Args: { _collection_id: string }
         Returns: undefined
@@ -787,6 +808,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: undefined
+      }
+      sync_story_format_collections: {
+        Args: { _story_id: string }
         Returns: undefined
       }
       update_story: {
