@@ -52,12 +52,13 @@
 :root {
   --radius: 0.9rem;
 
-  --background: oklch(0.975 0.012 83);
+  /* Warm off-white matched to the main ReEngage Africa platform (#FBF9F6) */
+  --background: oklch(0.9828 0.0045 78);
   --foreground: oklch(0.28 0.03 50);
 
-  --card: oklch(0.99 0.008 83);
+  --card: oklch(0.995 0.003 78);
   --card-foreground: oklch(0.28 0.03 50);
-  --popover: oklch(0.99 0.008 83);
+  --popover: oklch(0.995 0.003 78);
   --popover-foreground: oklch(0.28 0.03 50);
 
   --primary: oklch(0.62 0.16 52);
