@@ -86,3 +86,38 @@ export const SORT_OPTIONS = [
   { value: "longest", label: "Longest" },
   { value: "shortest", label: "Shortest" },
 ];
+
+/* ---------------- Story format (derived, never chosen) ---------------- */
+
+export type StoryFormat = "full" | "audio" | "video" | "written" | "empty";
+
+const has = (v?: string | null) => !!(v && v.trim());
+
+// Derive what kind of story this is from what it actually contains.
+export function storyFormat(story: {
+  audio_url?: string | null;
+  youtube_url?: string | null;
+  transcript_original?: string | null;
+  transcript_english?: string | null;
+}): StoryFormat {
+  const audio = has(story.audio_url);
+  const video = has(story.youtube_url);
+  const text = has(story.transcript_original) || has(story.transcript_english);
+  if (audio && video) return "full";
+  if (audio) return "audio";
+  if (video) return "video";
+  if (text) return "written";
+  return "empty";
+}
+
+export const STORY_FORMAT_LABEL: Record<StoryFormat, string> = {
+  full: "Full story",
+  audio: "Audio story",
+  video: "Video story",
+  written: "Written story",
+  empty: "Incomplete",
+};
+
+export function isPlayable(story: { audio_url?: string | null; youtube_url?: string | null }): boolean {
+  return has(story.audio_url) || has(story.youtube_url);
+}

@@ -1,17 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search, Upload, X, Trash2 } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X, Trash2, Plus } from "lucide-react";
 import {
   listAdminStories,
   updateStory,
+  createStory,
   deleteStory,
   transcribeAudio,
   translateToEnglish,
   type AdminStoryRow,
 } from "@/lib/admin.functions";
 import { youtubeEmbedUrl } from "@/lib/youtube";
+import { storyFormat, STORY_FORMAT_LABEL } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
 
 const COVER_URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
@@ -52,24 +54,39 @@ function EditStoriesPage() {
     staleTime: 10_000,
   });
   const [active, setActive] = useState<AdminStoryRow | null>(null);
+  const [creating, setCreating] = useState(false);
 
   return (
     <div className="space-y-4">
-      <form
-        onSubmit={(e) => { e.preventDefault(); setSearch(q); }}
-        className="flex items-center gap-2"
-      >
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search published stories by title"
-            className="w-full rounded-lg border bg-background py-2 pl-9 pr-3 text-sm"
-          />
-        </div>
-        <button className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Search</button>
-      </form>
+      <div className="flex flex-wrap items-center gap-2">
+        <form
+          onSubmit={(e) => { e.preventDefault(); setSearch(q); }}
+          className="flex flex-1 items-center gap-2"
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search stories by title"
+              className="w-full rounded-lg border bg-background py-2 pl-9 pr-3 text-sm"
+            />
+          </div>
+          <button className="rounded-full border px-4 py-2 text-sm font-semibold">Search</button>
+        </form>
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+        >
+          <Plus className="h-4 w-4" /> New story
+        </button>
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        One form for every kind of story — the format is worked out from what you fill in: audio only, video only,
+        both (a full story), or transcript only (a written story).
+      </p>
 
       <div className="space-y-2">
         {(stories ?? []).length === 0 ? (
@@ -81,7 +98,12 @@ function EditStoriesPage() {
               onClick={() => setActive(s)}
               className="flex w-full items-center justify-between gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
             >
-              <span className="truncate text-sm font-medium">{s.title}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{s.title}</span>
+                <span className="mt-0.5 inline-block rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  {STORY_FORMAT_LABEL[storyFormat(s)]}
+                </span>
+              </span>
               <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.status !== "published" && <span className="text-destructive">draft</span>}{s.is_featured && <span className="text-primary">★ featured</span>}{s.cover_url && <span>🖼 cover</span>}{s.audio_url && <span>🎵 audio</span>}{s.youtube_url && <span>▶ video</span>}</span>
 
             </button>
@@ -90,40 +112,50 @@ function EditStoriesPage() {
       </div>
 
       {active && <EditPanel story={active} onClose={() => setActive(null)} />}
+      {creating && <EditPanel story={null} onClose={() => setCreating(false)} />}
     </div>
   );
 }
 
-function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => void }) {
+function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: () => void }) {
   const qc = useQueryClient();
+  const isNew = !story;
   const [form, setForm] = useState({
-    title: story.title,
-    youtubeUrl: story.youtube_url ?? "",
-    coverUrl: story.cover_url ?? "",
-    audioUrl: story.audio_url ?? "",
-    transcriptOriginal: story.transcript_original ?? "",
-    transcriptEnglish: story.transcript_english ?? "",
-    description: story.description ?? "",
-    elderName: story.elder_name ?? "",
-    region: story.region_name ?? "",
-    tribe: story.tribe_name ?? "",
-    language: story.language_name ?? "",
-    storyType: story.story_type ?? "",
-    mood: story.mood ?? "",
+    title: story?.title ?? "",
+    youtubeUrl: story?.youtube_url ?? "",
+    coverUrl: story?.cover_url ?? "",
+    audioUrl: story?.audio_url ?? "",
+    transcriptOriginal: story?.transcript_original ?? "",
+    transcriptEnglish: story?.transcript_english ?? "",
+    description: story?.description ?? "",
+    elderName: story?.elder_name ?? "",
+    region: story?.region_name ?? "",
+    tribe: story?.tribe_name ?? "",
+    language: story?.language_name ?? "",
+    storyType: story?.story_type ?? "",
+    mood: story?.mood ?? "",
   });
-  const [isFeatured, setIsFeatured] = useState(story.is_featured);
-  const [published, setPublished] = useState(story.status === "published");
-  const [duration, setDuration] = useState(story.duration_seconds ?? 0);
+  const [isFeatured, setIsFeatured] = useState(story?.is_featured ?? false);
+  const [published, setPublished] = useState(story ? story.status === "published" : true);
+  const [duration, setDuration] = useState(story?.duration_seconds ?? 0);
   const [regenerateSlug, setRegenerateSlug] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingAudio, setUploadingAudio] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLInputElement>(null);
+  // Storage folder for uploads — the story id when editing, a scratch id when creating.
+  const uploadKey = useMemo(() => story?.id ?? `new-${crypto.randomUUID()}`, [story?.id]);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
   const embed = youtubeEmbedUrl(form.youtubeUrl);
+  const format = storyFormat({
+    audio_url: form.audioUrl,
+    youtube_url: form.youtubeUrl,
+    transcript_original: form.transcriptOriginal,
+    transcript_english: form.transcriptEnglish,
+  });
 
   const onCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -133,7 +165,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
-      const path = `${story.id}/${Date.now()}.${ext}`;
+      const path = `${uploadKey}/${Date.now()}.${ext}`;
       const up = await supabase.storage.from("story-covers").upload(path, file, {
         cacheControl: "31536000",
         upsert: true,
@@ -160,7 +192,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
     try {
       const secs = await readDuration(file);
       const ext = file.name.split(".").pop() || "mp3";
-      const path = `${story.id}/${Date.now()}.${ext}`;
+      const path = `${uploadKey}/${Date.now()}.${ext}`;
       const up = await supabase.storage.from("story-audio").upload(path, file, {
         cacheControl: "31536000",
         upsert: true,
@@ -180,7 +212,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
   };
 
   const remove = useMutation({
-    mutationFn: () => deleteStory({ data: { storyId: story.id } }),
+    mutationFn: () => deleteStory({ data: { storyId: story!.id } }),
     onSuccess: () => {
       toast.success("Story deleted.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
@@ -194,11 +226,23 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
 
 
   const save = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<void> => {
       if (!form.title.trim()) throw new Error("Title cannot be empty.");
-      return updateStory({
+      if (isNew) {
+        await createStory({
+          data: {
+            ...form,
+            title: form.title.trim(),
+            isFeatured,
+            durationSeconds: duration,
+            status: published ? "published" : "draft",
+          },
+        });
+        return;
+      }
+      await updateStory({
         data: {
-          storyId: story.id,
+          storyId: story!.id,
           ...form,
           title: form.title.trim(),
           isFeatured,
@@ -209,7 +253,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
       });
     },
     onSuccess: () => {
-      toast.success("Story updated.");
+      toast.success(isNew ? "Story created." : "Story updated.");
       qc.invalidateQueries({ queryKey: ["admin-stories"] });
       qc.invalidateQueries({ queryKey: ["stories"] });
       qc.invalidateQueries({ queryKey: ["story"] });
@@ -237,12 +281,17 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
         className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl border bg-background p-4 sm:max-w-lg sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-3 font-serif text-lg font-bold">{story.title}</h2>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="font-serif text-lg font-bold">{isNew ? "New story" : story!.title}</h2>
+          <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+            {STORY_FORMAT_LABEL[format]}
+          </span>
+        </div>
         <div className="space-y-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">Title</label>
             <input value={form.title} onChange={set("title")} placeholder="Story title" className={inputCls} />
-            {form.title.trim() !== story.title && (
+            {!isNew && form.title.trim() !== story!.title && (
               <label className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
                 <input type="checkbox" checked={regenerateSlug} onChange={(e) => setRegenerateSlug(e.target.checked)} className="h-3.5 w-3.5 accent-primary" />
                 Update the link to match the new title (breaks existing shared links)
@@ -415,11 +464,11 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
               onClick={() => save.mutate()}
               className="flex-1 rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
             >
-              {save.isPending ? "Saving…" : "Save changes"}
+              {save.isPending ? "Saving…" : isNew ? "Create story" : "Save changes"}
             </button>
           </div>
 
-          <div className="pt-1">
+          {!isNew && <div className="pt-1">
             {confirmDelete ? (
               <div className="flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-2 text-xs">
                 <span className="flex-1">Delete this story permanently?</span>
@@ -441,7 +490,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow; onClose: () => vo
                 <Trash2 className="h-3.5 w-3.5" /> Delete story
               </button>
             )}
-          </div>
+          </div>}
 
         </div>
       </div>
