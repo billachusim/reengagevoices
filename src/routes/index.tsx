@@ -59,7 +59,7 @@ function Home() {
             experiences. Explore interviews, audio recordings, and writings that keep our past alive.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Link to="/browse" className="inline-flex items-center gap-2 rounded-full bg-night-foreground px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-night">
+            <Link to="/browse" className="inline-flex items-center gap-2 rounded-full bg-gradient-warm px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white shadow-warm">
               Explore stories <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <Link to="/contribute" className="inline-flex items-center gap-2 rounded-full border border-night-foreground/40 px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
@@ -170,12 +170,12 @@ function Home() {
            <h2 className="mt-4 max-w-2xl font-serif text-3xl font-bold leading-[1.1] text-night-foreground sm:text-5xl">
              Every story, every format.
            </h2>
-           <Link
-             to="/browse"
-             className="mt-8 inline-flex items-center gap-2 rounded-full bg-night-foreground px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-night"
-           >
-             Browse the archive <ArrowRight className="h-3.5 w-3.5" />
-           </Link>
+            <Link
+              to="/browse"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-warm px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white shadow-warm"
+            >
+              Browse the archive <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
          </div>
        </section>
 
