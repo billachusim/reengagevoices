@@ -226,10 +226,10 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
 
 
   const save = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<void> => {
       if (!form.title.trim()) throw new Error("Title cannot be empty.");
       if (isNew) {
-        return createStory({
+        await createStory({
           data: {
             ...form,
             title: form.title.trim(),
@@ -238,8 +238,9 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
             status: published ? "published" : "draft",
           },
         });
+        return;
       }
-      return updateStory({
+      await updateStory({
         data: {
           storyId: story!.id,
           ...form,
