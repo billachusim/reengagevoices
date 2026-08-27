@@ -59,7 +59,7 @@ function Home() {
             experiences. Explore interviews, audio recordings, and writings that keep our past alive.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Link to="/browse" className="inline-flex items-center gap-2 rounded-full bg-night-foreground px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-night">
+            <Link to="/browse" className="inline-flex items-center gap-2 rounded-full bg-gradient-warm px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white shadow-warm">
               Explore stories <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <Link to="/contribute" className="inline-flex items-center gap-2 rounded-full border border-night-foreground/40 px-7 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
