@@ -82,9 +82,9 @@
   --ochre: oklch(0.7 0.14 70);
   --clay: oklch(0.55 0.16 35);
 
-  --night: oklch(0.24 0.025 50);
-  --night-foreground: oklch(0.95 0.012 83);
-  --night-muted: oklch(0.68 0.03 60);
+  --night: oklch(0.16 0 0);
+  --night-foreground: oklch(0.96 0 0);
+  --night-muted: oklch(0.66 0 0);
 
   --sidebar: oklch(0.955 0.018 80);
   --sidebar-foreground: oklch(0.3 0.03 50);
