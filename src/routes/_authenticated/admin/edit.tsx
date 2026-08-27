@@ -1,17 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search, Upload, X, Trash2 } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X, Trash2, Plus } from "lucide-react";
 import {
   listAdminStories,
   updateStory,
+  createStory,
   deleteStory,
   transcribeAudio,
   translateToEnglish,
   type AdminStoryRow,
 } from "@/lib/admin.functions";
 import { youtubeEmbedUrl } from "@/lib/youtube";
+import { storyFormat, STORY_FORMAT_LABEL } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
 
 const COVER_URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
