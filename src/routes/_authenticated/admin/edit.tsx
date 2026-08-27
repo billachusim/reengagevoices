@@ -119,34 +119,43 @@ function EditStoriesPage() {
 
 function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: () => void }) {
   const qc = useQueryClient();
+  const isNew = !story;
   const [form, setForm] = useState({
-    title: story.title,
-    youtubeUrl: story.youtube_url ?? "",
-    coverUrl: story.cover_url ?? "",
-    audioUrl: story.audio_url ?? "",
-    transcriptOriginal: story.transcript_original ?? "",
-    transcriptEnglish: story.transcript_english ?? "",
-    description: story.description ?? "",
-    elderName: story.elder_name ?? "",
-    region: story.region_name ?? "",
-    tribe: story.tribe_name ?? "",
-    language: story.language_name ?? "",
-    storyType: story.story_type ?? "",
-    mood: story.mood ?? "",
+    title: story?.title ?? "",
+    youtubeUrl: story?.youtube_url ?? "",
+    coverUrl: story?.cover_url ?? "",
+    audioUrl: story?.audio_url ?? "",
+    transcriptOriginal: story?.transcript_original ?? "",
+    transcriptEnglish: story?.transcript_english ?? "",
+    description: story?.description ?? "",
+    elderName: story?.elder_name ?? "",
+    region: story?.region_name ?? "",
+    tribe: story?.tribe_name ?? "",
+    language: story?.language_name ?? "",
+    storyType: story?.story_type ?? "",
+    mood: story?.mood ?? "",
   });
-  const [isFeatured, setIsFeatured] = useState(story.is_featured);
-  const [published, setPublished] = useState(story.status === "published");
-  const [duration, setDuration] = useState(story.duration_seconds ?? 0);
+  const [isFeatured, setIsFeatured] = useState(story?.is_featured ?? false);
+  const [published, setPublished] = useState(story ? story.status === "published" : true);
+  const [duration, setDuration] = useState(story?.duration_seconds ?? 0);
   const [regenerateSlug, setRegenerateSlug] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingAudio, setUploadingAudio] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLInputElement>(null);
+  // Storage folder for uploads — the story id when editing, a scratch id when creating.
+  const uploadKey = useMemo(() => story?.id ?? `new-${crypto.randomUUID()}`, [story?.id]);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm";
   const embed = youtubeEmbedUrl(form.youtubeUrl);
+  const format = storyFormat({
+    audio_url: form.audioUrl,
+    youtube_url: form.youtubeUrl,
+    transcript_original: form.transcriptOriginal,
+    transcript_english: form.transcriptEnglish,
+  });
 
   const onCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
