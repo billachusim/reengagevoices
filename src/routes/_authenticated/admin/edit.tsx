@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search, Upload, X, Trash2, Plus } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X, Trash2, Plus, FileText } from "lucide-react";
+import { parseStoryDocument, STORY_DOC_ACCEPT } from "@/lib/story-doc";
 import {
   listAdminStories,
   updateStory,
@@ -40,6 +41,45 @@ function fmtDuration(s: number) {
 }
 
 
+
+function DocUpload({ onText }: { onText: (text: string) => void }) {
+  const ref = useRef<HTMLInputElement | null>(null);
+  const [busy, setBusy] = useState(false);
+  return (
+    <>
+      <input
+        ref={ref}
+        type="file"
+        accept={STORY_DOC_ACCEPT}
+        className="hidden"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (!file) return;
+          setBusy(true);
+          try {
+            const text = await parseStoryDocument(file);
+            if (!text.trim()) throw new Error("That document looks empty.");
+            onText(text);
+            toast.success(`Loaded ${file.name}`);
+          } catch (err: any) {
+            toast.error(err?.message ?? "Could not read that document");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => ref.current?.click()}
+        className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium hover:bg-muted disabled:opacity-60"
+      >
+        <FileText className="h-3 w-3" /> {busy ? "Reading…" : "Upload document"}
+      </button>
+    </>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/admin/edit")({
   component: EditStoriesPage,
@@ -445,11 +485,17 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Transcript (original)</label>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <label className="block text-xs font-medium text-muted-foreground">Transcript (original)</label>
+              <DocUpload onText={(t) => setForm((f) => ({ ...f, transcriptOriginal: t }))} />
+            </div>
             <textarea value={form.transcriptOriginal} onChange={set("transcriptOriginal")} rows={4} className={inputCls} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Transcript (English)</label>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <label className="block text-xs font-medium text-muted-foreground">Transcript (English)</label>
+              <DocUpload onText={(t) => setForm((f) => ({ ...f, transcriptEnglish: t }))} />
+            </div>
             <textarea value={form.transcriptEnglish} onChange={set("transcriptEnglish")} rows={4} className={inputCls} />
           </div>
           <div>
