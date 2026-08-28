@@ -481,6 +481,8 @@ export type Database = {
           id: string
           is_featured: boolean
           language_id: string | null
+          manuscript_filename: string | null
+          manuscript_url: string | null
           play_count: number
           published_at: string | null
           region_id: string | null
@@ -505,6 +507,8 @@ export type Database = {
           id?: string
           is_featured?: boolean
           language_id?: string | null
+          manuscript_filename?: string | null
+          manuscript_url?: string | null
           play_count?: number
           published_at?: string | null
           region_id?: string | null
@@ -529,6 +533,8 @@ export type Database = {
           id?: string
           is_featured?: boolean
           language_id?: string | null
+          manuscript_filename?: string | null
+          manuscript_url?: string | null
           play_count?: number
           published_at?: string | null
           region_id?: string | null
@@ -731,6 +737,8 @@ export type Database = {
           _elder_name?: string
           _is_featured?: boolean
           _language?: string
+          _manuscript_filename?: string
+          _manuscript_url?: string
           _mood?: string
           _region?: string
           _status?: string
@@ -774,6 +782,8 @@ export type Database = {
           id: string
           is_featured: boolean
           language_id: string | null
+          manuscript_filename: string | null
+          manuscript_url: string | null
           play_count: number
           published_at: string | null
           region_id: string | null
@@ -823,6 +833,8 @@ export type Database = {
           _elder_name?: string
           _is_featured?: boolean
           _language?: string
+          _manuscript_filename?: string
+          _manuscript_url?: string
           _mood?: string
           _regenerate_slug?: boolean
           _region?: string
