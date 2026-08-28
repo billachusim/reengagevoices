@@ -59,9 +59,9 @@ function DocUpload({ onDocument }: { onDocument: (file: File, text: string) => P
           const file = e.target.files?.[0];
           e.target.value = "";
           if (!file) return;
-           if (file.size > MAX_MANUSCRIPT_BYTES) throw new Error("That document is larger than 20MB.");
           setBusy(true);
           try {
+             if (file.size > MAX_MANUSCRIPT_BYTES) throw new Error("That document is larger than 20MB.");
             const text = await parseStoryDocument(file);
             if (!text.trim()) throw new Error("That document looks empty.");
              await onDocument(file, text);
