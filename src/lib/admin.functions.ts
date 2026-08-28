@@ -64,7 +64,7 @@ export const approveSubmission = createServerFn({ method: "POST" })
         language: z.string().max(120).optional(),
         storyType: z.string().max(60).optional(),
         mood: z.string().max(60).optional(),
-        transcript: z.string().max(8000).optional(),
+        transcript: z.string().max(200000).optional(),
         description: z.string().max(2000).optional(),
         youtubeUrl: z.string().max(500).optional(),
         pointAward: z.number().int().min(0).max(1000).optional(),
@@ -232,7 +232,7 @@ export const transcribeAudio = createServerFn({ method: "POST" })
 // Admin-only: translate transcript text to English with Lovable AI.
 export const translateToEnglish = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => z.object({ text: z.string().trim().min(1).max(8000) }).parse(d))
+  .inputValidator((d: any) => z.object({ text: z.string().trim().min(1).max(200000) }).parse(d))
   .handler(async ({ data, context }): Promise<{ text: string }> => {
     await assertStaff(context.supabase, context.userId);
     const key = process.env.LOVABLE_API_KEY;
@@ -333,8 +333,8 @@ export const updateStory = createServerFn({ method: "POST" })
         durationSeconds: z.number().int().min(0).max(86400).optional(),
         status: z.enum(["published", "draft"]).optional(),
         youtubeUrl: z.string().max(500).optional(),
-        transcriptOriginal: z.string().max(8000).optional(),
-        transcriptEnglish: z.string().max(8000).optional(),
+        transcriptOriginal: z.string().max(200000).optional(),
+        transcriptEnglish: z.string().max(200000).optional(),
         description: z.string().max(2000).optional(),
         elderName: z.string().max(120).optional(),
         region: z.string().max(120).optional(),
@@ -392,8 +392,8 @@ export const createStory = createServerFn({ method: "POST" })
         audioUrl: z.string().max(2000).optional(),
         durationSeconds: z.number().int().min(0).max(86400).optional(),
         youtubeUrl: z.string().max(500).optional(),
-        transcriptOriginal: z.string().max(8000).optional(),
-        transcriptEnglish: z.string().max(8000).optional(),
+        transcriptOriginal: z.string().max(200000).optional(),
+        transcriptEnglish: z.string().max(200000).optional(),
         isFeatured: z.boolean().optional(),
         status: z.enum(["published", "draft"]).optional(),
       })
