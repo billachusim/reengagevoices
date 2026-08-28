@@ -41,6 +41,45 @@ function fmtDuration(s: number) {
 
 
 
+function DocUpload({ onText }: { onText: (text: string) => void }) {
+  const ref = useRef<HTMLInputElement | null>(null);
+  const [busy, setBusy] = useState(false);
+  return (
+    <>
+      <input
+        ref={ref}
+        type="file"
+        accept={STORY_DOC_ACCEPT}
+        className="hidden"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (!file) return;
+          setBusy(true);
+          try {
+            const text = await parseStoryDocument(file);
+            if (!text.trim()) throw new Error("That document looks empty.");
+            onText(text);
+            toast.success(`Loaded ${file.name}`);
+          } catch (err: any) {
+            toast.error(err?.message ?? "Could not read that document");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => ref.current?.click()}
+        className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium hover:bg-muted disabled:opacity-60"
+      >
+        <FileText className="h-3 w-3" /> {busy ? "Reading…" : "Upload document"}
+      </button>
+    </>
+  );
+}
+
 export const Route = createFileRoute("/_authenticated/admin/edit")({
   component: EditStoriesPage,
 });
