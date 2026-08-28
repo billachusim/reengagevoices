@@ -445,11 +445,17 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Transcript (original)</label>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <label className="block text-xs font-medium text-muted-foreground">Transcript (original)</label>
+              <DocUpload onText={(t) => setForm((f) => ({ ...f, transcriptOriginal: t }))} />
+            </div>
             <textarea value={form.transcriptOriginal} onChange={set("transcriptOriginal")} rows={4} className={inputCls} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Transcript (English)</label>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <label className="block text-xs font-medium text-muted-foreground">Transcript (English)</label>
+              <DocUpload onText={(t) => setForm((f) => ({ ...f, transcriptEnglish: t }))} />
+            </div>
             <textarea value={form.transcriptEnglish} onChange={set("transcriptEnglish")} rows={4} className={inputCls} />
           </div>
           <div>
