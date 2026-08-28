@@ -267,6 +267,8 @@ export interface AdminStoryRow {
   youtube_url: string | null;
   transcript_original: string | null;
   transcript_english: string | null;
+  manuscript_url: string | null;
+  manuscript_filename: string | null;
   description: string | null;
   is_featured: boolean;
   elder_name: string | null;
@@ -287,7 +289,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
     let query = context.supabase
       .from("stories")
       .select(
-        "id,slug,title,status,audio_url,duration_seconds,youtube_url,cover_url,transcript_original,transcript_english,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
+        "id,slug,title,status,audio_url,duration_seconds,youtube_url,cover_url,transcript_original,transcript_english,manuscript_url,manuscript_filename,description,is_featured,elder:elders(name),region:regions(name),tribe:tribes(name),language:languages(name),story_themes(theme:themes(name,kind))",
       )
       .in("status", ["published", "draft"])
       .order("published_at", { ascending: false })
@@ -307,6 +309,8 @@ export const listAdminStories = createServerFn({ method: "GET" })
         youtube_url: r.youtube_url,
         transcript_original: r.transcript_original,
         transcript_english: r.transcript_english,
+        manuscript_url: r.manuscript_url,
+        manuscript_filename: r.manuscript_filename,
         description: r.description,
         is_featured: r.is_featured ?? false,
         elder_name: r.elder?.name ?? null,
@@ -335,6 +339,8 @@ export const updateStory = createServerFn({ method: "POST" })
         youtubeUrl: z.string().max(500).optional(),
         transcriptOriginal: z.string().max(200000).optional(),
         transcriptEnglish: z.string().max(200000).optional(),
+        manuscriptUrl: z.string().max(2000).optional(),
+        manuscriptFilename: z.string().max(255).optional(),
         description: z.string().max(2000).optional(),
         elderName: z.string().max(120).optional(),
         region: z.string().max(120).optional(),
@@ -359,6 +365,8 @@ export const updateStory = createServerFn({ method: "POST" })
       _youtube_url: data.youtubeUrl ?? undefined,
       _transcript_original: data.transcriptOriginal ?? undefined,
       _transcript_english: data.transcriptEnglish ?? undefined,
+      _manuscript_url: data.manuscriptUrl ?? undefined,
+      _manuscript_filename: data.manuscriptFilename ?? undefined,
       _description: data.description ?? undefined,
       _elder_name: data.elderName ?? undefined,
       _region: data.region ?? undefined,
@@ -394,6 +402,8 @@ export const createStory = createServerFn({ method: "POST" })
         youtubeUrl: z.string().max(500).optional(),
         transcriptOriginal: z.string().max(200000).optional(),
         transcriptEnglish: z.string().max(200000).optional(),
+        manuscriptUrl: z.string().max(2000).optional(),
+        manuscriptFilename: z.string().max(255).optional(),
         isFeatured: z.boolean().optional(),
         status: z.enum(["published", "draft"]).optional(),
       })
@@ -416,6 +426,8 @@ export const createStory = createServerFn({ method: "POST" })
       _youtube_url: data.youtubeUrl ?? null,
       _transcript_original: data.transcriptOriginal ?? null,
       _transcript_english: data.transcriptEnglish ?? null,
+      _manuscript_url: data.manuscriptUrl ?? null,
+      _manuscript_filename: data.manuscriptFilename ?? null,
       _is_featured: data.isFeatured ?? false,
       _status: data.status ?? "published",
     });

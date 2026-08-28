@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Play, Pause, Heart, Plus, Share2, FileText, Video, Headphones, Lock } from "lucide-react";
+import { Play, Pause, Heart, Plus, Share2, FileText, Video, Headphones, Lock, ExternalLink } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { storyQuery } from "@/lib/queries";
@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { coverGradient, elderImage, formatDuration } from "@/lib/constants";
 import { youtubeEmbedUrl } from "@/lib/youtube";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/stories/$slug")({
   loader: async ({ context, params }) => {
@@ -88,6 +89,7 @@ function StoryPage() {
   const [mode, setMode] = useState<"audio" | "video">("audio");
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const { user } = useAuth();
+  const [openingManuscript, setOpeningManuscript] = useState(false);
   if (!data) return <RouteNotFound />;
   const { story, related } = data;
   const isCurrent = player.current?.id === story.id;
@@ -127,6 +129,26 @@ function StoryPage() {
       if (navigator.share) await navigator.share({ title: story.title, url });
       else { await navigator.clipboard.writeText(url); toast.success("Link copied"); }
     } catch { /* cancelled */ }
+  };
+
+  const openManuscript = async () => {
+    if (!story.manuscript_url) return;
+    if (!user) {
+      window.location.href = "/auth";
+      return;
+    }
+    setOpeningManuscript(true);
+    try {
+      const { data: signed, error } = await supabase.storage
+        .from("story-documents")
+        .createSignedUrl(story.manuscript_url, 60 * 10, { download: false });
+      if (error || !signed?.signedUrl) throw error ?? new Error("Could not open the document.");
+      window.open(signed.signedUrl, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not open the full story.");
+    } finally {
+      setOpeningManuscript(false);
+    }
   };
 
   return (
@@ -225,6 +247,24 @@ function StoryPage() {
               <GatedText text={story.transcript_original} signedIn={!!user} />
             </TabsContent>
           </Tabs>
+          {story.manuscript_url && (
+            <div className="mt-6 max-w-2xl border-t pt-5">
+              <button
+                type="button"
+                onClick={openManuscript}
+                disabled={openingManuscript}
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+              >
+                <ExternalLink className="h-4 w-4" />
+                {openingManuscript ? "Opening…" : "Open full story"}
+              </button>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {user
+                  ? `${story.manuscript_filename || "Full manuscript"} opens in a new tab and can be downloaded there.`
+                  : "Sign in free to open or download the complete manuscript."}
+              </p>
+            </div>
+          )}
         </Section>
 
         {/* Provenance */}

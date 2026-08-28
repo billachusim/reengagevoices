@@ -42,7 +42,10 @@ function fmtDuration(s: number) {
 
 
 
-function DocUpload({ onText }: { onText: (text: string) => void }) {
+const MANUSCRIPT_PREVIEW_CHARS = 20_000;
+const MAX_MANUSCRIPT_BYTES = 20 * 1024 * 1024;
+
+function DocUpload({ onDocument }: { onDocument: (file: File, text: string) => Promise<void> }) {
   const ref = useRef<HTMLInputElement | null>(null);
   const [busy, setBusy] = useState(false);
   return (
@@ -56,11 +59,12 @@ function DocUpload({ onText }: { onText: (text: string) => void }) {
           const file = e.target.files?.[0];
           e.target.value = "";
           if (!file) return;
+           if (file.size > MAX_MANUSCRIPT_BYTES) throw new Error("That document is larger than 20MB.");
           setBusy(true);
           try {
             const text = await parseStoryDocument(file);
             if (!text.trim()) throw new Error("That document looks empty.");
-            onText(text);
+             await onDocument(file, text);
             toast.success(`Loaded ${file.name}`);
           } catch (err: any) {
             toast.error(err?.message ?? "Could not read that document");
@@ -167,6 +171,8 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
     audioUrl: story?.audio_url ?? "",
     transcriptOriginal: story?.transcript_original ?? "",
     transcriptEnglish: story?.transcript_english ?? "",
+    manuscriptUrl: story?.manuscript_url ?? "",
+    manuscriptFilename: story?.manuscript_filename ?? "",
     description: story?.description ?? "",
     elderName: story?.elder_name ?? "",
     region: story?.region_name ?? "",
@@ -248,6 +254,29 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
       toast.error(err.message ?? "Upload failed");
     } finally {
       setUploadingAudio(false);
+    }
+  };
+
+  const onManuscript = async (file: File, text: string, field: "transcriptOriginal" | "transcriptEnglish") => {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "-");
+    const path = `${uploadKey}/${Date.now()}-${safeName}`;
+    const up = await supabase.storage.from("story-documents").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || "application/octet-stream",
+    });
+    if (up.error) throw up.error;
+    const preview = text.length > MANUSCRIPT_PREVIEW_CHARS
+      ? `${text.slice(0, MANUSCRIPT_PREVIEW_CHARS).trimEnd()}…`
+      : text;
+    setForm((f) => ({
+      ...f,
+      [field]: preview,
+      manuscriptUrl: path,
+      manuscriptFilename: file.name,
+    }));
+    if (text.length > MANUSCRIPT_PREVIEW_CHARS) {
+      toast.info("The first 20,000 characters will appear on the story page. The full document is attached for readers.");
     }
   };
 
@@ -485,16 +514,29 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
           </div>
 
           <div>
+            {form.manuscriptUrl && (
+              <div className="mb-3 flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-xs">
+                <FileText className="h-4 w-4 text-primary" />
+                <span className="min-w-0 flex-1 truncate">Full manuscript: {form.manuscriptFilename || "Attached document"}</span>
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, manuscriptUrl: "", manuscriptFilename: "" }))}
+                  className="text-destructive hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
             <div className="mb-1 flex items-center justify-between gap-2">
               <label className="block text-xs font-medium text-muted-foreground">Transcript (original)</label>
-              <DocUpload onText={(t) => setForm((f) => ({ ...f, transcriptOriginal: t }))} />
+              <DocUpload onDocument={(file, text) => onManuscript(file, text, "transcriptOriginal")} />
             </div>
             <textarea value={form.transcriptOriginal} onChange={set("transcriptOriginal")} rows={4} className={inputCls} />
           </div>
           <div>
             <div className="mb-1 flex items-center justify-between gap-2">
               <label className="block text-xs font-medium text-muted-foreground">Transcript (English)</label>
-              <DocUpload onText={(t) => setForm((f) => ({ ...f, transcriptEnglish: t }))} />
+              <DocUpload onDocument={(file, text) => onManuscript(file, text, "transcriptEnglish")} />
             </div>
             <textarea value={form.transcriptEnglish} onChange={set("transcriptEnglish")} rows={4} className={inputCls} />
           </div>
