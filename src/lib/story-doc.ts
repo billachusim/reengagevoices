@@ -47,7 +47,7 @@ export async function parseStoryDocument(file: File): Promise<string> {
   const name = file.name.toLowerCase();
 
   if (name.endsWith(".docx")) {
-    const mammoth = await import("mammoth/mammoth.browser");
+    const mammoth = await import(/* @vite-ignore */ "mammoth/mammoth.browser" as string);
     const buffer = await file.arrayBuffer();
     const { value } = await (mammoth as any).convertToHtml({ arrayBuffer: buffer });
     return tidy(stripHtml(value));
