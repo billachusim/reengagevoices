@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Languages, Search, Upload, X, Trash2, Plus } from "lucide-react";
+import { Sparkles, Languages, Search, Upload, X, Trash2, Plus, FileText } from "lucide-react";
+import { parseStoryDocument, STORY_DOC_ACCEPT } from "@/lib/story-doc";
 import {
   listAdminStories,
   updateStory,
