@@ -1,7 +1,8 @@
 // Turn an uploaded manuscript (.txt, .md, .docx, .html, .rtf) into clean text
 // that can live in a story transcript field.
 
-export const STORY_DOC_ACCEPT = ".txt,.md,.markdown,.docx,.html,.htm,.rtf,text/plain,text/markdown";
+export const STORY_DOC_ACCEPT =
+  ".txt,.md,.markdown,.docx,.doc,.pdf,.html,.htm,.rtf,text/plain,text/markdown,application/pdf";
 
 function tidy(text: string): string {
   return text
@@ -43,6 +44,52 @@ function stripMarkdown(md: string): string {
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1");
 }
 
+// Legacy Word (.doc) binary: pull out readable runs of text as a best effort.
+function extractLegacyDoc(bytes: Uint8Array): string {
+  let out = "";
+  let run = "";
+  const flush = () => {
+    if (run.trim().length >= 4) out += run.trim() + "\n";
+    run = "";
+  };
+  for (let i = 0; i < bytes.length; i++) {
+    const c = bytes[i]!;
+    if (c === 13 || c === 10) { flush(); continue; }
+    if (c === 9) { run += " "; continue; }
+    if (c >= 32 && c < 127) run += String.fromCharCode(c);
+    else flush();
+  }
+  flush();
+  return out
+    .split("\n")
+    .filter((line) => /[a-z]{3}/i.test(line) && !/^[A-Za-z0-9+/=]{60,}$/.test(line))
+    .join("\n\n");
+}
+
+async function parsePdf(file: File): Promise<string> {
+  const pdfjs: any = await import("pdfjs-dist");
+  const workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+  const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    let text = "";
+    let lastY: number | null = null;
+    for (const item of content.items as any[]) {
+      if (typeof item.str !== "string") continue;
+      const y = item.transform?.[5];
+      if (lastY !== null && typeof y === "number" && Math.abs(y - lastY) > 2) text += "\n";
+      text += item.str;
+      if (item.hasEOL) text += "\n";
+      if (typeof y === "number") lastY = y;
+    }
+    pages.push(text.replace(/[ \t]{2,}/g, " ").trim());
+  }
+  return pages.filter(Boolean).join("\n\n");
+}
+
 export async function parseStoryDocument(file: File): Promise<string> {
   const name = file.name.toLowerCase();
 
@@ -53,8 +100,16 @@ export async function parseStoryDocument(file: File): Promise<string> {
     return tidy(stripHtml(value));
   }
 
+  if (name.endsWith(".pdf")) {
+    return tidy(await parsePdf(file));
+  }
+
   if (name.endsWith(".doc")) {
-    throw new Error("Old .doc files aren't supported — save as .docx, .txt or .md first.");
+    const text = extractLegacyDoc(new Uint8Array(await file.arrayBuffer()));
+    if (!text.trim()) {
+      throw new Error("Could not read that .doc file — please save it as .docx or PDF and try again.");
+    }
+    return tidy(text);
   }
 
   const raw = await file.text();
