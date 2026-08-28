@@ -58,8 +58,16 @@ function GatedText({ text, signedIn, id }: { text: string | null; signedIn: bool
   const shown = gated ? text.slice(0, PREVIEW_CHARS) + "…" : text;
   return (
     <div id={id} className="scroll-mt-24">
-      <article className="mt-3 max-w-2xl whitespace-pre-line font-serif text-[15px] leading-relaxed text-foreground/90">
-        {shown}
+      <article className="mt-3 max-w-2xl space-y-4 font-serif text-[16px] leading-[1.85] text-foreground/90">
+        {shown
+          .split(/\n\s*\n/)
+          .map((p) => p.trim())
+          .filter(Boolean)
+          .map((p, i) => (
+            <p key={i} className="whitespace-pre-line first:first-letter:float-left first:first-letter:mr-2 first:first-letter:mt-1 first:first-letter:font-bold first:first-letter:text-5xl first:first-letter:leading-[0.85] first:first-letter:text-primary">
+              {p}
+            </p>
+          ))}
       </article>
       {gated && (
         <div className="mt-4 flex max-w-2xl flex-wrap items-center gap-3 rounded-xl border bg-muted/50 p-4">
