@@ -89,7 +89,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 function TopBar() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="sticky top-0 z-30 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b bg-background/85 px-3 py-2.5 backdrop-blur sm:px-5">
@@ -114,9 +114,9 @@ function TopBar() {
           Share your story
         </a>
         {user ? (
-          <button onClick={() => signOut()} aria-label="Account" title="Sign out">
+          <Link to="/account" aria-label="Account" title="Account">
             <Avatar className="h-8 w-8"><AvatarFallback className="bg-primary text-primary-foreground text-xs">{(user.email ?? "U")[0].toUpperCase()}</AvatarFallback></Avatar>
-          </button>
+          </Link>
         ) : (
           <Link to="/auth" className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
             <LogIn className="h-3.5 w-3.5" /> Sign in
