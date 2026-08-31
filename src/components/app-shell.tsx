@@ -89,7 +89,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 function TopBar() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="sticky top-0 z-30 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b bg-background/85 px-3 py-2.5 backdrop-blur sm:px-5">
