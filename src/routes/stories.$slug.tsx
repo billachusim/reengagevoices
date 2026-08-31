@@ -156,8 +156,8 @@ function StoryPage() {
       <div className="grain relative overflow-hidden px-5 py-8 sm:px-8 sm:py-12" style={{ backgroundImage: coverGradient(story.slug) }}>
         <div className="relative z-10 flex flex-col gap-5 text-white sm:flex-row sm:items-end">
           {heroImage && (
-            <div className="h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-warm sm:h-48 sm:w-48">
-              <img src={heroImage} alt="" className="h-full w-full object-cover opacity-80 mix-blend-luminosity" />
+            <div className="h-32 w-32 shrink-0 overflow-hidden rounded-full bg-black/20 shadow-warm ring-2 ring-white/20 sm:h-40 sm:w-40">
+              <img src={heroImage} alt="" className="h-full w-full object-cover opacity-90" />
             </div>
           )}
           <div className="min-w-0">
