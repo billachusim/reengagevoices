@@ -8,7 +8,7 @@ import { ScallopDivider } from "@/components/scallop-divider";
 import { HowItWorks } from "@/components/how-it-works";
 import { SiteFooter } from "@/components/site-footer";
 import { usePlayer } from "@/components/player/audio-provider";
-import { coverGradient, elderImage } from "@/lib/constants";
+import { coverGradient, elderImage, storyImagery } from "@/lib/constants";
 import { youtubeId } from "@/lib/youtube";
 import heroElder from "@/assets/hero-elder.jpg";
 
@@ -38,6 +38,7 @@ function Home() {
   const player = usePlayer();
 
   const featured = stories.find((s) => s.is_featured) ?? stories[0];
+  const { image: featuredImage } = storyImagery(featured);
   const mostPlayed = [...stories].sort((a, b) => b.play_count - a.play_count).slice(0, 8);
   const recent = stories.slice(0, 8);
   // Curated first (admin "show on homepage" + order), then auto-fill.
@@ -73,7 +74,7 @@ function Home() {
       {featured && (
         <section className="grain bg-secondary/40 px-5 py-10 sm:px-8 sm:py-14">
           <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-warm">
-            <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
+            <div className="grid gap-0 md:grid-cols-[1fr_1.1fr] md:items-center">
               <div className="p-6 sm:p-8">
                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
                   Featured story
@@ -101,12 +102,21 @@ function Home() {
                   </Link>
                 </div>
               </div>
-              <div
-                className="aspect-[16/10] w-full bg-muted bg-cover bg-center md:aspect-auto md:min-h-[280px]"
-                style={elderImage(featured.elder) ? { backgroundImage: `url(${elderImage(featured.elder)})` } : { backgroundImage: coverGradient(featured.slug) }}
-                role="img"
-                aria-label={featured.elder?.name ?? featured.title}
-              />
+              {featuredImage ? (
+                <img
+                  src={featuredImage}
+                  alt={featured.elder?.name ?? featured.title}
+                  className="aspect-square w-full bg-muted object-cover"
+                  loading="eager"
+                />
+              ) : (
+                <div
+                  className="aspect-square w-full bg-muted bg-cover bg-center"
+                  style={{ backgroundImage: coverGradient(featured.slug) }}
+                  role="img"
+                  aria-label={featured.elder?.name ?? featured.title}
+                />
+              )}
 
             </div>
           </div>
