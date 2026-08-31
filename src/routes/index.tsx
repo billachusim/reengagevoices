@@ -102,21 +102,23 @@ function Home() {
                   </Link>
                 </div>
               </div>
-              {featuredImage ? (
-                <img
-                  src={featuredImage}
-                  alt={featured.elder?.name ?? featured.title}
-                  className="aspect-square w-full bg-muted object-cover"
-                  loading="eager"
-                />
-              ) : (
-                <div
-                  className="aspect-square w-full bg-muted bg-cover bg-center"
-                  style={{ backgroundImage: coverGradient(featured.slug) }}
-                  role="img"
-                  aria-label={featured.elder?.name ?? featured.title}
-                />
-              )}
+              <div className="aspect-square w-full overflow-hidden rounded-xl bg-muted">
+                {featuredImage ? (
+                  <img
+                    src={featuredImage}
+                    alt={featured.elder?.name ?? featured.title}
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                  />
+                ) : (
+                  <div
+                    className="h-full w-full bg-cover bg-center"
+                    style={{ backgroundImage: coverGradient(featured.slug) }}
+                    role="img"
+                    aria-label={featured.elder?.name ?? featured.title}
+                  />
+                )}
+              </div>
 
             </div>
           </div>
