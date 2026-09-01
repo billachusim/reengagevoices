@@ -153,10 +153,10 @@ function StoryPage() {
 
   return (
     <div>
-      <div className="grain relative overflow-hidden px-5 py-8 sm:px-8 sm:py-12" style={{ backgroundImage: coverGradient(story.slug) }}>
-        <div className="relative z-10 flex flex-col gap-5 text-white sm:flex-row sm:items-end">
+      <div className="grain relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 sm:pb-20 sm:pt-14" style={{ backgroundImage: coverGradient(story.slug) }}>
+        <div className="relative z-10 flex items-center gap-4 text-white sm:gap-8">
           {heroImage && (
-            <div className="h-32 w-32 shrink-0 overflow-hidden rounded-full bg-black/20 shadow-warm ring-2 ring-white/20 sm:h-40 sm:w-40">
+            <div className="h-28 w-28 shrink-0 overflow-hidden rounded-full bg-black/20 shadow-warm ring-4 ring-white/25 sm:h-44 sm:w-44">
               <img src={heroImage} alt="" className="h-full w-full object-cover opacity-90" />
             </div>
           )}
@@ -177,6 +177,9 @@ function StoryPage() {
             </div>
           </div>
         </div>
+        <svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden className="absolute inset-x-0 bottom-0 h-8 w-full text-background sm:h-12">
+          <path d="M0 12 C 25 1 75 1 100 12 L100 12 L0 12 Z" fill="currentColor" />
+        </svg>
       </div>
 
 
