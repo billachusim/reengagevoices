@@ -136,7 +136,7 @@ function Home() {
         <Section title="Collections" action={<Link to="/collections" className="text-xs font-medium text-muted-foreground hover:text-foreground">See all</Link>}>
           <Rail>
             {homeCollections.map((c) => (
-              <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="w-52 shrink-0">
+              <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="w-48 shrink-0 sm:w-56 md:w-64">
                 <div className="grain relative flex aspect-video flex-col justify-end overflow-hidden rounded-xl p-4 text-white shadow-warm">
                   {c.cover_url ? (
                     <img
@@ -152,7 +152,7 @@ function Home() {
                       aria-hidden="true"
                     />
                   )}
-                  <div className="absolute inset-0 -z-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" aria-hidden="true" />
+                  <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" aria-hidden="true" />
                   <h3 className="relative z-10 font-serif text-lg font-semibold leading-tight">{c.title}</h3>
                   <p className="relative z-10 text-xs text-white/80">{c.story_count} stories</p>
                 </div>
