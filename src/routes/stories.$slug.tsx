@@ -153,16 +153,16 @@ function StoryPage() {
 
   return (
     <div>
-      <div className="grain relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 sm:pb-20 sm:pt-14" style={{ backgroundImage: coverGradient(story.slug) }}>
-        <div className="relative z-10 flex items-center gap-4 text-white sm:gap-8">
+      <div className="grain relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 sm:pb-20 sm:pt-14 lg:pb-16 lg:pt-12" style={{ backgroundImage: coverGradient(story.slug) }}>
+        <div className="relative z-10 mx-auto flex items-center gap-4 text-white sm:gap-8 lg:max-w-[1100px] lg:gap-10">
           {heroImage && (
-            <div className="h-28 w-28 shrink-0 overflow-hidden rounded-full bg-black/20 shadow-warm ring-4 ring-white/25 sm:h-44 sm:w-44">
+            <div className="h-28 w-28 shrink-0 overflow-hidden rounded-full bg-black/20 shadow-warm ring-4 ring-white/25 sm:h-44 sm:w-44 lg:h-48 lg:w-48">
               <img src={heroImage} alt="" className="h-full w-full object-cover opacity-90" />
             </div>
           )}
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-white/80">Story</p>
-            <h1 className="font-serif text-3xl font-bold leading-tight sm:text-5xl">{story.title}</h1>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-widest text-white/80 sm:text-sm">Story</p>
+            <h1 className="font-serif text-4xl font-bold leading-[1.1] lg:text-[52px] lg:leading-[1.08]">{story.title}</h1>
             <p className="mt-2 text-sm text-white/90">
               {story.elder && <Link to="/elders/$slug" params={{ slug: story.elder.slug }} className="underline-offset-2 hover:underline">{story.elder.name}</Link>}
               {" · "}{story.tribe?.name} · {story.language?.name} · {formatDuration(story.duration_seconds)}
@@ -183,7 +183,7 @@ function StoryPage() {
       </div>
 
 
-      <div className="px-5 py-6 sm:px-8">
+      <div className="mx-auto w-full px-5 py-6 sm:px-8 lg:max-w-[1100px] lg:py-10">
         <div className="mb-5 flex flex-wrap items-center gap-2">
           <SaveButton storyId={story.id} />
           {story.themes.map((t) => (
@@ -195,7 +195,7 @@ function StoryPage() {
 
         {/* Media: audio / video */}
         {!isWritten && (
-          <div id="watch" className="mb-8 max-w-2xl scroll-mt-24 overflow-hidden rounded-2xl border bg-card">
+          <div id="watch" className="mb-8 max-w-2xl scroll-mt-24 overflow-hidden rounded-2xl border bg-card lg:mb-10 lg:max-w-[880px]">
             {embedUrl && (
               <div className={activeMode === "video" ? "aspect-video w-full bg-black" : "aspect-video w-full bg-black opacity-90"}>
                 <iframe
@@ -278,7 +278,7 @@ function StoryPage() {
 
         {related.length > 0 && (
           <Section title="Related stories">
-            <Rail>{related.map((s) => <div key={s.id} className="w-40 shrink-0 sm:w-44"><StoryCard story={s} queue={related} /></div>)}</Rail>
+            <Rail>{related.map((s) => <div key={s.id} className="w-40 shrink-0 sm:w-44 lg:w-56"><StoryCard story={s} queue={related} /></div>)}</Rail>
           </Section>
         )}
       </div>
