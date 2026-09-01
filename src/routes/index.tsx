@@ -136,10 +136,25 @@ function Home() {
         <Section title="Collections" action={<Link to="/collections" className="text-xs font-medium text-muted-foreground hover:text-foreground">See all</Link>}>
           <Rail>
             {homeCollections.map((c) => (
-              <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="w-52 shrink-0">
-                <div className="grain flex aspect-[4/3] flex-col justify-end rounded-xl p-4 text-white shadow-warm" style={c.cover_url ? { backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.15)), url(${c.cover_url})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundImage: coverGradient(c.slug) }}>
-                  <h3 className="font-serif text-lg font-semibold leading-tight">{c.title}</h3>
-                  <p className="text-xs text-white/80">{c.story_count} stories</p>
+              <Link key={c.id} to="/collections/$slug" params={{ slug: c.slug }} className="w-48 shrink-0 sm:w-56 md:w-64">
+                <div className="grain relative flex aspect-video flex-col justify-end overflow-hidden rounded-xl p-4 text-white shadow-warm">
+                  {c.cover_url ? (
+                    <img
+                      src={c.cover_url}
+                      alt={c.title}
+                      loading="lazy"
+                      className="absolute inset-0 -z-10 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 -z-10 bg-cover bg-center"
+                      style={{ backgroundImage: coverGradient(c.slug) }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" aria-hidden="true" />
+                  <h3 className="relative z-10 font-serif text-lg font-semibold leading-tight">{c.title}</h3>
+                  <p className="relative z-10 text-xs text-white/80">{c.story_count} stories</p>
                 </div>
               </Link>
             ))}
