@@ -54,12 +54,12 @@ function SaveButton({ storyId }: { storyId: string }) {
 const PREVIEW_CHARS = 700;
 
 function GatedText({ text, signedIn, id }: { text: string | null; signedIn: boolean; id?: string }) {
-  if (!text || !text.trim()) return <p className="mt-3 text-sm text-muted-foreground">Coming soon.</p>;
+  if (!text || !text.trim()) return <p className="mt-3 text-sm text-muted-foreground lg:text-base">Coming soon.</p>;
   const gated = !signedIn && text.length > PREVIEW_CHARS;
   const shown = gated ? text.slice(0, PREVIEW_CHARS) + "…" : text;
   return (
     <div id={id} className="scroll-mt-24">
-      <article className="mt-3 max-w-2xl space-y-4 font-serif text-[16px] leading-[1.85] text-foreground/90">
+      <article className="mt-3 max-w-2xl space-y-4 font-serif text-[16px] leading-[1.85] text-foreground/90 lg:max-w-[880px] lg:text-lg lg:leading-[1.9]">
         {shown
           .split(/\n\s*\n/)
           .map((p) => p.trim())
@@ -71,7 +71,7 @@ function GatedText({ text, signedIn, id }: { text: string | null; signedIn: bool
           ))}
       </article>
       {gated && (
-        <div className="mt-4 flex max-w-2xl flex-wrap items-center gap-3 rounded-xl border bg-muted/50 p-4">
+        <div className="mt-4 flex max-w-2xl flex-wrap items-center gap-3 rounded-xl border bg-muted/50 p-4 lg:max-w-[880px]">
           <Lock className="h-4 w-4 text-muted-foreground" />
           <p className="flex-1 text-sm text-muted-foreground">Sign in free to read the whole story and listen without limits.</p>
           <Link to="/auth" className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">Sign in</Link>
@@ -191,7 +191,7 @@ function StoryPage() {
           ))}
         </div>
 
-        {story.description && <p className="mb-6 max-w-2xl text-sm text-muted-foreground">{story.description}</p>}
+        {story.description && <p className="mb-6 max-w-2xl text-sm leading-relaxed text-muted-foreground lg:max-w-[880px] lg:text-base">{story.description}</p>}
 
         {/* Media: audio / video */}
         {!isWritten && (
@@ -251,7 +251,7 @@ function StoryPage() {
             </TabsContent>
           </Tabs>
           {story.manuscript_url && (
-            <div className="mt-6 max-w-2xl border-t pt-5">
+            <div className="mt-6 max-w-2xl border-t pt-5 lg:max-w-[880px]">
               <button
                 type="button"
                 onClick={openManuscript}
@@ -261,7 +261,7 @@ function StoryPage() {
                 <ExternalLink className="h-4 w-4" />
                 {openingManuscript ? "Opening…" : "Open full story"}
               </button>
-              <p className="mt-2 text-xs text-muted-foreground">
+              <p className="mt-2 text-xs text-muted-foreground lg:text-sm">
                 {user
                   ? `${story.manuscript_filename || "Full manuscript"} opens in a new tab and can be downloaded there.`
                   : "Sign in free to open or download the complete manuscript."}
