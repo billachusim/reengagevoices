@@ -191,7 +191,7 @@ function StoryPage() {
           ))}
         </div>
 
-        {story.description && <p className="mb-6 max-w-2xl text-sm text-muted-foreground">{story.description}</p>}
+        {story.description && <p className="mb-6 max-w-2xl text-sm leading-relaxed text-muted-foreground lg:max-w-[880px] lg:text-base">{story.description}</p>}
 
         {/* Media: audio / video */}
         {!isWritten && (
@@ -251,7 +251,7 @@ function StoryPage() {
             </TabsContent>
           </Tabs>
           {story.manuscript_url && (
-            <div className="mt-6 max-w-2xl border-t pt-5">
+            <div className="mt-6 max-w-2xl border-t pt-5 lg:max-w-[880px]">
               <button
                 type="button"
                 onClick={openManuscript}
@@ -261,7 +261,7 @@ function StoryPage() {
                 <ExternalLink className="h-4 w-4" />
                 {openingManuscript ? "Opening…" : "Open full story"}
               </button>
-              <p className="mt-2 text-xs text-muted-foreground">
+              <p className="mt-2 text-xs text-muted-foreground lg:text-sm">
                 {user
                   ? `${story.manuscript_filename || "Full manuscript"} opens in a new tab and can be downloaded there.`
                   : "Sign in free to open or download the complete manuscript."}
