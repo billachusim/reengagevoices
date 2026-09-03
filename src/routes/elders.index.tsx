@@ -6,7 +6,11 @@ import { coverGradient, elderImage } from "@/lib/constants";
 
 export const Route = createFileRoute("/elders/")({
   head: () => ({ meta: [{ title: "Elders — ReEngage African Voices" }, { name: "description", content: "Meet the elders whose voices carry these stories across Africa." }] }),
-  loader: ({ context }) => { context.queryClient.ensureQueryData(eldersQuery); },
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(eldersQuery),
+    ]);
+  },
   component: Elders,
   errorComponent: RouteError,
 });

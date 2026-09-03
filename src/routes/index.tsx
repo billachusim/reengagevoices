@@ -21,11 +21,13 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "An audio archive of African elders' stories, in their own voices." },
     ],
   }),
-  loader: ({ context }) => {
-    context.queryClient.ensureQueryData(storiesQuery);
-    context.queryClient.ensureQueryData(collectionsQuery);
-    context.queryClient.ensureQueryData(eldersQuery);
-    context.queryClient.ensureQueryData(facetsQuery);
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(storiesQuery),
+      context.queryClient.ensureQueryData(collectionsQuery),
+      context.queryClient.ensureQueryData(eldersQuery),
+      context.queryClient.ensureQueryData(facetsQuery),
+    ]);
   },
   component: Home,
 });

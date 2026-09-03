@@ -5,7 +5,12 @@ import { RouteError } from "@/components/route-states";
 
 export const Route = createFileRoute("/themes/$slug")({
   head: () => ({ meta: [{ title: "Theme — ReEngage African Voices" }, { name: "description", content: "Stories grouped by theme and mood." }] }),
-  loader: ({ context }) => { context.queryClient.ensureQueryData(storiesQuery); context.queryClient.ensureQueryData(facetsQuery); },
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(storiesQuery),
+      context.queryClient.ensureQueryData(facetsQuery),
+    ]);
+  },
   component: () => { const { slug } = Route.useParams(); return <TaxonomyPage dim="theme" slug={slug} />; },
   errorComponent: RouteError,
 });
