@@ -21,9 +21,11 @@ export const Route = createFileRoute("/browse")({
     sort: typeof s.sort === "string" ? s.sort : "newest",
   }),
   head: () => ({ meta: [{ title: "Browse — ReEngage African Voices" }, { name: "description", content: "Browse the full archive of African elders' stories by region, tribe, language, type and mood." }] }),
-  loader: ({ context }) => {
-    context.queryClient.ensureQueryData(storiesQuery);
-    context.queryClient.ensureQueryData(facetsQuery);
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(storiesQuery),
+      context.queryClient.ensureQueryData(facetsQuery),
+    ]);
   },
   component: Browse,
   errorComponent: RouteError,

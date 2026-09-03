@@ -38,6 +38,13 @@ function mapStory(row: any): StoryDTO {
   };
 }
 
+// List views only need to know whether a transcript exists (to derive the
+// story format), never the full text — so the list payload carries a stub.
+function stubTranscripts(story: StoryDTO): StoryDTO {
+  const stub = (t: string | null) => (t && t.trim() ? t.slice(0, 1) : null);
+  return { ...story, transcript_original: stub(story.transcript_original), transcript_english: stub(story.transcript_english) };
+}
+
 export const getStories = createServerFn({ method: "GET" }).handler(async (): Promise<StoryDTO[]> => {
   const sb = publicClient();
   const { data, error } = await sb
@@ -46,7 +53,7 @@ export const getStories = createServerFn({ method: "GET" }).handler(async (): Pr
     .eq("status", "published")
     .order("published_at", { ascending: false });
   if (error) throw new Error(error.message);
-  return (data ?? []).map(mapStory);
+  return (data ?? []).map(mapStory).map(stubTranscripts);
 });
 
 export const getStory = createServerFn({ method: "GET" })
