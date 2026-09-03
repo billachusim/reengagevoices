@@ -59,7 +59,6 @@ export async function compressImage(file: File, preset: CompressPreset): Promise
     canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (!ctx) { src.close(); return file; }
-    ctx.drawImage; // keep TS happy about unused draw path
     src.draw(ctx, w, h);
     src.close();
 

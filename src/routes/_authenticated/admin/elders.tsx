@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Upload, X, Trash2, Plus } from "lucide-react";
 import { listAdminElders, saveElder, deleteElder, type AdminElderRow } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { compressImage } from "@/lib/image-compress";
 import { elderPortrait } from "@/lib/constants";
 
 const URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
@@ -94,12 +95,13 @@ function ElderPanel({ elder, onClose }: { elder: AdminElderRow | null; onClose: 
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const onPhotoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const raw = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
-    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    if (!raw) return;
+    if (!raw.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
     setUploading(true);
     try {
+      const file = await compressImage(raw, "portrait");
       const ext = file.name.split(".").pop() || "jpg";
       const path = `${elder?.id ?? "new"}/${Date.now()}.${ext}`;
       const up = await supabase.storage.from("elder-photos").upload(path, file, {
