@@ -12,6 +12,7 @@ import {
   type AdminStoryRow,
 } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { compressImage } from "@/lib/image-compress";
 
 const URL_TTL = 60 * 60 * 24 * 365 * 10; // 10 years
 
@@ -117,12 +118,13 @@ function CollectionPanel({ collection, onClose }: { collection: AdminCollectionR
   };
 
   const onCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const raw = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
-    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    if (!raw) return;
+    if (!raw.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
     setUploading(true);
     try {
+      const file = await compressImage(raw, "cover");
       const ext = file.name.split(".").pop() || "jpg";
       const path = `collections/${collection?.id ?? "new"}/${Date.now()}.${ext}`;
       const up = await supabase.storage.from("story-covers").upload(path, file, {

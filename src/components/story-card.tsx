@@ -19,6 +19,7 @@ export function StoryCard({ story, queue }: { story: StoryDTO; queue?: StoryDTO[
             src={image}
             alt=""
             loading="lazy"
+            decoding="async"
             className={cn(
               "absolute inset-0 h-full w-full object-cover transition group-hover:scale-105",
               isCover ? "" : "opacity-55 mix-blend-luminosity group-hover:opacity-70",
@@ -69,6 +70,7 @@ export function StoryRow({ story, queue, index }: { story: StoryDTO; queue?: Sto
             src={image}
             alt=""
             loading="lazy"
+            decoding="async"
             className={cn(
               "absolute inset-0 h-full w-full object-cover",
               isCover ? "" : "opacity-50 mix-blend-luminosity",

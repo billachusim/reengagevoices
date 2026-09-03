@@ -110,6 +110,8 @@ function Home() {
                       alt={featured.elder?.name ?? featured.title}
                       className="h-full w-full object-cover"
                       loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                     />
                   ) : (
                     <div
@@ -143,6 +145,7 @@ function Home() {
                       src={c.cover_url}
                       alt={c.title}
                       loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 -z-10 h-full w-full object-cover"
                     />
                   ) : (
