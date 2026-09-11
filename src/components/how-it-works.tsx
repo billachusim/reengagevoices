@@ -5,7 +5,7 @@ const STEPS = [
     n: "01",
     icon: Mic,
     title: "We listen",
-    body: "Our local teams sit with elders in their homes and villages, recording the stories they want to leave behind. Elders can also self-record anytime through Agadi, our WhatsApp chatbot.",
+    body: "Our local teams sit with elders in their homes and villages, recording the stories they want to leave behind. Elders can also self-record anytime through our WhatsApp chatbot.",
   },
   {
     n: "02",
@@ -26,7 +26,7 @@ export function HowItWorks() {
     <section className="bg-secondary/40 px-5 py-14 sm:px-8 sm:py-20">
       <div className="mx-auto max-w-6xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-          How ReEngage African Voices works
+          How ReEngage Voices works
         </p>
         <h2 className="mt-4 font-serif text-3xl font-bold leading-tight sm:text-4xl">
           Three quiet acts

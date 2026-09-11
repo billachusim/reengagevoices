@@ -37,7 +37,7 @@ export function SiteFooter() {
           </p>
         </div>
         <p className="mt-4 max-w-md text-sm leading-relaxed text-night-muted">
-          A digital archive of African heritage stories and lived experiences — a project of ReEngage Africa.
+          A digital archive of African heritage stories and lived experiences. A project of ReEngage Africa.
         </p>
 
         <ul className="mt-5 flex flex-wrap items-center gap-3">
@@ -56,7 +56,7 @@ export function SiteFooter() {
           ))}
         </ul>
 
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:max-w-md">
+        <div className="mt-9 grid gap-8 sm:grid-cols-2 sm:max-w-md">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Archive</p>
             <ul className="mt-4 space-y-3 text-sm">
