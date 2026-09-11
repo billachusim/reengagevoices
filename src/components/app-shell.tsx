@@ -197,6 +197,9 @@ function WhatsAppButton() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = path === "/admin" || path.startsWith("/admin/");
+
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
       <div className="flex min-h-0 flex-1">
@@ -212,8 +215,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
       <PlayerBarSlot />
-      <BottomTabs />
-      <WhatsAppButton />
+      {!isAdmin && <BottomTabs />}
+      {!isAdmin && <WhatsAppButton />}
     </div>
   );
 }
