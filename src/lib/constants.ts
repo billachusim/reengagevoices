@@ -118,6 +118,14 @@ export const STORY_FORMAT_LABEL: Record<StoryFormat, string> = {
   empty: "Incomplete",
 };
 
+export const STORY_FORMAT_SHORT_LABEL: Record<StoryFormat, string> = {
+  full: "Audio & Video",
+  audio: "Audio",
+  video: "Video",
+  written: "Written",
+  empty: "Story",
+};
+
 export function isPlayable(story: { audio_url?: string | null; youtube_url?: string | null }): boolean {
   return has(story.audio_url) || has(story.youtube_url);
 }

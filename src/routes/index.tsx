@@ -159,7 +159,7 @@ function Home() {
                   )}
                   <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" aria-hidden="true" />
                   <h3 className="relative z-10 font-serif text-lg font-semibold leading-tight">{c.title}</h3>
-                  <p className="relative z-10 text-xs text-white/80">{c.story_count} stories</p>
+                  <p className="relative z-10 text-xs text-white/80">{c.story_count} {c.story_count === 1 ? "story" : "stories"}</p>
                 </div>
               </Link>
             ))}
