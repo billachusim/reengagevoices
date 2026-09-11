@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Play, Pause, BookOpen } from "lucide-react";
 import type { StoryDTO } from "@/lib/types";
-import { coverGradient, storyImagery, formatDuration, isPlayable, storyFormat, STORY_FORMAT_LABEL } from "@/lib/constants";
+import { coverGradient, storyImagery, formatDuration, isPlayable, storyFormat, STORY_FORMAT_SHORT_LABEL } from "@/lib/constants";
 import { usePlayer } from "@/components/player/audio-provider";
 import { cn } from "@/lib/utils";
 
@@ -41,11 +41,9 @@ export function StoryCard({ story, queue }: { story: StoryDTO; queue?: StoryDTO[
           </span>
         )}
       </div>
-      <Link to="/stories/$slug" params={{ slug: story.slug }} className="mt-2">
-        <h3 className={cn("truncate font-serif text-sm font-semibold", isCurrent && "text-primary")}>{story.title}</h3>
-      </Link>
       <p className="truncate text-xs text-muted-foreground">
-        {story.elder?.name ?? "Unknown elder"} · {playable ? formatDuration(story.duration_seconds) : STORY_FORMAT_LABEL[storyFormat(story)]}
+        {story.elder?.name ?? "Unknown elder"} · {STORY_FORMAT_SHORT_LABEL[storyFormat(story)]}
+        {story.duration_seconds > 0 && ` · ${formatDuration(story.duration_seconds)}`}
       </p>
     </div>
   );
