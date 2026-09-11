@@ -78,7 +78,7 @@ function DocUpload({ onDocument }: { onDocument: (file: File, text: string) => P
         type="button"
         disabled={busy}
         onClick={() => ref.current?.click()}
-        className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium hover:bg-muted disabled:opacity-60"
+        className="inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-medium hover:bg-muted disabled:opacity-60"
       >
         <FileText className="h-3 w-3" /> {busy ? "Reading…" : "Upload document"}
       </button>
@@ -103,10 +103,10 @@ function EditStoriesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid gap-2 sm:flex sm:flex-wrap sm:items-center">
         <form
           onSubmit={(e) => { e.preventDefault(); setSearch(q); }}
-          className="flex flex-1 items-center gap-2"
+          className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-1"
         >
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -122,7 +122,7 @@ function EditStoriesPage() {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
         >
           <Plus className="h-4 w-4" /> New story
         </button>
@@ -141,7 +141,7 @@ function EditStoriesPage() {
             <button
               key={s.id}
               onClick={() => setActive(s)}
-              className="flex w-full items-center justify-between gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
+              className="grid w-full grid-cols-[minmax(0,1fr)] gap-2 rounded-xl border bg-card p-3 text-left hover:bg-accent sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3"
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium">{s.title}</span>
@@ -149,7 +149,7 @@ function EditStoriesPage() {
                   {STORY_FORMAT_LABEL[storyFormat(s)]}
                 </span>
               </span>
-              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">{s.status !== "published" && <span className="text-destructive">draft</span>}{s.is_featured && <span className="text-primary">★ featured</span>}{s.cover_url && <span>🖼 cover</span>}{s.audio_url && <span>🎵 audio</span>}{s.youtube_url && <span>▶ video</span>}</span>
+              <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground sm:shrink-0 sm:justify-end">{s.status !== "published" && <span className="text-destructive">draft</span>}{s.is_featured && <span className="text-primary">★ featured</span>}{s.cover_url && <span>🖼 cover</span>}{s.audio_url && <span>🎵 audio</span>}{s.youtube_url && <span>▶ video</span>}</span>
 
             </button>
           ))
@@ -347,16 +347,21 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={onClose}>
       <div
-        className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl border bg-background p-4 sm:max-w-lg sm:rounded-2xl"
+        className="h-full w-full overflow-y-auto bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-2xl sm:border sm:pb-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="font-serif text-lg font-bold">{isNew ? "New story" : story!.title}</h2>
-          <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-            {STORY_FORMAT_LABEL[format]}
-          </span>
+        <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b bg-background px-4 py-3 sm:static sm:mx-0 sm:mt-0 sm:border-0 sm:p-0">
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="truncate font-serif text-lg font-bold">{isNew ? "New story" : story!.title}</h2>
+            <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+              {STORY_FORMAT_LABEL[format]}
+            </span>
+          </div>
+          <button type="button" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-accent" aria-label="Close story editor">
+            <X className="h-5 w-5" />
+          </button>
         </div>
         <div className="space-y-3">
           <div>
@@ -414,7 +419,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
 
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">Cover image</label>
-            <div className="flex gap-2">
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
               <input value={form.coverUrl} onChange={set("coverUrl")} placeholder="Paste an image URL…" className={inputCls} />
               <input ref={fileRef} type="file" accept="image/*" onChange={onCoverFile} className="hidden" />
               <button
@@ -466,7 +471,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
 
 
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">Elder</label>
               <input value={form.elderName} onChange={set("elderName")} placeholder="Elder name" className={inputCls} />
@@ -547,7 +552,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
             <textarea value={form.description} onChange={set("description")} rows={2} className={inputCls} />
           </div>
 
-          <div className="flex gap-2 pt-1">
+          <div className="sticky bottom-0 z-10 -mx-4 flex gap-2 border-t bg-background px-4 py-3 sm:static sm:mx-0 sm:border-0 sm:p-0 sm:pt-1">
             <button onClick={onClose} className="flex-1 rounded-full border py-2.5 text-sm font-medium">Cancel</button>
             <button
               disabled={save.isPending}

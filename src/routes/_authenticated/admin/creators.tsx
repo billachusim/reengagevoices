@@ -32,7 +32,7 @@ function CreatorsPage() {
   return (
     <div className="space-y-2">
       {creators.map((c) => (
-        <div key={c.user_id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-3">
+        <div key={c.user_id} className="grid gap-3 rounded-xl border bg-card p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-sm font-medium">
               {c.display_name ?? "Creator"}
@@ -42,7 +42,7 @@ function CreatorsPage() {
             </div>
             <div className="text-xs text-muted-foreground">{c.points} pts · {c.approved_count} approved</div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 border-t pt-3 sm:border-0 sm:pt-0">
             <button
               onClick={() => verify.mutate({ userId: c.user_id, verified: !c.verified })}
               className="rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-accent"

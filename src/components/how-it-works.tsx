@@ -17,7 +17,7 @@ const STEPS = [
     n: "03",
     icon: Share2,
     title: "We pass it on",
-    body: "Stories travel back to families, schools, and communities — keeping wisdom alive across generations.",
+    body: "Stories travel back to families, schools, and communities, keeping wisdom alive across generations.",
   },
 ];
 

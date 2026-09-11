@@ -30,13 +30,13 @@ function AdminCollectionsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
         <p className="text-sm text-muted-foreground">
           Build collections, pick their stories, and choose which appear on the homepage.
         </p>
         <button
           onClick={() => setActive("new")}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
         >
           <Plus className="h-4 w-4" /> New collection
         </button>
@@ -48,7 +48,7 @@ function AdminCollectionsPage() {
           <button
             key={c.id}
             onClick={() => setActive(c)}
-            className="flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
+            className="grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent sm:grid-cols-[auto_minmax(0,1fr)_auto]"
           >
             <span className="h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
               {c.cover_url && <img src={c.cover_url} alt="" className="h-full w-full object-cover" />}
@@ -57,7 +57,7 @@ function AdminCollectionsPage() {
               <span className="block truncate text-sm font-medium">{c.title}</span>
               <span className="block truncate text-xs text-muted-foreground">{c.story_ids.length} stories</span>
             </span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+            <span className="col-start-2 flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground sm:col-start-auto sm:shrink-0">
               {!c.is_public && <span className="text-destructive">private</span>}
               {c.is_homepage && <span className="text-primary">★ homepage</span>}
             </span>
@@ -185,9 +185,9 @@ function CollectionPanel({ collection, onClose }: { collection: AdminCollectionR
   });
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 p-4 backdrop-blur sm:p-8">
-      <div className="mx-auto max-w-2xl space-y-4 rounded-2xl border bg-card p-5 shadow-warm">
-        <div className="flex items-start justify-between gap-3">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 p-0 backdrop-blur sm:p-8">
+      <div className="mx-auto min-h-full max-w-2xl space-y-4 bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:min-h-0 sm:rounded-2xl sm:border sm:p-5 sm:shadow-warm">
+        <div className="sticky top-0 z-10 -mx-4 -mt-4 flex items-start justify-between gap-3 border-b bg-card px-4 py-3 sm:static sm:mx-0 sm:mt-0 sm:border-0 sm:p-0">
           <h2 className="font-serif text-xl font-bold">{collection ? "Edit collection" : "New collection"}</h2>
           <button onClick={onClose} className="rounded-full p-1 hover:bg-accent"><X className="h-5 w-5" /></button>
         </div>
@@ -204,11 +204,11 @@ function CollectionPanel({ collection, onClose }: { collection: AdminCollectionR
 
         <div className="space-y-2">
           <p className="text-sm font-medium">Cover image</p>
-          <div className="flex items-center gap-3">
+          <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center">
             <span className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
               {form.coverUrl.trim() && <img src={form.coverUrl} alt="" className="h-full w-full object-cover" />}
             </span>
-            <div className="flex-1 space-y-2">
+            <div className="min-w-0 space-y-2">
               <input value={form.coverUrl} onChange={set("coverUrl")} placeholder="Paste an image URL" className={inputCls} />
               <div className="flex gap-2">
                 <input ref={fileRef} type="file" accept="image/*" onChange={onCoverFile} className="hidden" />
@@ -256,14 +256,14 @@ function CollectionPanel({ collection, onClose }: { collection: AdminCollectionR
             ))}
           </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); setSearch(q); }} className="flex items-center gap-2 pt-2">
+          <form onSubmit={(e) => { e.preventDefault(); setSearch(q); }} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 pt-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search stories to add" className="w-full rounded-lg border bg-background py-2 pl-9 pr-3 text-sm" />
             </div>
             <button className="rounded-full border px-3 py-2 text-sm font-semibold">Search</button>
           </form>
-          <div className="max-h-56 space-y-1 overflow-y-auto">
+          <div className="max-h-[40vh] space-y-1 overflow-y-auto overscroll-contain sm:max-h-56">
             {(stories ?? [])
               .filter((s) => !storyIds.includes(s.id))
               .map((s) => (
@@ -301,7 +301,7 @@ function CollectionPanel({ collection, onClose }: { collection: AdminCollectionR
           </label>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div className="sticky bottom-0 z-10 -mx-4 grid gap-3 border-t bg-card px-4 py-3 sm:static sm:mx-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:border-0 sm:p-0 sm:pt-2">
           <div>
             {collection && (confirmDelete ? (
               <div className="flex items-center gap-2">
@@ -323,7 +323,7 @@ function CollectionPanel({ collection, onClose }: { collection: AdminCollectionR
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <button onClick={onClose} className="rounded-full border px-4 py-2 text-sm font-semibold">Cancel</button>
             <button
               onClick={() => save.mutate()}

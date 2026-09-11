@@ -40,9 +40,10 @@ function AdminLayout() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8">
+    <div className="mx-auto max-w-5xl px-4 py-5 sm:px-8 sm:py-6">
       <h1 className="font-serif text-2xl font-bold sm:text-3xl">Admin console</h1>
-      <div className="mt-4 flex gap-1 overflow-x-auto border-b">
+      <div className="sticky top-0 z-20 -mx-4 mt-3 overflow-x-auto border-b bg-background/95 px-4 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-0 sm:mt-4 sm:px-0">
+        <div className="flex w-max min-w-full gap-1">
         {TABS.map((t) => {
           const active = t.exact ? path === t.to : path === t.to || path.startsWith(t.to + "/");
           return (
@@ -50,7 +51,7 @@ function AdminLayout() {
               key={t.to}
               to={t.to}
               className={cn(
-                "flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition",
+                "flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition",
                 active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >
@@ -59,8 +60,9 @@ function AdminLayout() {
             </Link>
           );
         })}
+        </div>
       </div>
-      <div className="py-6">
+      <div className="py-4 sm:py-6">
         <Outlet />
       </div>
     </div>

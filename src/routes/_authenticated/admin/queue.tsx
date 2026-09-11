@@ -132,7 +132,7 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[calc(100dvh-1rem)] overflow-y-auto p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:max-h-[90vh] sm:max-w-lg sm:p-6">
         <DialogHeader>
           <DialogTitle>Review submission</DialogTitle>
         </DialogHeader>
@@ -141,11 +141,11 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
           {item.audio_url && <audio controls src={item.audio_url} className="w-full" />}
           <input disabled={!editable} value={form.title} onChange={set("title")} placeholder="Story title" className={inputCls} />
           <input disabled={!editable} value={form.elderName} onChange={set("elderName")} placeholder="Elder name" className={inputCls} />
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             <input disabled={!editable} value={form.region} onChange={set("region")} placeholder="Region" className={inputCls} />
             <input disabled={!editable} value={form.tribe} onChange={set("tribe")} placeholder="Tribe" className={inputCls} />
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid gap-2 sm:grid-cols-3">
             <input disabled={!editable} value={form.language} onChange={set("language")} placeholder="Language" className={inputCls} />
             <input disabled={!editable} value={form.storyType} onChange={set("storyType")} placeholder="Type" className={inputCls} />
             <input disabled={!editable} value={form.mood} onChange={set("mood")} placeholder="Mood" className={inputCls} />
@@ -185,12 +185,12 @@ function ReviewDialog({ item, onClose }: { item: QueueItem; onClose: () => void 
               >
                 {approve.isPending ? "Publishing…" : "Approve & publish"}
               </button>
-              <div className="flex gap-2">
+              <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
                 <input
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Reason to reject"
-                  className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm"
+                  className="min-w-0 rounded-lg border bg-background px-3 py-2 text-sm"
                 />
                 <button
                   disabled={reject.isPending || !reason.trim()}

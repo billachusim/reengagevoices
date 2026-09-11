@@ -24,13 +24,13 @@ function AdminEldersPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
         <p className="text-sm text-muted-foreground">
           Manage elder profiles and choose who appears in “Voices to follow” on the homepage.
         </p>
         <button
           onClick={() => setActive("new")}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
         >
           <Plus className="h-4 w-4" /> New elder
         </button>
@@ -44,7 +44,7 @@ function AdminEldersPage() {
             <button
               key={e.id}
               onClick={() => setActive(e)}
-              className="flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent"
+              className="grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-xl border bg-card p-3 text-left hover:bg-accent sm:grid-cols-[auto_minmax(0,1fr)_auto]"
             >
               <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted">
                 {img && <img src={img} alt={e.name} className="h-full w-full object-cover" />}
@@ -55,7 +55,7 @@ function AdminEldersPage() {
                   {[e.tribe_name, e.region_name, e.language_name].filter(Boolean).join(" · ") || "No details yet"}
                 </span>
               </span>
-              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+              <span className="col-start-2 flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground sm:col-start-auto sm:shrink-0">
                 {e.is_homepage && <span className="text-primary">★ homepage</span>}
                 <span>{e.story_count} stories</span>
               </span>
@@ -165,9 +165,9 @@ function ElderPanel({ elder, onClose }: { elder: AdminElderRow | null; onClose: 
   const preview = form.photoUrl.trim() || elderPortrait(elder?.slug);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 p-4 backdrop-blur sm:p-8">
-      <div className="mx-auto max-w-2xl space-y-4 rounded-2xl border bg-card p-5 shadow-warm">
-        <div className="flex items-start justify-between gap-3">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 p-0 backdrop-blur sm:p-8">
+      <div className="mx-auto min-h-full max-w-2xl space-y-4 bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:min-h-0 sm:rounded-2xl sm:border sm:p-5 sm:shadow-warm">
+        <div className="sticky top-0 z-10 -mx-4 -mt-4 flex items-start justify-between gap-3 border-b bg-card px-4 py-3 sm:static sm:mx-0 sm:mt-0 sm:border-0 sm:p-0">
           <h2 className="font-serif text-xl font-bold">{elder ? "Edit elder" : "New elder"}</h2>
           <button onClick={onClose} className="rounded-full p-1 hover:bg-accent"><X className="h-5 w-5" /></button>
         </div>
@@ -199,11 +199,11 @@ function ElderPanel({ elder, onClose }: { elder: AdminElderRow | null; onClose: 
 
         <div className="space-y-2">
           <p className="text-sm font-medium">Photo</p>
-          <div className="flex items-center gap-3">
+          <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center">
             <span className="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-muted">
               {preview && <img src={preview} alt="" className="h-full w-full object-cover" />}
             </span>
-            <div className="flex-1 space-y-2">
+            <div className="min-w-0 space-y-2">
               <input value={form.photoUrl} onChange={set("photoUrl")} placeholder="Paste an image URL" className={inputCls} />
               <div className="flex gap-2">
                 <input ref={fileRef} type="file" accept="image/*" onChange={onPhotoFile} className="hidden" />
@@ -246,10 +246,10 @@ function ElderPanel({ elder, onClose }: { elder: AdminElderRow | null; onClose: 
           </label>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div className="sticky bottom-0 z-10 -mx-4 grid gap-3 border-t bg-card px-4 py-3 sm:static sm:mx-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:border-0 sm:p-0 sm:pt-2">
           <div>
             {elder && (confirmDelete ? (
-              <div className="flex items-center gap-2">
+           <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => remove.mutate()}
                   disabled={remove.isPending}
