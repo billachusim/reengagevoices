@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ReEngage African Voices — African elders' stories, in their own voices" },
-      { name: "description", content: "Listen to folktales, songs, proverbs and lived memory from elders across Africa. Browse by region, tribe, language and theme." },
+      { name: "description", content: "Listen to folklore, songs, proverbs and lived memory from elders across Africa. Browse by region, tribe, language and theme." },
       { property: "og:title", content: "ReEngage African Voices" },
       { property: "og:description", content: "An audio archive of African elders' stories, in their own voices." },
     ],

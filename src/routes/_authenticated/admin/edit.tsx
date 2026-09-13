@@ -490,7 +490,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">Story type</label>
-              <input value={form.storyType} onChange={set("storyType")} placeholder="e.g. Folktale" className={inputCls} />
+              <input value={form.storyType} onChange={set("storyType")} placeholder="e.g. Folklore" className={inputCls} />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">Mood</label>
