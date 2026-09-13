@@ -25,7 +25,7 @@ function Contribute() {
         <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex flex-col gap-2 rounded-2xl border bg-card p-6 shadow-warm">
           <MessageCircle className="h-7 w-7 text-[#25D366]" />
           <h2 className="font-serif text-xl font-semibold">Send on WhatsApp</h2>
-          <p className="text-sm text-muted-foreground">Talk to Agadi, our story assistant, and submit a voice note.</p>
+          <p className="text-sm text-muted-foreground">Submit a voice note through our WhatsApp chatbot.</p>
         </a>
       </div>
     </div>
