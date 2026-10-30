@@ -1,6 +1,6 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 
-export function RouteError({ reset }: { error: Error; reset: () => void }) {
+export function RouteError({ reset }: ErrorComponentProps) {
   const router = useRouter();
   return (
     <div className="grid place-items-center px-6 py-24 text-center">
