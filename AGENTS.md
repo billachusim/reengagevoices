@@ -10,3 +10,6 @@
 <!-- LOVABLE:END -->
 
 - Keep archive taxonomy and elder biographies public; user profiles are owner/staff-only, associations follow parent-record RLS, and private cover/document downloads require ownership, staff access, or a published/public reference. This preserves discovery without exposing private records or unused uploads.
+- Store contributor audio as object paths and serve published recordings through a no-store, publication-checked streaming endpoint; never persist long-lived recording capabilities. This makes withdrawing a story revoke future playback requests.
+- Transcription downloads only validated archive audio object paths through the authenticated storage client, never caller-selected network URLs. This prevents arbitrary outbound requests.
+- Archive story creation/publication is staff-only; contributors submit to moderation, and listening rewards bind the listener to auth.uid() with fixed award/verification values. This prevents review bypass and point tampering.
