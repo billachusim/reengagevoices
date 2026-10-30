@@ -33,7 +33,12 @@ export const getModerationQueue = createServerFn({ method: "GET" })
       .select("id,status,created_at,audio_url,reject_reason,submitter_id,payload")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    const rows = data ?? [];
+    const rows = await Promise.all((data ?? []).map(async (row: any) => {
+      const path = row.audio_url && audioObjectPath(row.audio_url, process.env.SUPABASE_URL);
+      if (!path) return row;
+      const { data: signed } = await supabase.storage.from("story-audio").createSignedUrl(path, 300);
+      return { ...row, audio_url: signed?.signedUrl ?? null };
+    }));
     const ids = [...new Set(rows.map((r: any) => r.submitter_id).filter(Boolean))];
     let names: Record<string, string> = {};
     if (ids.length) {
@@ -299,14 +304,16 @@ export const listAdminStories = createServerFn({ method: "GET" })
     if (data.q && data.q.trim()) query = query.ilike("title", `%${data.q.trim()}%`);
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((r: any): AdminStoryRow => {
+    return Promise.all((rows ?? []).map(async (r: any): Promise<AdminStoryRow> => {
       const themes = (r.story_themes ?? []).map((st: any) => st.theme).filter(Boolean);
+      const path = r.audio_url && audioObjectPath(r.audio_url, process.env.SUPABASE_URL);
+      const signed = path ? await context.supabase.storage.from("story-audio").createSignedUrl(path, 300) : null;
       return {
         id: r.id,
         slug: r.slug,
         title: r.title,
         status: r.status,
-        audio_url: r.audio_url,
+        audio_url: path ? signed?.data?.signedUrl ?? null : r.audio_url,
         duration_seconds: r.duration_seconds ?? 0,
         youtube_url: r.youtube_url,
         transcript_original: r.transcript_original,
@@ -323,7 +330,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
         mood: themes.find((t: any) => t.kind === "mood")?.name ?? null,
         cover_url: r.cover_url ?? null,
       };
-    });
+    }));
   });
 
 // Admin-only: update a story's editable fields.
