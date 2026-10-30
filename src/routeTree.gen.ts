@@ -9,41 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as BrowseRouteImport } from './routes/browse'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EldersIndexRouteImport } from './routes/elders.index'
-import { Route as ContributeIndexRouteImport } from './routes/contribute.index'
-import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
-import { Route as TribesSlugRouteImport } from './routes/tribes.$slug'
-import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
-import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
-import { Route as RegionsSlugRouteImport } from './routes/regions.$slug'
-import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
-import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
-import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
-import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
-import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator'
+import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
+import { Route as ContributeIndexRouteImport } from './routes/contribute.index'
+import { Route as EldersIndexRouteImport } from './routes/elders.index'
+import { Route as EldersSlugRouteImport } from './routes/elders.$slug'
+import { Route as LanguagesSlugRouteImport } from './routes/languages.$slug'
+import { Route as RegionsSlugRouteImport } from './routes/regions.$slug'
+import { Route as StoriesSlugRouteImport } from './routes/stories.$slug'
+import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
+import { Route as TribesSlugRouteImport } from './routes/tribes.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
-import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
-import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
-import { Route as AuthenticatedAdminEldersRouteImport } from './routes/_authenticated/admin/elders'
-import { Route as AuthenticatedAdminEditRouteImport } from './routes/_authenticated/admin/edit'
-import { Route as AuthenticatedAdminCreatorsRouteImport } from './routes/_authenticated/admin/creators'
 import { Route as AuthenticatedAdminCollectionsRouteImport } from './routes/_authenticated/admin/collections'
+import { Route as AuthenticatedAdminCreatorsRouteImport } from './routes/_authenticated/admin/creators'
+import { Route as AuthenticatedAdminEditRouteImport } from './routes/_authenticated/admin/edit'
+import { Route as AuthenticatedAdminEldersRouteImport } from './routes/_authenticated/admin/elders'
+import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
+import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
 
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrowseRoute = BrowseRouteImport.update({
-  id: '/browse',
-  path: '/browse',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -51,74 +50,15 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const BrowseRoute = BrowseRouteImport.update({
+  id: '/browse',
+  path: '/browse',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
-} as any)
-const EldersIndexRoute = EldersIndexRouteImport.update({
-  id: '/elders/',
-  path: '/elders/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContributeIndexRoute = ContributeIndexRouteImport.update({
-  id: '/contribute/',
-  path: '/contribute/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
-  id: '/collections/',
-  path: '/collections/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TribesSlugRoute = TribesSlugRouteImport.update({
-  id: '/tribes/$slug',
-  path: '/tribes/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ThemesSlugRoute = ThemesSlugRouteImport.update({
-  id: '/themes/$slug',
-  path: '/themes/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StoriesSlugRoute = StoriesSlugRouteImport.update({
-  id: '/stories/$slug',
-  path: '/stories/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegionsSlugRoute = RegionsSlugRouteImport.update({
-  id: '/regions/$slug',
-  path: '/regions/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LanguagesSlugRoute = LanguagesSlugRouteImport.update({
-  id: '/languages/$slug',
-  path: '/languages/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EldersSlugRoute = EldersSlugRouteImport.update({
-  id: '/elders/$slug',
-  path: '/elders/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
-  id: '/collections/$slug',
-  path: '/collections/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCreatorRoute = AuthenticatedCreatorRouteImport.update({
-  id: '/creator',
-  path: '/creator',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
@@ -130,20 +70,86 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCreatorRoute = AuthenticatedCreatorRouteImport.update({
+  id: '/creator',
+  path: '/creator',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributeIndexRoute = ContributeIndexRouteImport.update({
+  id: '/contribute/',
+  path: '/contribute/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EldersIndexRoute = EldersIndexRouteImport.update({
+  id: '/elders/',
+  path: '/elders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EldersSlugRoute = EldersSlugRouteImport.update({
+  id: '/elders/$slug',
+  path: '/elders/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LanguagesSlugRoute = LanguagesSlugRouteImport.update({
+  id: '/languages/$slug',
+  path: '/languages/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegionsSlugRoute = RegionsSlugRouteImport.update({
+  id: '/regions/$slug',
+  path: '/regions/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesSlugRoute = StoriesSlugRouteImport.update({
+  id: '/stories/$slug',
+  path: '/stories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesSlugRoute = ThemesSlugRouteImport.update({
+  id: '/themes/$slug',
+  path: '/themes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TribesSlugRoute = TribesSlugRouteImport.update({
+  id: '/tribes/$slug',
+  path: '/tribes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
-const AuthenticatedContributeRecordRoute =
-  AuthenticatedContributeRecordRouteImport.update({
-    id: '/contribute/record',
-    path: '/contribute/record',
-    getParentRoute: () => AuthenticatedRouteRoute,
+const AuthenticatedAdminCollectionsRoute =
+  AuthenticatedAdminCollectionsRouteImport.update({
+    id: '/collections',
+    path: '/collections',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
-const AuthenticatedAdminQueueRoute = AuthenticatedAdminQueueRouteImport.update({
-  id: '/queue',
-  path: '/queue',
+const AuthenticatedAdminCreatorsRoute =
+  AuthenticatedAdminCreatorsRouteImport.update({
+    id: '/creators',
+    path: '/creators',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminEditRoute = AuthenticatedAdminEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 const AuthenticatedAdminEldersRoute =
@@ -152,22 +158,16 @@ const AuthenticatedAdminEldersRoute =
     path: '/elders',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
-const AuthenticatedAdminEditRoute = AuthenticatedAdminEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
+const AuthenticatedAdminQueueRoute = AuthenticatedAdminQueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
-const AuthenticatedAdminCreatorsRoute =
-  AuthenticatedAdminCreatorsRouteImport.update({
-    id: '/creators',
-    path: '/creators',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminCollectionsRoute =
-  AuthenticatedAdminCollectionsRouteImport.update({
-    id: '/collections',
-    path: '/collections',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
+const AuthenticatedContributeRecordRoute =
+  AuthenticatedContributeRecordRouteImport.update({
+    id: '/contribute/record',
+    path: '/contribute/record',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -356,25 +356,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/browse': {
-      id: '/browse'
-      path: '/browse'
-      fullPath: '/browse'
-      preLoaderRoute: typeof BrowseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -384,96 +370,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/elders/': {
-      id: '/elders/'
-      path: '/elders'
-      fullPath: '/elders/'
-      preLoaderRoute: typeof EldersIndexRouteImport
+    '/browse': {
+      id: '/browse'
+      path: '/browse'
+      fullPath: '/browse'
+      preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/contribute/': {
-      id: '/contribute/'
-      path: '/contribute'
-      fullPath: '/contribute/'
-      preLoaderRoute: typeof ContributeIndexRouteImport
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/collections/': {
-      id: '/collections/'
-      path: '/collections'
-      fullPath: '/collections/'
-      preLoaderRoute: typeof CollectionsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tribes/$slug': {
-      id: '/tribes/$slug'
-      path: '/tribes/$slug'
-      fullPath: '/tribes/$slug'
-      preLoaderRoute: typeof TribesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/themes/$slug': {
-      id: '/themes/$slug'
-      path: '/themes/$slug'
-      fullPath: '/themes/$slug'
-      preLoaderRoute: typeof ThemesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stories/$slug': {
-      id: '/stories/$slug'
-      path: '/stories/$slug'
-      fullPath: '/stories/$slug'
-      preLoaderRoute: typeof StoriesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/regions/$slug': {
-      id: '/regions/$slug'
-      path: '/regions/$slug'
-      fullPath: '/regions/$slug'
-      preLoaderRoute: typeof RegionsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/languages/$slug': {
-      id: '/languages/$slug'
-      path: '/languages/$slug'
-      fullPath: '/languages/$slug'
-      preLoaderRoute: typeof LanguagesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elders/$slug': {
-      id: '/elders/$slug'
-      path: '/elders/$slug'
-      fullPath: '/elders/$slug'
-      preLoaderRoute: typeof EldersSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/collections/$slug': {
-      id: '/collections/$slug'
-      path: '/collections/$slug'
-      fullPath: '/collections/$slug'
-      preLoaderRoute: typeof CollectionsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/library': {
-      id: '/_authenticated/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/creator': {
-      id: '/_authenticated/creator'
-      path: '/creator'
-      fullPath: '/creator'
-      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/account': {
       id: '/_authenticated/account'
@@ -489,6 +405,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/creator': {
+      id: '/_authenticated/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/library': {
+      id: '/_authenticated/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$slug': {
+      id: '/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof CollectionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contribute/': {
+      id: '/contribute/'
+      path: '/contribute'
+      fullPath: '/contribute/'
+      preLoaderRoute: typeof ContributeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elders/': {
+      id: '/elders/'
+      path: '/elders'
+      fullPath: '/elders/'
+      preLoaderRoute: typeof EldersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elders/$slug': {
+      id: '/elders/$slug'
+      path: '/elders/$slug'
+      fullPath: '/elders/$slug'
+      preLoaderRoute: typeof EldersSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/languages/$slug': {
+      id: '/languages/$slug'
+      path: '/languages/$slug'
+      fullPath: '/languages/$slug'
+      preLoaderRoute: typeof LanguagesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regions/$slug': {
+      id: '/regions/$slug'
+      path: '/regions/$slug'
+      fullPath: '/regions/$slug'
+      preLoaderRoute: typeof RegionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stories/$slug': {
+      id: '/stories/$slug'
+      path: '/stories/$slug'
+      fullPath: '/stories/$slug'
+      preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes/$slug': {
+      id: '/themes/$slug'
+      path: '/themes/$slug'
+      fullPath: '/themes/$slug'
+      preLoaderRoute: typeof ThemesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tribes/$slug': {
+      id: '/tribes/$slug'
+      path: '/tribes/$slug'
+      fullPath: '/tribes/$slug'
+      preLoaderRoute: typeof TribesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -496,32 +496,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/_authenticated/contribute/record': {
-      id: '/_authenticated/contribute/record'
-      path: '/contribute/record'
-      fullPath: '/contribute/record'
-      preLoaderRoute: typeof AuthenticatedContributeRecordRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/queue': {
-      id: '/_authenticated/admin/queue'
-      path: '/queue'
-      fullPath: '/admin/queue'
-      preLoaderRoute: typeof AuthenticatedAdminQueueRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/elders': {
-      id: '/_authenticated/admin/elders'
-      path: '/elders'
-      fullPath: '/admin/elders'
-      preLoaderRoute: typeof AuthenticatedAdminEldersRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/edit': {
-      id: '/_authenticated/admin/edit'
-      path: '/edit'
-      fullPath: '/admin/edit'
-      preLoaderRoute: typeof AuthenticatedAdminEditRouteImport
+    '/_authenticated/admin/collections': {
+      id: '/_authenticated/admin/collections'
+      path: '/collections'
+      fullPath: '/admin/collections'
+      preLoaderRoute: typeof AuthenticatedAdminCollectionsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/creators': {
@@ -531,12 +510,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCreatorsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/_authenticated/admin/collections': {
-      id: '/_authenticated/admin/collections'
-      path: '/collections'
-      fullPath: '/admin/collections'
-      preLoaderRoute: typeof AuthenticatedAdminCollectionsRouteImport
+    '/_authenticated/admin/edit': {
+      id: '/_authenticated/admin/edit'
+      path: '/edit'
+      fullPath: '/admin/edit'
+      preLoaderRoute: typeof AuthenticatedAdminEditRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/elders': {
+      id: '/_authenticated/admin/elders'
+      path: '/elders'
+      fullPath: '/admin/elders'
+      preLoaderRoute: typeof AuthenticatedAdminEldersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/queue': {
+      id: '/_authenticated/admin/queue'
+      path: '/queue'
+      fullPath: '/admin/queue'
+      preLoaderRoute: typeof AuthenticatedAdminQueueRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/contribute/record': {
+      id: '/_authenticated/contribute/record'
+      path: '/contribute/record'
+      fullPath: '/contribute/record'
+      preLoaderRoute: typeof AuthenticatedContributeRecordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
