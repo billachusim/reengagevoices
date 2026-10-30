@@ -13,7 +13,6 @@ export const Route = createFileRoute("/_authenticated/contribute/record")({
 });
 
 const MAX_AUDIO_BYTES = 20 * 1024 * 1024; // 20MB
-const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10; // ~10 years
 
 function extFor(type: string) {
   if (type.includes("webm")) return "webm";
@@ -77,9 +76,7 @@ function RecordPage() {
       upsert: false,
     });
     if (up.error) throw new Error(up.error.message);
-    const signed = await supabase.storage.from("story-audio").createSignedUrl(path, SIGNED_URL_TTL);
-    if (signed.error || !signed.data?.signedUrl) throw new Error(signed.error?.message ?? "Could not finalize audio.");
-    await submitStory({ data: { ...form, audioUrl: signed.data.signedUrl } });
+    await submitStory({ data: { ...form, audioUrl: path } });
   };
 
   const mut = useMutation({

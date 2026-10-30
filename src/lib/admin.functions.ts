@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { audioObjectPath } from "./audio-storage";
 
 async function assertStaff(supabase: any, userId: string) {
   const [{ data: isAdmin }, { data: isMod }] = await Promise.all([
@@ -32,7 +33,12 @@ export const getModerationQueue = createServerFn({ method: "GET" })
       .select("id,status,created_at,audio_url,reject_reason,submitter_id,payload")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    const rows = data ?? [];
+    const rows = await Promise.all((data ?? []).map(async (row: any) => {
+      const path = row.audio_url && audioObjectPath(row.audio_url, process.env.SUPABASE_URL);
+      if (!path) return row;
+      const { data: signed } = await supabase.storage.from("story-audio").createSignedUrl(path, 300);
+      return { ...row, audio_url: signed?.signedUrl ?? null };
+    }));
     const ids = [...new Set(rows.map((r: any) => r.submitter_id).filter(Boolean))];
     let names: Record<string, string> = {};
     if (ids.length) {
@@ -200,15 +206,16 @@ function extFromType(type: string) {
 // Admin-only: transcribe a story's audio with Lovable AI speech-to-text.
 export const transcribeAudio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => z.object({ audioUrl: z.string().url() }).parse(d))
+  .inputValidator((d: any) => z.object({ audioUrl: z.string().min(1).max(2000) }).parse(d))
   .handler(async ({ data, context }): Promise<{ text: string }> => {
     await assertStaff(context.supabase, context.userId);
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("AI is not configured.");
 
-    const audioRes = await fetch(data.audioUrl);
-    if (!audioRes.ok) throw new Error("Could not download the audio file.");
-    const blob = await audioRes.blob();
+    const path = audioObjectPath(data.audioUrl, process.env.SUPABASE_URL);
+    if (!path) throw new Error("Transcription requires audio uploaded to this archive.");
+    const { data: blob, error } = await context.supabase.storage.from("story-audio").download(path);
+    if (error || !blob) throw new Error("Could not download the audio file.");
     const type = blob.type || "audio/webm";
 
     const form = new FormData();
@@ -297,14 +304,16 @@ export const listAdminStories = createServerFn({ method: "GET" })
     if (data.q && data.q.trim()) query = query.ilike("title", `%${data.q.trim()}%`);
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((r: any): AdminStoryRow => {
+    return Promise.all((rows ?? []).map(async (r: any): Promise<AdminStoryRow> => {
       const themes = (r.story_themes ?? []).map((st: any) => st.theme).filter(Boolean);
+      const path = r.audio_url && audioObjectPath(r.audio_url, process.env.SUPABASE_URL);
+      const signed = path ? await context.supabase.storage.from("story-audio").createSignedUrl(path, 300) : null;
       return {
         id: r.id,
         slug: r.slug,
         title: r.title,
         status: r.status,
-        audio_url: r.audio_url,
+        audio_url: path ? signed?.data?.signedUrl ?? null : r.audio_url,
         duration_seconds: r.duration_seconds ?? 0,
         youtube_url: r.youtube_url,
         transcript_original: r.transcript_original,
@@ -321,7 +330,7 @@ export const listAdminStories = createServerFn({ method: "GET" })
         mood: themes.find((t: any) => t.kind === "mood")?.name ?? null,
         cover_url: r.cover_url ?? null,
       };
-    });
+    }));
   });
 
 // Admin-only: update a story's editable fields.

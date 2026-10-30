@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import type { StoryDTO, ElderDTO, CollectionDTO, FacetsDTO } from "./types";
+import { audioObjectPath } from "./audio-storage";
 
 function publicClient() {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -20,7 +21,8 @@ function mapStory(row: any): StoryDTO {
     slug: row.slug,
     title: row.title,
     description: row.description,
-    audio_url: row.audio_url,
+    audio_url: row.audio_url && audioObjectPath(row.audio_url, process.env.SUPABASE_URL)
+      ? `/api/audio/${row.id}` : row.audio_url,
     cover_url: row.cover_url,
     duration_seconds: row.duration_seconds ?? 0,
     play_count: row.play_count ?? 0,

@@ -35,6 +35,7 @@ import { Route as AuthenticatedAdminEditRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminEldersRouteImport } from './routes/_authenticated/admin/elders'
 import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
 import { Route as AuthenticatedContributeRecordRouteImport } from './routes/_authenticated/contribute.record'
+import { Route as ApiAudioIdRouteImport } from './routes/api/audio/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -169,6 +170,11 @@ const AuthenticatedContributeRecordRoute =
     path: '/contribute/record',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAudioIdRoute = ApiAudioIdRouteImport.update({
+  id: '/api/audio/$id',
+  path: '/api/audio/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/admin/elders': typeof AuthenticatedAdminEldersRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/api/audio/$id': typeof ApiAudioIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/admin/elders': typeof AuthenticatedAdminEldersRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/api/audio/$id': typeof ApiAudioIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/elders': typeof AuthenticatedAdminEldersRoute
   '/_authenticated/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/_authenticated/contribute/record': typeof AuthenticatedContributeRecordRoute
+  '/api/audio/$id': typeof ApiAudioIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -279,6 +288,7 @@ export interface FileRouteTypes {
     | '/admin/elders'
     | '/admin/queue'
     | '/contribute/record'
+    | '/api/audio/$id'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/admin/elders'
     | '/admin/queue'
     | '/contribute/record'
+    | '/api/audio/$id'
     | '/admin'
   id:
     | '__root__'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/elders'
     | '/_authenticated/admin/queue'
     | '/_authenticated/contribute/record'
+    | '/api/audio/$id'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -352,6 +364,7 @@ export interface RootRouteChildren {
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ContributeIndexRoute: typeof ContributeIndexRoute
   EldersIndexRoute: typeof EldersIndexRoute
+  ApiAudioIdRoute: typeof ApiAudioIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -538,6 +551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContributeRecordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/audio/$id': {
+      id: '/api/audio/$id'
+      path: '/api/audio/$id'
+      fullPath: '/api/audio/$id'
+      preLoaderRoute: typeof ApiAudioIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -600,6 +620,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsIndexRoute: CollectionsIndexRoute,
   ContributeIndexRoute: ContributeIndexRoute,
   EldersIndexRoute: EldersIndexRoute,
+  ApiAudioIdRoute: ApiAudioIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
