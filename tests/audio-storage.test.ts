@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { audioObjectPath } from "./audio-storage";
+import { audioObjectPath } from "../src/lib/audio-storage";
 
 describe("archive audio object validation", () => {
   const origin = "https://archive.example";
