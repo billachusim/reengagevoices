@@ -8,6 +8,13 @@
       "when": 1793323416394,
       "tag": "0000_restrict_selected_private_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793323919308,
+      "tag": "0001_enforce_story_review_and_listen_rewards",
+      "breakpoints": true
     }
   ]
 }
