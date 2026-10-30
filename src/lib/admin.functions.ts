@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { audioObjectPath } from "./audio-storage";
 
 async function assertStaff(supabase: any, userId: string) {
   const [{ data: isAdmin }, { data: isMod }] = await Promise.all([
@@ -200,15 +201,16 @@ function extFromType(type: string) {
 // Admin-only: transcribe a story's audio with Lovable AI speech-to-text.
 export const transcribeAudio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => z.object({ audioUrl: z.string().url() }).parse(d))
+  .inputValidator((d: any) => z.object({ audioUrl: z.string().min(1).max(2000) }).parse(d))
   .handler(async ({ data, context }): Promise<{ text: string }> => {
     await assertStaff(context.supabase, context.userId);
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("AI is not configured.");
 
-    const audioRes = await fetch(data.audioUrl);
-    if (!audioRes.ok) throw new Error("Could not download the audio file.");
-    const blob = await audioRes.blob();
+    const path = audioObjectPath(data.audioUrl, process.env.SUPABASE_URL);
+    if (!path) throw new Error("Transcription requires audio uploaded to this archive.");
+    const { data: blob, error } = await context.supabase.storage.from("story-audio").download(path);
+    if (error || !blob) throw new Error("Could not download the audio file.");
     const type = blob.type || "audio/webm";
 
     const form = new FormData();

@@ -148,10 +148,15 @@ export const submitStory = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { audioUrl, ...payload } = data;
+    const { audioObjectPath } = await import("./audio-storage");
+    const path = audioUrl ? audioObjectPath(audioUrl) : null;
+    if (!path || !path.startsWith(`${userId}/`)) throw new Error("Please upload your own recording.");
+    const { error: audioError } = await supabase.storage.from("story-audio").download(path);
+    if (audioError) throw new Error("Recording is not available.");
     const { error } = await supabase.from("pending_stories").insert({
       submitter_id: userId,
       payload: payload as any,
-      audio_url: audioUrl ?? null,
+      audio_url: path,
       status: "pending",
     });
     if (error) throw new Error(error.message);

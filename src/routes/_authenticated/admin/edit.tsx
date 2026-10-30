@@ -247,7 +247,7 @@ function EditPanel({ story, onClose }: { story: AdminStoryRow | null; onClose: (
         contentType: file.type,
       });
       if (up.error) throw up.error;
-      const signed = await supabase.storage.from("story-audio").createSignedUrl(path, COVER_URL_TTL);
+      const signed = await supabase.storage.from("story-audio").createSignedUrl(path, 300);
       if (signed.error || !signed.data?.signedUrl) throw signed.error ?? new Error("Could not create URL");
       setForm((f) => ({ ...f, audioUrl: signed.data.signedUrl }));
       setDuration(secs);
