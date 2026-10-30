@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { StoryDTO, ElderDTO } from "./types";
+import { audioObjectPath } from "./audio-storage";
 
 const STORY_SELECT =
   "id,slug,title,description,audio_url,cover_url,duration_seconds,play_count,transcript_original,transcript_english,manuscript_url,manuscript_filename,youtube_url,is_featured,elder:elders(slug,name),region:regions(slug,name),tribe:tribes(slug,name),language:languages(slug,name),story_themes(theme:themes(slug,name,kind))";
@@ -13,7 +14,8 @@ function mapStory(row: any): StoryDTO {
     slug: row.slug,
     title: row.title,
     description: row.description,
-    audio_url: row.audio_url,
+    audio_url: row.audio_url && audioObjectPath(row.audio_url, process.env.SUPABASE_URL)
+      ? `/api/audio/${row.id}` : row.audio_url,
     cover_url: row.cover_url,
     duration_seconds: row.duration_seconds ?? 0,
     play_count: row.play_count ?? 0,
